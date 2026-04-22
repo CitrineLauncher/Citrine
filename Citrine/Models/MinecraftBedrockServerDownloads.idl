@@ -1,0 +1,9 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftBedrockServerDownloads
+    {
+        Windows.Foundation.Uri WindowsPackage{ get; };
+        Windows.Foundation.Uri LinuxPackage{ get; };
+    }
+}

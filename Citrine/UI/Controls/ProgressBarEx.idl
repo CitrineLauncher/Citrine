@@ -1,0 +1,26 @@
+import "UI/Controls/ProgressBarExTemplateSettings.idl";
+
+namespace Citrine
+{
+    enum ProgressBarStatus {
+
+        Active,
+        Paused,
+        Error
+    };
+
+    [default_interface]
+    runtimeclass ProgressBarEx : Microsoft.UI.Xaml.Controls.Primitives.RangeBase
+    {
+        ProgressBarEx();
+
+        Boolean IsIndeterminate;
+        static Microsoft.UI.Xaml.DependencyProperty IsIndeterminateProperty{ get; };
+
+        ProgressBarStatus Status;
+        static Microsoft.UI.Xaml.DependencyProperty StatusProperty{ get; };
+
+        ProgressBarExTemplateSettings TemplateSettings{ get; };
+        static Microsoft.UI.Xaml.DependencyProperty TemplateSettingsProperty{ get; };
+    }
+}

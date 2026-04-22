@@ -1,0 +1,13 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftBedrockInstallLocationPicker 
+    {
+        MinecraftBedrockInstallLocationPicker();
+    
+        Microsoft.UI.Xaml.XamlRoot XamlRoot;
+        
+        String DefaultInstallLocation;
+        String PickInstallLocation();
+    }
+}

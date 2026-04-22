@@ -1,0 +1,10 @@
+import "UI/Navigation/NavigationDirection.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass OneTimeNavigationTransitionInfo : Microsoft.UI.Xaml.Media.Animation.NavigationTransitionInfo
+    {
+        OneTimeNavigationTransitionInfo(Microsoft.UI.Xaml.Media.Animation.NavigationTransitionInfo transitionInfo, NavigationDirection direction);
+    }
+}

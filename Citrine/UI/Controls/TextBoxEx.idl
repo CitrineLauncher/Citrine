@@ -1,0 +1,17 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass TextBoxEx : Microsoft.UI.Xaml.Controls.TextBox
+    {
+        TextBoxEx();
+
+        Microsoft.UI.Xaml.Visibility ClearButtonVisibility;
+        static Microsoft.UI.Xaml.DependencyProperty ClearButtonVisibilityProperty{ get; };
+
+        String PrefixText;
+        static Microsoft.UI.Xaml.DependencyProperty PrefixTextProperty{ get; };
+
+        String SuffixText;
+        static Microsoft.UI.Xaml.DependencyProperty SuffixTextProperty{ get; };
+    }
+}

@@ -1,0 +1,10 @@
+import "Models/MinecraftBedrockGamePackageItem.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftBedrockGamePackageImportContext
+    {
+        MinecraftBedrockGamePackageItem GamePackage{ get; };
+    }
+}

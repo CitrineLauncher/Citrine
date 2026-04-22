@@ -1,0 +1,10 @@
+namespace Citrine
+{
+	enum NotificationSeverity
+	{
+		Info,
+		Success,
+		Warning,
+		Error
+	};
+}

@@ -1,0 +1,10 @@
+namespace Citrine{
+
+	enum InstallLocationValidationResult {
+
+		Success,
+		InvalidPath,
+		MaxPathLengthExceeded,
+		DirectoryNotFound
+	};
+}

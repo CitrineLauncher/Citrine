@@ -1,0 +1,25 @@
+import "UI/Controls/FrameEx.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass NavigationContext 
+    {
+        NavigationContext(FrameEx frame);
+        NavigationContext(FrameEx frame, Windows.UI.Xaml.Interop.TypeName sourcePageType);
+
+        Boolean IsActive{ get; };
+        Boolean MakeActive();
+        Boolean MakeActive(Microsoft.UI.Xaml.Media.Animation.NavigationTransitionInfo transitionInfo);
+
+        Windows.UI.Xaml.Interop.TypeName CurrentSourcePageType{ get; };
+        Boolean Navigate(Windows.UI.Xaml.Interop.TypeName sourcePageType);
+        Boolean Navigate(Windows.UI.Xaml.Interop.TypeName sourcePageType, Object parameter);
+        Boolean Navigate(Windows.UI.Xaml.Interop.TypeName sourcePageType, Object parameter, Microsoft.UI.Xaml.Media.Animation.NavigationTransitionInfo transitionInfo);
+    
+        Boolean CanNavigateBack{ get; };
+        Boolean NavigateBack();
+        Boolean NavigateBack(Object parameter);
+        Boolean NavigateBack(Object parameter, Microsoft.UI.Xaml.Media.Animation.NavigationTransitionInfo transitionInfoOverride);
+    }
+}

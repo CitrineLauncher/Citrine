@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Citrine.GeneralSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Citrine"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    NavigationCacheMode="Required">
+
+    <Page.Resources>
+        <XamlUICommand x:Name="RestartAppCommand" Command="{x:Bind ViewModel.RestartAppCommand}" />
+    </Page.Resources>
+
+    <ScrollViewer MaxWidth="800">
+        <StackPanel>
+
+            <StackPanel.ChildrenTransitions>
+                <TransitionCollection>
+                    <RepositionThemeTransition IsStaggeringEnabled="False" />
+                </TransitionCollection>
+            </StackPanel.ChildrenTransitions>
+
+            <TextBlock x:Uid="GeneralSettings_Localization" FontSize="16" FontWeight="Medium" />
+
+            <Grid Height="70" Margin="0,6,0,2" Padding="16" ColumnSpacing="16" Background="{ThemeResource ControlFillColorDefaultBrush}" CornerRadius="4" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <FontIcon Glyph="&#xE8C1;" Margin="2,0" VerticalAlignment="Center" Grid.Column="0" FontSize="24"/>
+                <TextBlock x:Uid="GeneralSettings_Language" VerticalAlignment="Center" FontSize="16" Grid.Column="1"/>
+                <ComboBox ItemsSource="{x:Bind ViewModel.Languages}" SelectedIndex="{x:Bind ViewModel.Language, Mode=TwoWay}" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="160" />
+            </Grid>
+
+            <InfoBar x:Uid="Settings_AppRestartRequired" Severity="Warning" IsClosable="False" IsOpen="{x:Bind ViewModel.LanguageHasChanged, Mode=OneWay}" >
+                <InfoBar.ActionButton >
+                    <Button x:Uid="Settings_RestartApp" HorizontalAlignment="Right" Command="{StaticResource RestartAppCommand}" />
+                </InfoBar.ActionButton>
+            </InfoBar>
+
+            <TextBlock x:Uid="GeneralSettings_Appearance" Margin="0,22,0,0" FontSize="16" FontWeight="Medium" />
+
+            <Grid Height="70" Margin="0,6,0,0" Padding="16" ColumnSpacing="16" Background="{ThemeResource ControlFillColorDefaultBrush}" CornerRadius="4" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <FontIcon Glyph="&#xE790;" Margin="2,0" VerticalAlignment="Center" Grid.Column="0" FontSize="24"/>
+                <TextBlock x:Uid="GeneralSettings_Theme" VerticalAlignment="Center" FontSize="16" Grid.Column="1"/>
+                <ComboBox SelectedIndex="{x:Bind ViewModel.Theme, Mode=TwoWay}" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="160">
+                    <ComboBox.Items>
+                        <ComboBoxItem x:Uid="AppTheme_SystemTheme" />
+                        <ComboBoxItem x:Uid="AppTheme_Light" />
+                        <ComboBoxItem x:Uid="AppTheme_Dark" />
+                    </ComboBox.Items>
+                </ComboBox>
+            </Grid>
+
+            <Grid Height="70" Margin="0,3,0,0" Padding="16" ColumnSpacing="16" Background="{ThemeResource ControlFillColorDefaultBrush}" CornerRadius="4" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <FontIcon Glyph="&#xE81E;" Margin="2,0" VerticalAlignment="Center" Grid.Column="0" FontSize="24"/>
+                <TextBlock x:Uid="GeneralSettings_Backdrop" VerticalAlignment="Center" FontSize="16" Grid.Column="1"/>
+                <ComboBox SelectedIndex="{x:Bind ViewModel.Backdrop, Mode=TwoWay}" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="160">
+                    <ComboBox.Items>
+                        <ComboBoxItem Content="Mica" />
+                        <ComboBoxItem Content="Mica Alt" />
+                    </ComboBox.Items>
+                </ComboBox>
+            </Grid>
+
+            <TextBlock x:Uid="GeneralSettings_FileManagement" Margin="0,24,0,0" FontSize="16" FontWeight="Medium" />
+
+            <Button Height="70" Margin="0,6,0,0" Padding="16" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Stretch" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    Command="{x:Bind ViewModel.OpenAppDataDirectoryCommand}">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Glyph="&#xE838;" Margin="2,0" VerticalAlignment="Center" Grid.Column="0" FontSize="24"/>
+                    <TextBlock x:Uid="GeneralSettings_OpenAppDataDirectory" VerticalAlignment="Center" FontSize="16" Grid.Column="1" />
+                    <FontIcon Glyph="&#xE8A7;" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Right" FontSize="14" />
+                </Grid>
+            </Button>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

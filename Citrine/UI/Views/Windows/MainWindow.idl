@@ -1,0 +1,13 @@
+import "UI/Controls/WindowEx.idl";
+import "UI/ViewModels/MainWindowViewModel.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MainWindow : WindowEx, Microsoft.UI.Xaml.Markup.IComponentConnector
+    {
+        MainWindow();
+
+        MainWindowViewModel ViewModel{ get; };
+    }
+}

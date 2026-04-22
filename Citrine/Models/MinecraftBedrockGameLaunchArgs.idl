@@ -1,0 +1,14 @@
+import "Models/MinecraftBedrockGamePackageItem.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftBedrockGameLaunchArgs
+    {
+        MinecraftBedrockGameLaunchArgs(MinecraftBedrockGamePackageItem selectedGamePackage);
+
+        MinecraftBedrockGamePackageItem SelectedGamePackage{ get; };
+        Boolean ActivateEditor;
+        String FileToImport;
+    }
+}

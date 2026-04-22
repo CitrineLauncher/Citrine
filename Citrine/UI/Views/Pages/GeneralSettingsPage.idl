@@ -1,0 +1,12 @@
+import "UI/ViewModels/GeneralSettingsViewModel.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass GeneralSettingsPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        GeneralSettingsPage();
+
+        GeneralSettingsViewModel ViewModel{ get; };
+    }
+}

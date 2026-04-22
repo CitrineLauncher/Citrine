@@ -1,0 +1,13 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass AboutViewModel 
+    {
+        AboutViewModel();
+
+        Microsoft.UI.Xaml.Input.ICommand OpenHyperlinkCommand{ get; };
+
+        String VersionInfoString{ get; };
+        String RuntimeInfoString{ get; };
+    }
+}

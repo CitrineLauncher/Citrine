@@ -1,0 +1,13 @@
+import "UI/Navigation/NavigationContext.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass NavigationEventArgsEx 
+    {
+        NavigationEventArgsEx(Microsoft.UI.Xaml.Navigation.NavigationEventArgs args);
+
+        NavigationContext Context{ get; };
+        Object Parameter{ get; };
+    }
+}

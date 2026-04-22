@@ -1,0 +1,8 @@
+namespace Citrine
+{
+    enum NavigationDirection
+    {
+        Forward,
+        Backward
+    };
+}

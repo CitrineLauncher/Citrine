@@ -1,0 +1,14 @@
+import "Collections/IObservableCollectionView.idl";
+import "Models/ToastNotification.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MainWindowViewModel 
+    {
+        MainWindowViewModel();
+
+        IObservableCollectionView Notifications{ get; };
+        Microsoft.UI.Xaml.Input.ICommand CloseNotificationCommand{ get; };
+    }
+}

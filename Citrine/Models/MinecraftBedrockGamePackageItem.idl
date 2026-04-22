@@ -1,0 +1,35 @@
+import "Models/MinecraftBedrockGamePackageStatus.idl";
+import "Models/ByteProgress.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftBedrockGamePackageItem : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        String Version{ get; };
+        String BuildType{ get; };
+        String Platform{ get; };
+        Windows.System.ProcessorArchitecture Architecture{ get; };
+        String Origin{ get; };
+        UInt16 InstallId{ get; };
+
+        String NormalizedVersion{ get; };
+        String NameTag{ get; };
+
+        Boolean IsSupported{ get; };
+        Boolean IsRenamable{ get; };
+        Boolean IsInstalled{ get; };
+        MinecraftBedrockGamePackageStatus Status{ get; };
+
+        ByteProgress OperationProgress{ get; };
+        Boolean OperationProgressIsIndeterminate{ get; };
+
+        Boolean OperationIsPausable{ get; };
+        Boolean OperationIsCancellable{ get; };
+
+        Boolean GameSupportsEditor{ get; };
+        Boolean GameSupportsVibrantVisuals{ get; };
+        Boolean GameSupportsRayTracing{ get; };
+        IVectorView<String> GameAssociatedFileTypes{ get; };
+    }
+}

@@ -1,0 +1,8 @@
+namespace Citrine
+{
+	struct ByteProgress {
+
+		UInt64 BytesProcessed;
+		UInt64 TotalBytesToProcess;
+	};
+}

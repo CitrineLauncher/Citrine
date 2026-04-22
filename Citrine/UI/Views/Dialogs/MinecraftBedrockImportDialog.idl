@@ -1,0 +1,18 @@
+import "UI/Controls/ContentDialogEx.idl";
+import "UI/Views/IMinecraftBedrockGamePackageViewBase.idl";
+import "UI/ViewModels/MinecraftBedrockGamePackagesViewModel.idl";
+import "Models/MinecraftBedrockGamePackageItem.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftBedrockImportDialog : ContentDialogEx, Microsoft.UI.Xaml.Markup.IComponentConnector, IMinecraftBedrockGamePackageViewBase
+    {
+        MinecraftBedrockImportDialog(MinecraftBedrockGamePackagesViewModel viewModel, String gamePackageLocation);
+
+        MinecraftBedrockGamePackagesViewModel ViewModel{ get; };
+
+        MinecraftBedrockGamePackageItem GamePackage{ get; };
+        static Microsoft.UI.Xaml.DependencyProperty GamePackageProperty{ get; };
+    }
+}

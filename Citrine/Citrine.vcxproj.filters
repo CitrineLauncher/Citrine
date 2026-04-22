@@ -1,0 +1,274 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="Locale\Localizer.cpp" />
+    <ClCompile Include="Core\Logging\Logger.cpp" />
+    <ClCompile Include="Core\Unicode\Utf.cpp" />
+    <ClCompile Include="Core\Unicode\Unicode.cpp" />
+    <ClCompile Include="Core\IO\File.cpp" />
+    <ClCompile Include="Core\Logging\LogMessageQueue.cpp" />
+    <ClCompile Include="Core\Logging\LogMessage.cpp" />
+    <ClCompile Include="Core\Util\Guid.cpp" />
+    <ClCompile Include="Core\Logging\LogFormatter.cpp" />
+    <ClCompile Include="Core\Coroutine\TaskPromise.cpp" />
+    <ClCompile Include="Services\HttpService.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Core\Net\Http\HttpContent.cpp" />
+    <ClCompile Include="Core\Net\Http\HttpHeader.cpp" />
+    <ClCompile Include="Core\Net\Http\HttpResponse.cpp" />
+    <ClCompile Include="Core\IO\Buffer.cpp" />
+    <ClCompile Include="Core\Net\Url.cpp" />
+    <ClCompile Include="Core\Net\UrlQuery.cpp" />
+    <ClCompile Include="Core\Codec\UrlCodec.cpp" />
+    <ClCompile Include="Core\Net\Http\HttpMethod.cpp" />
+    <ClCompile Include="ApplicationData.cpp" />
+    <ClCompile Include="ApplicationSettings.cpp" />
+    <ClCompile Include="Core\Security\DataProtection.cpp" />
+    <ClCompile Include="Core\Storage\JsonStorage.cpp" />
+    <ClCompile Include="Core\Storage\ProtectedJsonStorage.cpp" />
+    <ClCompile Include="Core\IO\WinRTFileStream.cpp" />
+    <ClCompile Include="Windows\BuildInfo.cpp" />
+    <ClCompile Include="Windows\AppLauncher.cpp" />
+    <ClCompile Include="Windows\FE3Handler.cpp" />
+    <ClCompile Include="Windows\AppModel.cpp" />
+    <ClCompile Include="Windows\Msix\MsixManifest.cpp" />
+    <ClCompile Include="Windows\Msix\StreamedMsixFile.cpp" />
+    <ClCompile Include="Services\ToastNotificationService.cpp" />
+    <ClCompile Include="Minecraft\Bedrock\GameVersion.cpp" />
+    <ClCompile Include="Services\MinecraftBedrockGameManager.cpp" />
+    <ClCompile Include="ApplicationMutex.cpp" />
+    <ClCompile Include="Minecraft\Bedrock\GamePackageMeta.cpp" />
+    <ClCompile Include="UI\Views\MinecraftBedrockGamePackageViewBase.cpp" />
+    <ClCompile Include="Minecraft\Bedrock\GameCapabilities.cpp" />
+    <ClCompile Include="Xbox\Xvc\StreamedXvcFile.cpp" />
+    <ClCompile Include="Xbox\Keys\KeyRegistry.cpp" />
+    <ClCompile Include="Windows\Shell.cpp" />
+    <ClCompile Include="Windows\User.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Locale\Localizer.h" />
+    <ClInclude Include="Core\Logging\Logger.h" />
+    <ClInclude Include="Core\Logging\LogFormatter.h" />
+    <ClInclude Include="Core\Unicode\Utf.h" />
+    <ClInclude Include="Core\Unicode\Unicode.h" />
+    <ClInclude Include="Core\Util\Hash.h" />
+    <ClInclude Include="Core\Util\Concepts.h" />
+    <ClInclude Include="Core\Util\VariableSizedType.h" />
+    <ClInclude Include="Core\Util\TypeTraits.h" />
+    <ClInclude Include="Core\IO\File.h" />
+    <ClInclude Include="Core\Logging\Common.h" />
+    <ClInclude Include="Core\Logging\LogMessage.h" />
+    <ClInclude Include="Core\Logging\LogMessageQueue.h" />
+    <ClInclude Include="Core\Codec\Base16.h" />
+    <ClInclude Include="Core\Util\Guid.h" />
+    <ClInclude Include="Core\Util\DateTime.h" />
+    <ClInclude Include="Core\Util\FormatInteger.h" />
+    <ClInclude Include="Core\Util\StringLiteral.h" />
+    <ClInclude Include="Core\Util\Checksum.h" />
+    <ClInclude Include="Core\Util\ParseInteger.h" />
+    <ClInclude Include="Core\Util\FormatByteCount.h" />
+    <ClInclude Include="Core\Util\VersionNumber.h" />
+    <ClInclude Include="Helpers\NotifyPropertyChangedBase.h" />
+    <ClInclude Include="Core\Coroutine\TaskPromise.h" />
+    <ClInclude Include="Services\HttpService.h" />
+    <ClInclude Include="Core\Coroutine\FireAndForget.h" />
+    <ClInclude Include="Core\Util\Ascii.h" />
+    <ClInclude Include="Core\Net\Http\HttpContent.h" />
+    <ClInclude Include="Core\Net\Http\HttpHeader.h" />
+    <ClInclude Include="Core\Net\Http\HttpStatusCode.h" />
+    <ClInclude Include="Core\Net\Http\HttpResponse.h" />
+    <ClInclude Include="Core\Net\Http\Common.h" />
+    <ClInclude Include="Core\IO\Buffer.h" />
+    <ClInclude Include="Core\Codec\Base64.h" />
+    <ClInclude Include="Core\Codec\Base64Url.h" />
+    <ClInclude Include="Core\Net\Url.h" />
+    <ClInclude Include="Core\Net\UrlQuery.h" />
+    <ClInclude Include="Core\Util\Param.h" />
+    <ClInclude Include="Core\Util\Append.h" />
+    <ClInclude Include="Core\Codec\UrlCodec.h" />
+    <ClInclude Include="Core\Net\Http\HttpMethod.h" />
+    <ClInclude Include="Core\Util\TrivialArray.h" />
+    <ClInclude Include="Core\Util\Frozen.h" />
+    <ClInclude Include="Core\IO\WinRTBuffer.h" />
+    <ClInclude Include="Core\IO\WinRTMemoryStream.h" />
+    <ClInclude Include="Core\Util\Event.h" />
+    <ClInclude Include="Core\Codec\Base16Encoder.h" />
+    <ClInclude Include="Core\Codec\Base16Decoder.h" />
+    <ClInclude Include="Core\Codec\Base64Encoder.h" />
+    <ClInclude Include="Core\Codec\Base64Decoder.h" />
+    <ClInclude Include="ApplicationData.h" />
+    <ClInclude Include="ApplicationSettings.h" />
+    <ClInclude Include="Locale\LanguageTag.h" />
+    <ClInclude Include="Core\Util\Scope.h" />
+    <ClInclude Include="Core\Security\DataProtection.h" />
+    <ClInclude Include="Core\Storage\JsonStorage.h" />
+    <ClInclude Include="Core\Storage\ProtectedJsonStorage.h" />
+    <ClInclude Include="Core\Storage\Common.h" />
+    <ClInclude Include="Core\Util\Math.h" />
+    <ClInclude Include="Core\IO\WinRTFileStream.h" />
+    <ClInclude Include="Windows\BuildInfo.h" />
+    <ClInclude Include="Windows\AppLauncher.h" />
+    <ClInclude Include="Windows\FE3Handler.h" />
+    <ClInclude Include="Windows\AppModel.h" />
+    <ClInclude Include="Core\Codec\Base32Encoder.h" />
+    <ClInclude Include="Core\Coroutine\Task.h" />
+    <ClInclude Include="Core\Codec\Base32.h" />
+    <ClInclude Include="Core\Codec\Base32Decoder.h" />
+    <ClInclude Include="Core\Codec\Base32Hex.h" />
+    <ClInclude Include="Core\Codec\Base32Crockford.h" />
+    <ClInclude Include="Windows\Msix\MsixManifest.h" />
+    <ClInclude Include="Windows\Msix\StreamedMsixFile.h" />
+    <ClInclude Include="Services\ToastNotificationService.h" />
+    <ClInclude Include="Minecraft\Bedrock\GameVersion.h" />
+    <ClInclude Include="Minecraft\Bedrock\GamePackageMeta.h" />
+    <ClInclude Include="Minecraft\Bedrock\GameBuildType.h" />
+    <ClInclude Include="Minecraft\Bedrock\GamePlatform.h" />
+    <ClInclude Include="Minecraft\Bedrock\ServerPackageMeta.h" />
+    <ClInclude Include="Minecraft\Bedrock\ServerBuildType.h" />
+    <ClInclude Include="Minecraft\Bedrock\ServerPlatform.h" />
+    <ClInclude Include="Core\Util\JsonWrappers.h" />
+    <ClInclude Include="Minecraft\Bedrock\GamePackage.h" />
+    <ClInclude Include="Minecraft\Bedrock\PackageCollection.h" />
+    <ClInclude Include="Services\MinecraftBedrockGameManager.h" />
+    <ClInclude Include="Collections\BindableVector.h" />
+    <ClInclude Include="Collections\FilterableCollectionView.h" />
+    <ClInclude Include="Helpers\NotifyCollectionChangedBase.h" />
+    <ClInclude Include="Collections\ObservableCollection.h" />
+    <ClInclude Include="UI\Mvvm\RelayCommand.h" />
+    <ClInclude Include="ApplicationMutex.h" />
+    <ClInclude Include="Minecraft\Bedrock\PackageAction.h" />
+    <ClInclude Include="Minecraft\Bedrock\PackageOperationCollection.h" />
+    <ClInclude Include="Minecraft\Bedrock\GamePackageOperation.h" />
+    <ClInclude Include="Minecraft\Bedrock\PackageOperation.h" />
+    <ClInclude Include="UI\Views\MinecraftBedrockGamePackageViewBase.h" />
+    <ClInclude Include="Minecraft\Bedrock\GameCapabilities.h" />
+    <ClInclude Include="Xbox\Xvc\XvdHeader.h" />
+    <ClInclude Include="Xbox\Xvc\Common.h" />
+    <ClInclude Include="Xbox\Xvc\StreamedXvcFile.h" />
+    <ClInclude Include="Windows\Msix\Common.h" />
+    <ClInclude Include="Xbox\Xvc\XvdUserDataHeader.h" />
+    <ClInclude Include="Xbox\Xvc\XvdUserDataPackageFile.h" />
+    <ClInclude Include="Xbox\Xvc\XvdUserDataPackageFilesHeader.h" />
+    <ClInclude Include="Core\Util\Memory.h" />
+    <ClInclude Include="Xbox\Xvc\XvcHeader.h" />
+    <ClInclude Include="Xbox\Xvc\XvcRegionHeader.h" />
+    <ClInclude Include="Xbox\Xvc\XvcXtsEntry.h" />
+    <ClInclude Include="Xbox\Xvc\XvcSegment.h" />
+    <ClInclude Include="Xbox\Xvc\XvcRegionId.h" />
+    <ClInclude Include="Xbox\Xvc\XvcRegionSpecifier.h" />
+    <ClInclude Include="Xbox\Xvc\XvdSegmentMetadata.h" />
+    <ClInclude Include="Xbox\Keys\CikEntry.h" />
+    <ClInclude Include="Xbox\Keys\KeyRegistry.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipLocalFileHeader.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipExtraFieldHeader.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipCompressionMethod.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipFlags.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipCentralDirectoryFileHeader.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipEndOfCentralDirectory.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipDataDescriptor.h" />
+    <ClInclude Include="Windows\Msix\MsixAction.h" />
+    <ClInclude Include="Windows\Msix\MsixApplication.h" />
+    <ClInclude Include="Windows\Msix\MsixFileTypeAssociation.h" />
+    <ClInclude Include="Windows\Msix\MsixCustomInstallExtension.h" />
+    <ClInclude Include="Windows\Shell.h" />
+    <ClInclude Include="Windows\User.h" />
+    <ClInclude Include="Citrine.h" />
+    <ClInclude Include="Core\Util\SemanticVersion.h" />
+    <ClInclude Include="Core\Coroutine\LazyTask.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{061ca76f-dcd5-4aac-ac6d-73cd535dfde4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="PreBuild.fsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natstepfilter" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Include="Locale\en\Resources.resw" />
+    <PRIResource Include="Locale\de\Resources.resw" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="UI\Views\Windows\MainWindow.xaml" />
+    <Page Include="UI\Views\Pages\SettingsPage.xaml" />
+    <Page Include="UI\Views\Pages\MinecraftBedrockPage.xaml" />
+    <Page Include="UI\Views\Pages\MinecraftJavaPage.xaml" />
+    <Page Include="UI\Views\Pages\GeneralSettingsPage.xaml" />
+    <Page Include="UI\Views\Pages\AboutPage.xaml" />
+    <Page Include="UI\Views\ToastNotificationView.xaml" />
+    <Page Include="UI\Views\Pages\MinecraftBedrockPreviewsPage.xaml" />
+    <Page Include="UI\Views\Pages\MinecraftBedrockGamePackagesPage.xaml" />
+    <Page Include="UI\Views\Pages\MinecraftBedrockImportsPage.xaml" />
+    <Page Include="UI\Views\MinecraftBedrockGamePackageView.xaml" />
+    <Page Include="UI\Views\Pages\MinecraftBedrockReleasesPage.xaml" />
+    <Page Include="UI\Controls\TextBoxEx_ThemeResources.xaml" />
+    <Page Include="UI\Controls\NumberBoxEx_ThemeResources.xaml" />
+    <Page Include="UI\Views\Dialogs\MinecraftBedrockInstallDialog.xaml" />
+    <Page Include="UI\Controls\ProgressBarEx_ThemeResources.xaml" />
+    <Page Include="UI\Views\Dialogs\MinecraftBedrockManageDialog.xaml" />
+    <Page Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml" />
+    <Page Include="UI\Views\Dialogs\MinecraftBedrockRenameDialog.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="Collections\IObservableCollectionView.idl" />
+    <Midl Include="Collections\IObservableCollection.idl" />
+    <Midl Include="Collections\IFilterableCollectionView.idl" />
+    <Midl Include="UI\PrivateDefinitions.idl" />
+    <Midl Include="UI\Navigation\NavigationContext.idl" />
+    <Midl Include="UI\Navigation\NavigationEventArgsEx.idl" />
+    <Midl Include="Models\ParameterPair.idl" />
+    <Midl Include="UI\Navigation\OneTimeNavigationTransitionInfo.idl" />
+    <Midl Include="UI\Navigation\NavigationDirection.idl" />
+    <Midl Include="UI\ViewModels\GeneralSettingsViewModel.idl" />
+    <Midl Include="Models\NotificationSeverity.idl" />
+    <Midl Include="Models\ToastNotification.idl" />
+    <Midl Include="UI\ViewModels\MainWindowViewModel.idl" />
+    <Midl Include="UI\Mvvm\IRelayCommand.idl" />
+    <Midl Include="Models\ByteProgress.idl" />
+    <Midl Include="Models\MinecraftBedrockGamePackageItem.idl" />
+    <Midl Include="Models\InstallLocationValidationResult.idl" />
+    <Midl Include="Models\MinecraftBedrockServerDownloads.idl" />
+    <Midl Include="UI\ViewModels\MinecraftBedrockGamePackagesViewModel.idl" />
+    <Midl Include="UI\Views\IMinecraftBedrockGamePackageViewBase.idl" />
+    <Midl Include="Helpers\ByteProgressFormatter.idl" />
+    <Midl Include="Models\MinecraftBedrockGamePackageStatus.idl" />
+    <Midl Include="UI\Converters\StringToVisibilityConverter.idl" />
+    <Midl Include="UI\Converters\BoolToVisibilityConverter.idl" />
+    <Midl Include="UI\Controls\FrameEx.idl" />
+    <Midl Include="UI\Controls\NumberBoxEx.idl" />
+    <Midl Include="UI\Controls\TextBoxEx.idl" />
+    <Midl Include="UI\Controls\WindowEx.idl" />
+    <Midl Include="UI\Controls\ContentDialogEx.idl" />
+    <Midl Include="UI\Views\Dialogs\MinecraftBedrockGamePackagePicker.idl" />
+    <Midl Include="UI\Views\Dialogs\MinecraftBedrockInstallLocationPicker.idl" />
+    <Midl Include="UI\Converters\Convert.idl" />
+    <Midl Include="Models\IRangeStreamProvider.idl" />
+    <Midl Include="UI\Controls\ProgressBarEx.idl" />
+    <Midl Include="UI\Controls\ProgressBarExTemplateSettings.idl" />
+    <Midl Include="Models\MinecraftBedrockGameInfo.idl" />
+    <Midl Include="Models\MinecraftBedrockGamePackageImportContext.idl" />
+    <Midl Include="Models\MinecraftBedrockGameLaunchArgs.idl" />
+    <Midl Include="Models\MinecraftBedrockGameLaunchResult.idl" />
+    <Midl Include="UI\ViewModels\AboutViewModel.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Citrine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Icons\Citrine.ico" />
+  </ItemGroup>
+</Project>

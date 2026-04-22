@@ -1,0 +1,12 @@
+import "UI/ViewModels/AboutViewModel.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass AboutPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        AboutPage();
+
+        AboutViewModel ViewModel{ get; };
+    }
+}

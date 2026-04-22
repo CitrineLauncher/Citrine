@@ -1,0 +1,12 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftBedrockGamePackagePicker 
+    {
+        MinecraftBedrockGamePackagePicker();
+
+        Microsoft.UI.Xaml.XamlRoot XamlRoot;
+
+        String PickGamePackage();
+    }
+}

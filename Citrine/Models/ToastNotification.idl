@@ -1,0 +1,15 @@
+import "Models/NotificationSeverity.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass ToastNotification 
+    {
+        ToastNotification(NotificationSeverity severity, String title);
+        ToastNotification(NotificationSeverity severity, String title, String message);
+
+        NotificationSeverity Severity{ get; };
+        String Title{ get; };
+        String Message{ get; };
+    }
+}

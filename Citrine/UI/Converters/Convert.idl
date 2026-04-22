@@ -1,0 +1,22 @@
+namespace Citrine
+{
+    static runtimeclass Convert 
+    {
+        static Boolean BoolToInverseBool(Boolean value);
+
+        static Microsoft.UI.Xaml.Visibility BoolToVisibility(Boolean value);
+        static Microsoft.UI.Xaml.Visibility BoolToInverseVisibility(Boolean value);
+
+        static Boolean NullToBool(Object value);
+        static Boolean NullToInverseBool(Object value);
+
+        static Microsoft.UI.Xaml.Visibility NullToVisibility(Object value);
+        static Microsoft.UI.Xaml.Visibility NullToInverseVisibility(Object value);
+
+        static Boolean StringToBool(String value);
+        static Boolean StringToInverseBool(String value);
+
+        static Microsoft.UI.Xaml.Visibility StringToVisibility(String value);
+        static Microsoft.UI.Xaml.Visibility StringToInverseVisibility(String value);
+    }
+}

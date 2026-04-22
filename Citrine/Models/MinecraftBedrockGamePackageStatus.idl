@@ -1,0 +1,22 @@
+namespace Citrine
+{
+    enum MinecraftBedrockGamePackageStatus {
+
+        NotInstalled,
+        PreparingDownload,
+        Downloading,
+        Extracting,
+        CancellingInstallation,
+        InstallationPaused,
+        InstallationFailed,
+        Installed,
+        PreparingRepair,
+        Repairing,
+        RepairFailed,
+        Registering,
+        Launching,
+        Uninstalling,
+        UninstallationPending,
+        UninstallationFailed,
+    };
+}

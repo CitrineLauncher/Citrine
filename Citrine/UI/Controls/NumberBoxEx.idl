@@ -1,0 +1,14 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass NumberBoxEx : Microsoft.UI.Xaml.Controls.NumberBox
+    {
+        NumberBoxEx();
+
+        Microsoft.UI.Xaml.Visibility ClearButtonVisibility;
+        static Microsoft.UI.Xaml.DependencyProperty ClearButtonVisibilityProperty{ get; };
+
+        String SuffixText;
+        static Microsoft.UI.Xaml.DependencyProperty SuffixTextProperty{ get; };
+    }
+}

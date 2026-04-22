@@ -1,0 +1,7 @@
+namespace Citrine
+{
+	interface IRelayCommand requires Microsoft.UI.Xaml.Input.ICommand
+	{
+		void NotifyCanExecuteChanged();
+	};
+}

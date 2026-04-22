@@ -1,0 +1,15 @@
+import "Collections/IObservableCollectionView.idl";
+
+namespace Citrine
+{
+    interface IFilterableCollectionView requires IVectorView<Object>, Microsoft.UI.Xaml.Interop.INotifyCollectionChanged
+    {
+        Boolean IsEmpty{ get; };
+
+        IObservableCollectionView Source{ get; };
+        String Filter;
+        void Refresh();
+
+        Windows.UI.Xaml.Interop.TypeName ItemType{ get; };
+    }
+}

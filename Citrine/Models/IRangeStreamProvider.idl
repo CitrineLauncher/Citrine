@@ -1,0 +1,7 @@
+namespace Citrine{
+
+	interface IRangeStreamProvider {
+
+		Windows.Storage.Streams.IInputStream GetRangeStream(UInt64 offset, UInt64 size);
+	};
+}

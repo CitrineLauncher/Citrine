@@ -1,0 +1,8 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass StringToVisibilityConverter : Microsoft.UI.Xaml.Data.IValueConverter
+    {
+        StringToVisibilityConverter();
+    }
+}

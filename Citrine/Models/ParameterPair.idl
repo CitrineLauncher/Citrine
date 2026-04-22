@@ -1,0 +1,12 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass ParameterPair 
+    {
+        ParameterPair();
+        ParameterPair(Object first, Object second);
+
+        Object First;
+        Object Second;
+    }
+}

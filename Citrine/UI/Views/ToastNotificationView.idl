@@ -1,0 +1,16 @@
+import "Models/ToastNotification.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass ToastNotificationView : Microsoft.UI.Xaml.Controls.UserControl
+    {
+        ToastNotificationView();
+
+        ToastNotification Notification;
+        static Microsoft.UI.Xaml.DependencyProperty NotificationProperty{ get; };
+
+        Microsoft.UI.Xaml.Input.ICommand CloseCommand;
+        static Microsoft.UI.Xaml.DependencyProperty CloseCommandProperty{ get; };
+    }
+}

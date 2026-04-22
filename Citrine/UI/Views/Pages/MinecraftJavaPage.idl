@@ -1,0 +1,8 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftJavaPage : Microsoft.UI.Xaml.Controls.Page
+    {
+        MinecraftJavaPage();
+    }
+}

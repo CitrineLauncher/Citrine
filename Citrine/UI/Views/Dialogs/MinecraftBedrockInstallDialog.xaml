@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<local:ContentDialogEx
+    x:Class="Citrine.MinecraftBedrockInstallDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Citrine"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Width="580" IsTabStop="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="34" />
+            <RowDefinition Height="46" />
+            <RowDefinition Height="16" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <ImageIcon Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Width="80" Height="80" Source="{x:Bind GetPackageIconSource(GamePackage), Mode=OneTime}" />
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="{x:Bind GetPackageTitleString(GamePackage), Mode=OneTime}" FontSize="24" />
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="{x:Bind GetPackageDescriptionString(GamePackage), Mode=OneTime}" FontSize="17" Foreground="{ThemeResource TextFillColorSecondary}" />
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Spacing="5">
+            <TextBlock x:Uid="MinecraftBedrock_GameInstallLocation" FontSize="15" FontWeight="Medium" Foreground="{ThemeResource TextFillColorSecondary}" />
+            <Grid Height="32" HorizontalAlignment="Stretch" ColumnSpacing="8">
+                <Grid.ColumnDefinitions >
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="InstallLocationTextBox" Text="{x:Bind ViewModel.CurrentInstallLocation, Mode=OneTime}" Grid.Column="0" VerticalAlignment="Stretch" FontSize="14" />
+                <Button Grid.Column="1" VerticalAlignment="Stretch" Width="42" Click="PickInstallLocationButton_Click">
+                    <FontIcon Glyph="&#xE838;" FontSize="16" />
+                </Button>
+            </Grid>
+            <TextBlock x:Name="InstallLocationErrorText" FontSize="14" Foreground="{ThemeResource SystemFillColorCriticalBrush}" Visibility="{x:Bind local:Convert.StringToVisibility(InstallLocationErrorText.Text), Mode=OneWay}" />
+        </StackPanel>
+    </Grid>
+</local:ContentDialogEx>

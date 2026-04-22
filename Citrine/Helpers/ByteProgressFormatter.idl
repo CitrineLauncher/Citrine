@@ -1,0 +1,9 @@
+import "Models/ByteProgress.idl";
+
+namespace Citrine
+{
+    static runtimeclass ByteProgressFormatter
+    {
+        static String Format(ByteProgress progress, String ratioDelimiter);
+    }
+}

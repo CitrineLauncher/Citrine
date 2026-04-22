@@ -1,0 +1,10 @@
+namespace Citrine
+{
+    [contentproperty("WindowContent")]
+    [default_interface]
+    unsealed runtimeclass WindowEx : Microsoft.UI.Xaml.Window
+    {
+        WindowEx();
+        IInspectable WindowContent;
+    }
+}

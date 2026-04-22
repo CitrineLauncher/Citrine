@@ -1,0 +1,8 @@
+namespace Citrine
+{
+    [default_interface]
+    unsealed runtimeclass ContentDialogEx : Microsoft.UI.Xaml.Controls.ContentDialog
+    {
+        ContentDialogEx();
+    }
+}

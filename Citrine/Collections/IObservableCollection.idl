@@ -1,0 +1,13 @@
+import "Collections/IObservableCollectionView.idl";
+
+namespace Citrine
+{
+    interface IObservableCollection requires IVector<Object>, Microsoft.UI.Xaml.Interop.INotifyCollectionChanged
+    {
+        Boolean IsEmpty{ get; };
+        IObservableCollectionView GetObservableView();
+        void Move(UInt32 oldIndex, UInt32 newIndex);
+
+        Windows.UI.Xaml.Interop.TypeName ItemType{ get; };
+    }
+}

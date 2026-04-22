@@ -1,0 +1,989 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.WindowsAppSDK.WinUI.2.0.7-preview\build\native\Microsoft.WindowsAppSDK.WinUI.props" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.WinUI.2.0.7-preview\build\native\Microsoft.WindowsAppSDK.WinUI.props')" />
+  <Import Project="..\packages\Microsoft.WindowsAppSDK.Foundation.2.0.15-preview\build\native\Microsoft.WindowsAppSDK.Foundation.props" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.Foundation.2.0.15-preview\build\native\Microsoft.WindowsAppSDK.Foundation.props')" />
+  <Import Project="..\packages\Microsoft.WindowsAppSDK.InteractiveExperiences.2.0.6-preview\build\native\Microsoft.WindowsAppSDK.InteractiveExperiences.props" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.InteractiveExperiences.2.0.6-preview\build\native\Microsoft.WindowsAppSDK.InteractiveExperiences.props')" />
+  <Import Project="..\packages\Microsoft.WindowsAppSDK.Base.2.0.2-preview\build\native\Microsoft.WindowsAppSDK.Base.props" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.Base.2.0.2-preview\build\native\Microsoft.WindowsAppSDK.Base.props')" />
+  <Import Project="..\packages\Microsoft.Windows.SDK.BuildTools.MSIX.1.7.260316102\build\Microsoft.Windows.SDK.BuildTools.MSIX.props" Condition="Exists('..\packages\Microsoft.Windows.SDK.BuildTools.MSIX.1.7.260316102\build\Microsoft.Windows.SDK.BuildTools.MSIX.props')" />
+  <Import Project="..\packages\Microsoft.Windows.SDK.BuildTools.10.0.28000.1-RTM\build\Microsoft.Windows.SDK.BuildTools.props" Condition="Exists('..\packages\Microsoft.Windows.SDK.BuildTools.10.0.28000.1-RTM\build\Microsoft.Windows.SDK.BuildTools.props')" />
+  <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props')" />
+  <PropertyGroup Label="Globals">
+    <CppWinRTOptimized>true</CppWinRTOptimized>
+    <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
+    <MinimalCoreWin>true</MinimalCoreWin>
+    <ProjectGuid>{061ca76f-dcd5-4aac-ac6d-73cd535dfde4}</ProjectGuid>
+    <ProjectName>Citrine</ProjectName>
+    <RootNamespace>Citrine</RootNamespace>
+    <!--
+      $(TargetName) should be same as $(RootNamespace) so that the produced binaries (.exe/.pri/etc.)
+      have a name that matches the .winmd
+    -->
+    <TargetName>$(RootNamespace)</TargetName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>false</AppContainerApplication>
+    <AppxPackage>false</AppxPackage>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
+      <WarningLevel>Level4</WarningLevel>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj /utf-8 /arch:SSE4.2</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);DISABLE_XAML_GENERATED_MAIN;NOMINMAX;WIN32_LEAN_AND_MEAN;WINRT_LEAN_AND_MEAN;PROJECT_DIR=R"($(ProjectDir))"</PreprocessorDefinitions>
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir);$(ProjectDir)\Generated Files\;$(ProjectDir)\Generated Files\UI\Controls;$(ProjectDir)\Generated Files\UI\Views;$(ProjectDir)\Generated Files\UI\Views\Dialogs;$(ProjectDir)\Generated Files\UI\Views\Pages;$(ProjectDir)\Generated Files\UI\Views\Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <UseStandardPreprocessor Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</UseStandardPreprocessor>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">stdcpplatest</LanguageStandard>
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MultiThreadedDebug</RuntimeLibrary>
+      <UseStandardPreprocessor Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</UseStandardPreprocessor>
+      <UseStandardPreprocessor Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</UseStandardPreprocessor>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(ProjectDir);$(ProjectDir)\Generated Files\;$(ProjectDir)\Generated Files\UI\Controls;$(ProjectDir)\Generated Files\UI\Views;$(ProjectDir)\Generated Files\UI\Views\Dialogs;$(ProjectDir)\Generated Files\UI\Views\Pages;$(ProjectDir)\Generated Files\UI\Views\Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir);$(ProjectDir)\Generated Files\;$(ProjectDir)\Generated Files\UI\Controls;$(ProjectDir)\Generated Files\UI\Views;$(ProjectDir)\Generated Files\UI\Views\Dialogs;$(ProjectDir)\Generated Files\UI\Views\Pages;$(ProjectDir)\Generated Files\UI\Views\Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdcpplatest</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);DISABLE_XAML_GENERATED_MAIN;NOMINMAX;WIN32_LEAN_AND_MEAN;WINRT_LEAN_AND_MEAN;PROJECT_DIR=R"($(ProjectDir))"</PreprocessorDefinitions>
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MultiThreaded</RuntimeLibrary>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir);$(ProjectDir)\Generated Files\;$(ProjectDir)\Generated Files\UI\Controls;$(ProjectDir)\Generated Files\UI\Views;$(ProjectDir)\Generated Files\UI\Views\Dialogs;$(ProjectDir)\Generated Files\UI\Views\Pages;$(ProjectDir)\Generated Files\UI\Views\Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <UseStandardPreprocessor Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</UseStandardPreprocessor>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">stdcpplatest</LanguageStandard>
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MultiThreaded</RuntimeLibrary>
+      <UseStandardPreprocessor Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">true</UseStandardPreprocessor>
+      <UseStandardPreprocessor Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</UseStandardPreprocessor>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">$(ProjectDir);$(ProjectDir)\Generated Files\;$(ProjectDir)\Generated Files\UI\Controls;$(ProjectDir)\Generated Files\UI\Views;$(ProjectDir)\Generated Files\UI\Views\Dialogs;$(ProjectDir)\Generated Files\UI\Views\Pages;$(ProjectDir)\Generated Files\UI\Views\Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir);$(ProjectDir)\Generated Files\;$(ProjectDir)\Generated Files\UI\Controls;$(ProjectDir)\Generated Files\UI\Views;$(ProjectDir)\Generated Files\UI\Views\Dialogs;$(ProjectDir)\Generated Files\UI\Views\Pages;$(ProjectDir)\Generated Files\UI\Views\Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup Condition="'$(WindowsPackageType)'!='None' and Exists('Package.appxmanifest')">
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ApplicationMutex.h" />
+    <ClInclude Include="Citrine.h" />
+    <ClInclude Include="Collections\BindableVector.h" />
+    <ClInclude Include="Collections\FilterableCollectionView.h" />
+    <ClInclude Include="Collections\ObservableCollection.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipCentralDirectoryFileHeader.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipDataDescriptor.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipEndOfCentralDirectory.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipExtraFieldHeader.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipCompressionMethod.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipFlags.h" />
+    <ClInclude Include="Core\Compression\Zip\ZipLocalFileHeader.h" />
+    <ClInclude Include="Core\Coroutine\LazyTask.h" />
+    <ClInclude Include="Core\Util\JsonWrappers.h" />
+    <ClInclude Include="Core\Util\Memory.h" />
+    <ClInclude Include="Core\Util\SemanticVersion.h" />
+    <ClInclude Include="Models\MinecraftBedrockGameInfo.h">
+      <DependentUpon>Models\MinecraftBedrockGameInfo.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="Models\MinecraftBedrockGameLaunchArgs.h">
+      <DependentUpon>Models\MinecraftBedrockGameLaunchArgs.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="Models\MinecraftBedrockGamePackageImportContext.h">
+      <DependentUpon>Models\MinecraftBedrockGamePackageImportContext.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\ProgressBarEx.h">
+      <DependentUpon>UI\Controls\ProgressBarEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\ProgressBarExTemplateSettings.h">
+      <DependentUpon>UI\Controls\ProgressBarExTemplateSettings.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Converters\Convert.h">
+      <DependentUpon>UI\Converters\Convert.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\ViewModels\AboutViewModel.h">
+      <DependentUpon>UI\ViewModels\AboutViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml.h">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Dialogs\MinecraftBedrockInstallDialog.xaml.h">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockInstallDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Dialogs\MinecraftBedrockManageDialog.xaml.h">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockManageDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Dialogs\MinecraftBedrockRenameDialog.xaml.h">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockRenameDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="Windows\User.h" />
+    <ClInclude Include="Windows\Shell.h" />
+    <ClInclude Include="UI\Controls\ContentDialogEx.h">
+      <DependentUpon>UI\Controls\ContentDialogEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\FrameEx.h">
+      <DependentUpon>UI\Controls\FrameEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\NumberBoxEx.h">
+      <DependentUpon>UI\Controls\NumberBoxEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\TextBoxEx.h">
+      <DependentUpon>UI\Controls\TextBoxEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\WindowEx.h">
+      <DependentUpon>UI\Controls\WindowEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Dialogs\MinecraftBedrockGamePackagePicker.h">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockGamePackagePicker.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Dialogs\MinecraftBedrockInstallLocationPicker.h">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockInstallLocationPicker.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="Windows\Msix\MsixAction.h" />
+    <ClInclude Include="Windows\Msix\MsixApplication.h" />
+    <ClInclude Include="Windows\Msix\MsixCustomInstallExtension.h" />
+    <ClInclude Include="Windows\Msix\MsixFileTypeAssociation.h" />
+    <ClInclude Include="Xbox\Keys\CikEntry.h" />
+    <ClInclude Include="Xbox\Keys\KeyRegistry.h" />
+    <ClInclude Include="Minecraft\Bedrock\GameCapabilities.h" />
+    <ClInclude Include="Helpers\ByteProgressFormatter.h">
+      <DependentUpon>Helpers\ByteProgressFormatter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="Helpers\NotifyCollectionChangedBase.h" />
+    <ClInclude Include="Windows\Msix\Common.h" />
+    <ClInclude Include="Xbox\Xvc\Common.h" />
+    <ClInclude Include="Xbox\Xvc\StreamedXvcFile.h" />
+    <ClInclude Include="UI\Converters\BoolToVisibilityConverter.h">
+      <DependentUpon>UI\Converters\BoolToVisibilityConverter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Converters\StringToVisibilityConverter.h">
+      <DependentUpon>UI\Converters\StringToVisibilityConverter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\MinecraftBedrockGamePackageViewBase.h" />
+    <ClInclude Include="Minecraft\Bedrock\GamePackageOperation.h" />
+    <ClInclude Include="Minecraft\Bedrock\PackageAction.h" />
+    <ClInclude Include="Minecraft\Bedrock\PackageOperation.h" />
+    <ClInclude Include="Minecraft\Bedrock\PackageOperationCollection.h" />
+    <ClInclude Include="Models\MinecraftBedrockGamePackageItem.h">
+      <DependentUpon>Models\MinecraftBedrockGamePackageItem.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="Models\MinecraftBedrockServerDownloads.h">
+      <DependentUpon>Models\MinecraftBedrockServerDownloads.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="Models\ToastNotification.h">
+      <DependentUpon>Models\ToastNotification.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Mvvm\RelayCommand.h" />
+    <ClInclude Include="Services\MinecraftBedrockGameManager.h" />
+    <ClInclude Include="Minecraft\Bedrock\GameBuildType.h" />
+    <ClInclude Include="Minecraft\Bedrock\GamePackage.h" />
+    <ClInclude Include="Minecraft\Bedrock\GamePackageMeta.h" />
+    <ClInclude Include="Minecraft\Bedrock\GamePlatform.h" />
+    <ClInclude Include="Minecraft\Bedrock\GameVersion.h" />
+    <ClInclude Include="Minecraft\Bedrock\PackageCollection.h" />
+    <ClInclude Include="Minecraft\Bedrock\ServerBuildType.h" />
+    <ClInclude Include="Minecraft\Bedrock\ServerPackageMeta.h" />
+    <ClInclude Include="Minecraft\Bedrock\ServerPlatform.h" />
+    <ClInclude Include="Core\Codec\Base32.h" />
+    <ClInclude Include="Core\Codec\Base32Crockford.h" />
+    <ClInclude Include="Core\Codec\Base32Decoder.h" />
+    <ClInclude Include="Core\Codec\Base32Encoder.h" />
+    <ClInclude Include="Core\Codec\Base32Hex.h" />
+    <ClInclude Include="Core\Coroutine\Task.h" />
+    <ClInclude Include="Services\ToastNotificationService.h" />
+    <ClInclude Include="UI\ViewModels\MainWindowViewModel.h">
+      <DependentUpon>UI\ViewModels\MainWindowViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\ViewModels\MinecraftBedrockGamePackagesViewModel.h">
+      <DependentUpon>UI\ViewModels\MinecraftBedrockGamePackagesViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\MinecraftBedrockGamePackageView.xaml.h">
+      <DependentUpon>UI\Views\MinecraftBedrockGamePackageView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Pages\MinecraftBedrockGamePackagesPage.xaml.h">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockGamePackagesPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Pages\MinecraftBedrockImportsPage.xaml.h">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockImportsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Pages\MinecraftBedrockPreviewsPage.xaml.h">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockPreviewsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Pages\MinecraftBedrockReleasesPage.xaml.h">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockReleasesPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\ToastNotificationView.xaml.h">
+      <DependentUpon>UI\Views\ToastNotificationView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\ViewModels\GeneralSettingsViewModel.h">
+      <DependentUpon>UI\ViewModels\GeneralSettingsViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Pages\AboutPage.xaml.h">
+      <DependentUpon>UI\Views\Pages\AboutPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Pages\GeneralSettingsPage.xaml.h">
+      <DependentUpon>UI\Views\Pages\GeneralSettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Pages\MinecraftBedrockPage.xaml.h">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Pages\MinecraftJavaPage.xaml.h">
+      <DependentUpon>UI\Views\Pages\MinecraftJavaPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Pages\SettingsPage.xaml.h">
+      <DependentUpon>UI\Views\Pages\SettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="Windows\Msix\StreamedMsixFile.h" />
+    <ClInclude Include="Windows\Msix\MsixManifest.h" />
+    <ClInclude Include="Windows\AppModel.h" />
+    <ClInclude Include="Windows\FE3Handler.h" />
+    <ClInclude Include="Windows\AppLauncher.h" />
+    <ClInclude Include="ApplicationData.h" />
+    <ClInclude Include="ApplicationSettings.h" />
+    <ClInclude Include="Windows\BuildInfo.h" />
+    <ClInclude Include="Core\Codec\Base16Decoder.h" />
+    <ClInclude Include="Core\Codec\Base16Encoder.h" />
+    <ClInclude Include="Core\Codec\Base64.h" />
+    <ClInclude Include="Core\Codec\Base64Decoder.h" />
+    <ClInclude Include="Core\Codec\Base64Encoder.h" />
+    <ClInclude Include="Core\Codec\Base64Url.h" />
+    <ClInclude Include="Core\IO\Buffer.h" />
+    <ClInclude Include="Core\Coroutine\FireAndForget.h" />
+    <ClInclude Include="Core\IO\WinRTBuffer.h" />
+    <ClInclude Include="Core\IO\WinRTMemoryStream.h" />
+    <ClInclude Include="Core\IO\WinRTFileStream.h" />
+    <ClInclude Include="Core\Net\Http\Common.h" />
+    <ClInclude Include="Core\Net\Http\HttpStatusCode.h" />
+    <ClInclude Include="Core\Util\Append.h" />
+    <ClInclude Include="Core\Util\Ascii.h" />
+    <ClInclude Include="Core\Util\Checksum.h" />
+    <ClInclude Include="Core\Util\DateTime.h" />
+    <ClInclude Include="Core\Util\Event.h" />
+    <ClInclude Include="Core\Util\FormatByteCount.h" />
+    <ClInclude Include="Core\Util\FormatInteger.h" />
+    <ClInclude Include="Core\Util\Frozen.h" />
+    <ClInclude Include="Core\Util\Guid.h" />
+    <ClInclude Include="Core\Codec\Base16.h" />
+    <ClInclude Include="Core\IO\File.h" />
+    <ClInclude Include="Core\Util\Concepts.h" />
+    <ClInclude Include="Core\Util\Hash.h" />
+    <ClInclude Include="Core\Util\Math.h" />
+    <ClInclude Include="Core\Util\Param.h" />
+    <ClInclude Include="Core\Util\ParseInteger.h" />
+    <ClInclude Include="Core\Util\Scope.h" />
+    <ClInclude Include="Core\Util\StringLiteral.h" />
+    <ClInclude Include="Core\Util\TrivialArray.h" />
+    <ClInclude Include="Core\Util\TypeTraits.h" />
+    <ClInclude Include="Core\Util\VersionNumber.h" />
+    <ClInclude Include="Core\Net\Http\HttpHeader.h" />
+    <ClInclude Include="Core\Security\DataProtection.h" />
+    <ClInclude Include="Helpers\NotifyPropertyChangedBase.h" />
+    <ClInclude Include="Xbox\Xvc\XvcHeader.h" />
+    <ClInclude Include="Xbox\Xvc\XvcRegionHeader.h" />
+    <ClInclude Include="Xbox\Xvc\XvcRegionId.h" />
+    <ClInclude Include="Xbox\Xvc\XvcRegionSpecifier.h" />
+    <ClInclude Include="Xbox\Xvc\XvcSegment.h" />
+    <ClInclude Include="Xbox\Xvc\XvcXtsEntry.h" />
+    <ClInclude Include="Xbox\Xvc\XvdSegmentMetadata.h" />
+    <ClInclude Include="Xbox\Xvc\XvdUserDataPackageFilesHeader.h" />
+    <ClInclude Include="Xbox\Xvc\XvdHeader.h" />
+    <ClInclude Include="Xbox\Xvc\XvdUserDataHeader.h" />
+    <ClInclude Include="Xbox\Xvc\XvdUserDataPackageFile.h" />
+    <ClInclude Include="Services\HttpService.h" />
+    <ClInclude Include="Core\Net\Http\HttpContent.h" />
+    <ClInclude Include="Core\Storage\Common.h" />
+    <ClInclude Include="Core\Storage\ProtectedJsonStorage.h" />
+    <ClInclude Include="Core\Storage\JsonStorage.h" />
+    <ClInclude Include="Locale\LanguageTag.h" />
+    <ClInclude Include="Locale\Localizer.h" />
+    <ClInclude Include="Core\Logging\LogFormatter.h" />
+    <ClInclude Include="Core\Logging\Logger.h" />
+    <ClInclude Include="Core\Logging\Common.h" />
+    <ClInclude Include="Core\Logging\LogMessage.h" />
+    <ClInclude Include="Core\Logging\LogMessageQueue.h" />
+    <ClInclude Include="Core\Coroutine\TaskPromise.h" />
+    <ClInclude Include="Core\Net\Http\HttpResponse.h" />
+    <ClInclude Include="Core\Net\Url.h" />
+    <ClInclude Include="Core\Net\UrlQuery.h" />
+    <ClInclude Include="Core\Codec\UrlCodec.h" />
+    <ClInclude Include="Core\Net\Http\HttpMethod.h" />
+    <ClInclude Include="Models\ParameterPair.h">
+      <DependentUpon>Models\ParameterPair.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Navigation\NavigationContext.h">
+      <DependentUpon>UI\Navigation\NavigationContext.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Navigation\NavigationEventArgsEx.h">
+      <DependentUpon>UI\Navigation\NavigationEventArgsEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Navigation\OneTimeNavigationTransitionInfo.h">
+      <DependentUpon>UI\Navigation\OneTimeNavigationTransitionInfo.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="App.xaml.h">
+      <DependentUpon>App.xaml</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Windows\MainWindow.xaml.h">
+      <DependentUpon>UI\Views\Windows\MainWindow.xaml</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="Core\Unicode\Utf.h" />
+    <ClInclude Include="Core\Unicode\Unicode.h" />
+    <ClInclude Include="Core\Util\VariableSizedType.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+    <Page Include="UI\Controls\NumberBoxEx_ThemeResources.xaml" />
+    <Page Include="UI\Controls\ProgressBarEx_ThemeResources.xaml" />
+    <Page Include="UI\Controls\TextBoxEx_ThemeResources.xaml" />
+    <Page Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\Dialogs\MinecraftBedrockInstallDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\Dialogs\MinecraftBedrockManageDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\Dialogs\MinecraftBedrockRenameDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\MinecraftBedrockGamePackageView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\Pages\MinecraftBedrockGamePackagesPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\Pages\MinecraftBedrockImportsPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\Pages\MinecraftBedrockPreviewsPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\Pages\MinecraftBedrockReleasesPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\ToastNotificationView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\Windows\MainWindow.xaml" />
+    <Page Include="UI\Views\Pages\AboutPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\Pages\GeneralSettingsPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\Pages\MinecraftBedrockPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\Pages\MinecraftJavaPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Views\Pages\SettingsPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ApplicationMutex.cpp" />
+    <ClCompile Include="Models\MinecraftBedrockGameInfo.cpp">
+      <DependentUpon>Models\MinecraftBedrockGameInfo.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="Models\MinecraftBedrockGameLaunchArgs.cpp">
+      <DependentUpon>Models\MinecraftBedrockGameLaunchArgs.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="Models\MinecraftBedrockGamePackageImportContext.cpp">
+      <DependentUpon>Models\MinecraftBedrockGamePackageImportContext.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\ProgressBarEx.cpp">
+      <DependentUpon>UI\Controls\ProgressBarEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\ProgressBarExTemplateSettings.cpp">
+      <DependentUpon>UI\Controls\ProgressBarExTemplateSettings.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Converters\Convert.cpp">
+      <DependentUpon>UI\Converters\Convert.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\ViewModels\AboutViewModel.cpp">
+      <DependentUpon>UI\ViewModels\AboutViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml.cpp">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Dialogs\MinecraftBedrockInstallDialog.xaml.cpp">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockInstallDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Dialogs\MinecraftBedrockManageDialog.xaml.cpp">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockManageDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Dialogs\MinecraftBedrockRenameDialog.xaml.cpp">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockRenameDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="Windows\User.cpp" />
+    <ClCompile Include="Windows\Shell.cpp" />
+    <ClCompile Include="UI\Controls\ContentDialogEx.cpp">
+      <DependentUpon>UI\Controls\ContentDialogEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\FrameEx.cpp">
+      <DependentUpon>UI\Controls\FrameEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\NumberBoxEx.cpp">
+      <DependentUpon>UI\Controls\NumberBoxEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\TextBoxEx.cpp">
+      <DependentUpon>UI\Controls\TextBoxEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\WindowEx.cpp">
+      <DependentUpon>UI\Controls\WindowEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Dialogs\MinecraftBedrockGamePackagePicker.cpp">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockGamePackagePicker.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Dialogs\MinecraftBedrockInstallLocationPicker.cpp">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockInstallLocationPicker.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="Xbox\Keys\KeyRegistry.cpp" />
+    <ClCompile Include="Minecraft\Bedrock\GameCapabilities.cpp" />
+    <ClCompile Include="Helpers\ByteProgressFormatter.cpp">
+      <DependentUpon>Helpers\ByteProgressFormatter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="Xbox\Xvc\StreamedXvcFile.cpp" />
+    <ClCompile Include="UI\Converters\BoolToVisibilityConverter.cpp">
+      <DependentUpon>UI\Converters\BoolToVisibilityConverter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Converters\StringToVisibilityConverter.cpp">
+      <DependentUpon>UI\Converters\StringToVisibilityConverter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\MinecraftBedrockGamePackageViewBase.cpp" />
+    <ClCompile Include="Minecraft\Bedrock\GamePackageMeta.cpp" />
+    <ClCompile Include="Models\MinecraftBedrockGamePackageItem.cpp">
+      <DependentUpon>Models\MinecraftBedrockGamePackageItem.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="Models\MinecraftBedrockServerDownloads.cpp">
+      <DependentUpon>Models\MinecraftBedrockServerDownloads.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="Models\ToastNotification.cpp">
+      <DependentUpon>Models\ToastNotification.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="Services\MinecraftBedrockGameManager.cpp" />
+    <ClCompile Include="Minecraft\Bedrock\GameVersion.cpp" />
+    <ClCompile Include="Services\ToastNotificationService.cpp" />
+    <ClCompile Include="UI\ViewModels\MainWindowViewModel.cpp">
+      <DependentUpon>UI\ViewModels\MainWindowViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\ViewModels\MinecraftBedrockGamePackagesViewModel.cpp">
+      <DependentUpon>UI\ViewModels\MinecraftBedrockGamePackagesViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\MinecraftBedrockGamePackageView.xaml.cpp">
+      <DependentUpon>UI\Views\MinecraftBedrockGamePackageView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Pages\MinecraftBedrockGamePackagesPage.xaml.cpp">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockGamePackagesPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Pages\MinecraftBedrockImportsPage.xaml.cpp">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockImportsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Pages\MinecraftBedrockPreviewsPage.xaml.cpp">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockPreviewsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Pages\MinecraftBedrockReleasesPage.xaml.cpp">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockReleasesPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\ToastNotificationView.xaml.cpp">
+      <DependentUpon>UI\Views\ToastNotificationView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\ViewModels\GeneralSettingsViewModel.cpp">
+      <DependentUpon>UI\ViewModels\GeneralSettingsViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Pages\AboutPage.xaml.cpp">
+      <DependentUpon>UI\Views\Pages\AboutPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Pages\GeneralSettingsPage.xaml.cpp">
+      <DependentUpon>UI\Views\Pages\GeneralSettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Pages\MinecraftBedrockPage.xaml.cpp">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Pages\MinecraftJavaPage.xaml.cpp">
+      <DependentUpon>UI\Views\Pages\MinecraftJavaPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Pages\SettingsPage.xaml.cpp">
+      <DependentUpon>UI\Views\Pages\SettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="Windows\Msix\StreamedMsixFile.cpp" />
+    <ClCompile Include="Windows\Msix\MsixManifest.cpp" />
+    <ClCompile Include="Windows\AppModel.cpp" />
+    <ClCompile Include="Windows\FE3Handler.cpp" />
+    <ClCompile Include="Windows\AppLauncher.cpp" />
+    <ClCompile Include="ApplicationData.cpp" />
+    <ClCompile Include="ApplicationSettings.cpp" />
+    <ClCompile Include="Windows\BuildInfo.cpp" />
+    <ClCompile Include="Core\IO\Buffer.cpp" />
+    <ClCompile Include="Core\Util\Guid.cpp" />
+    <ClCompile Include="Core\IO\File.cpp" />
+    <ClCompile Include="Core\Logging\LogFormatter.cpp" />
+    <ClCompile Include="Core\IO\WinRTFileStream.cpp" />
+    <ClCompile Include="Services\HttpService.cpp" />
+    <ClCompile Include="Core\Net\Http\HttpContent.cpp" />
+    <ClCompile Include="Core\Net\Http\HttpHeader.cpp" />
+    <ClCompile Include="Core\Security\DataProtection.cpp" />
+    <ClCompile Include="Core\Storage\ProtectedJsonStorage.cpp" />
+    <ClCompile Include="Core\Storage\JsonStorage.cpp" />
+    <ClCompile Include="Locale\Localizer.cpp" />
+    <ClCompile Include="Core\Logging\Logger.cpp" />
+    <ClCompile Include="Core\Logging\LogMessageQueue.cpp" />
+    <ClCompile Include="Core\Logging\LogMessage.cpp" />
+    <ClCompile Include="Core\Coroutine\TaskPromise.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Core\Net\Http\HttpResponse.cpp" />
+    <ClCompile Include="Core\Net\Url.cpp" />
+    <ClCompile Include="Core\Net\UrlQuery.cpp" />
+    <ClCompile Include="Core\Codec\UrlCodec.cpp" />
+    <ClCompile Include="Core\Net\Http\HttpMethod.cpp" />
+    <ClCompile Include="Models\ParameterPair.cpp">
+      <DependentUpon>Models\ParameterPair.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Navigation\NavigationContext.cpp">
+      <DependentUpon>UI\Navigation\NavigationContext.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Navigation\NavigationEventArgsEx.cpp">
+      <DependentUpon>UI\Navigation\NavigationEventArgsEx.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Navigation\OneTimeNavigationTransitionInfo.cpp">
+      <DependentUpon>UI\Navigation\OneTimeNavigationTransitionInfo.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="App.xaml.cpp">
+      <DependentUpon>App.xaml</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Windows\MainWindow.xaml.cpp">
+      <DependentUpon>UI\Views\Windows\MainWindow.xaml</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="Core\Unicode\Utf.cpp" />
+    <ClCompile Include="Core\Unicode\Unicode.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="Collections\IFilterableCollectionView.idl" />
+    <Midl Include="Collections\IObservableCollection.idl" />
+    <Midl Include="Collections\IObservableCollectionView.idl" />
+    <Midl Include="Helpers\ByteProgressFormatter.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="Models\ByteProgress.idl" />
+    <Midl Include="Models\InstallLocationValidationResult.idl" />
+    <Midl Include="Models\IRangeStreamProvider.idl" />
+    <Midl Include="Models\MinecraftBedrockGameInfo.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="Models\MinecraftBedrockGameLaunchArgs.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="Models\MinecraftBedrockGameLaunchResult.idl" />
+    <Midl Include="Models\MinecraftBedrockGamePackageImportContext.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="Models\MinecraftBedrockGamePackageItem.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="Models\MinecraftBedrockGamePackageStatus.idl" />
+    <Midl Include="Models\MinecraftBedrockServerDownloads.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="Models\NotificationSeverity.idl" />
+    <Midl Include="Models\ParameterPair.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="Models\ToastNotification.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Controls\ContentDialogEx.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Controls\FrameEx.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Controls\NumberBoxEx.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Controls\ProgressBarEx.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Controls\ProgressBarExTemplateSettings.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Controls\TextBoxEx.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Controls\WindowEx.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Converters\BoolToVisibilityConverter.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Converters\Convert.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Converters\StringToVisibilityConverter.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Mvvm\IRelayCommand.idl" />
+    <Midl Include="UI\ViewModels\AboutViewModel.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\ViewModels\MainWindowViewModel.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\ViewModels\MinecraftBedrockGamePackagesViewModel.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Dialogs\MinecraftBedrockGamePackagePicker.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.idl">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Dialogs\MinecraftBedrockInstallDialog.idl">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockInstallDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Dialogs\MinecraftBedrockInstallLocationPicker.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Dialogs\MinecraftBedrockManageDialog.idl">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockManageDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Dialogs\MinecraftBedrockRenameDialog.idl">
+      <DependentUpon>UI\Views\Dialogs\MinecraftBedrockRenameDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\IMinecraftBedrockGamePackageViewBase.idl" />
+    <Midl Include="UI\Views\MinecraftBedrockGamePackageView.idl">
+      <DependentUpon>UI\Views\MinecraftBedrockGamePackageView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Pages\MinecraftBedrockGamePackagesPage.idl">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockGamePackagesPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Pages\MinecraftBedrockImportsPage.idl">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockImportsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Pages\MinecraftBedrockPreviewsPage.idl">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockPreviewsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Pages\MinecraftBedrockReleasesPage.idl">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockReleasesPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\ToastNotificationView.idl">
+      <DependentUpon>UI\Views\ToastNotificationView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Windows\MainWindow.idl">
+      <SubType>Code</SubType>
+      <DependentUpon>UI\Views\Windows\MainWindow.xaml</DependentUpon>
+    </Midl>
+    <Midl Include="UI\Navigation\NavigationContext.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Navigation\NavigationDirection.idl" />
+    <Midl Include="UI\Navigation\NavigationEventArgsEx.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Navigation\OneTimeNavigationTransitionInfo.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\PrivateDefinitions.idl" />
+    <Midl Include="UI\ViewModels\GeneralSettingsViewModel.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Pages\AboutPage.idl">
+      <DependentUpon>UI\Views\Pages\AboutPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Pages\GeneralSettingsPage.idl">
+      <DependentUpon>UI\Views\Pages\GeneralSettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Pages\MinecraftBedrockPage.idl">
+      <DependentUpon>UI\Views\Pages\MinecraftBedrockPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Pages\MinecraftJavaPage.idl">
+      <DependentUpon>UI\Views\Pages\MinecraftJavaPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Pages\SettingsPage.idl">
+      <DependentUpon>UI\Views\Pages\SettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\**\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <!--
+    Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+    Tools extension to be activated for this project even if the Windows App SDK Nuget
+    package has not yet been restored.
+  -->
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="PreBuild.fsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Include="Locale\de\Resources.resw" />
+    <PRIResource Include="Locale\en\Resources.resw" />
+  </ItemGroup>
+  <!--
+    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
+    Explorer "Package and Publish" context menu entry to be enabled for this project even if
+    the Windows App SDK Nuget package has not yet been restored.
+  -->
+  <ItemGroup>
+    <ResourceCompile Include="Citrine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Icons\Citrine.ico" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <MultiProcMIDL>true</MultiProcMIDL>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <MultiProcMIDL>true</MultiProcMIDL>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <MultiProcMIDL>true</MultiProcMIDL>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <MultiProcMIDL>true</MultiProcMIDL>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <MultiProcMIDL>true</MultiProcMIDL>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <MultiProcMIDL>true</MultiProcMIDL>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgUseMD>true</VcpkgUseMD>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgUseMD>true</VcpkgUseMD>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="..\packages\Microsoft.Windows.SDK.BuildTools.10.0.28000.1-RTM\build\Microsoft.Windows.SDK.BuildTools.targets" Condition="Exists('..\packages\Microsoft.Windows.SDK.BuildTools.10.0.28000.1-RTM\build\Microsoft.Windows.SDK.BuildTools.targets')" />
+    <Import Project="..\packages\Microsoft.Windows.ImplementationLibrary.1.0.260126.7\build\native\Microsoft.Windows.ImplementationLibrary.targets" Condition="Exists('..\packages\Microsoft.Windows.ImplementationLibrary.1.0.260126.7\build\native\Microsoft.Windows.ImplementationLibrary.targets')" />
+    <Import Project="..\packages\Microsoft.Web.WebView2.1.0.3908-prerelease\build\native\Microsoft.Web.WebView2.targets" Condition="Exists('..\packages\Microsoft.Web.WebView2.1.0.3908-prerelease\build\native\Microsoft.Web.WebView2.targets')" />
+    <Import Project="..\packages\Microsoft.Windows.SDK.BuildTools.MSIX.1.7.260316102\build\Microsoft.Windows.SDK.BuildTools.MSIX.targets" Condition="Exists('..\packages\Microsoft.Windows.SDK.BuildTools.MSIX.1.7.260316102\build\Microsoft.Windows.SDK.BuildTools.MSIX.targets')" />
+    <Import Project="..\packages\Microsoft.WindowsAppSDK.Base.2.0.2-preview\build\native\Microsoft.WindowsAppSDK.Base.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.Base.2.0.2-preview\build\native\Microsoft.WindowsAppSDK.Base.targets')" />
+    <Import Project="..\packages\Microsoft.WindowsAppSDK.InteractiveExperiences.2.0.6-preview\build\native\Microsoft.WindowsAppSDK.InteractiveExperiences.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.InteractiveExperiences.2.0.6-preview\build\native\Microsoft.WindowsAppSDK.InteractiveExperiences.targets')" />
+    <Import Project="..\packages\Microsoft.WindowsAppSDK.Foundation.2.0.15-preview\build\native\Microsoft.WindowsAppSDK.Foundation.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.Foundation.2.0.15-preview\build\native\Microsoft.WindowsAppSDK.Foundation.targets')" />
+    <Import Project="..\packages\Microsoft.WindowsAppSDK.WinUI.2.0.7-preview\build\native\Microsoft.WindowsAppSDK.WinUI.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.WinUI.2.0.7-preview\build\native\Microsoft.WindowsAppSDK.WinUI.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.250303.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.SDK.BuildTools.10.0.28000.1-RTM\build\Microsoft.Windows.SDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.SDK.BuildTools.10.0.28000.1-RTM\build\Microsoft.Windows.SDK.BuildTools.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.SDK.BuildTools.10.0.28000.1-RTM\build\Microsoft.Windows.SDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.SDK.BuildTools.10.0.28000.1-RTM\build\Microsoft.Windows.SDK.BuildTools.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.ImplementationLibrary.1.0.260126.7\build\native\Microsoft.Windows.ImplementationLibrary.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.ImplementationLibrary.1.0.260126.7\build\native\Microsoft.Windows.ImplementationLibrary.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Web.WebView2.1.0.3908-prerelease\build\native\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Web.WebView2.1.0.3908-prerelease\build\native\Microsoft.Web.WebView2.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.SDK.BuildTools.MSIX.1.7.260316102\build\Microsoft.Windows.SDK.BuildTools.MSIX.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.SDK.BuildTools.MSIX.1.7.260316102\build\Microsoft.Windows.SDK.BuildTools.MSIX.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Windows.SDK.BuildTools.MSIX.1.7.260316102\build\Microsoft.Windows.SDK.BuildTools.MSIX.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.SDK.BuildTools.MSIX.1.7.260316102\build\Microsoft.Windows.SDK.BuildTools.MSIX.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.WindowsAppSDK.Base.2.0.2-preview\build\native\Microsoft.WindowsAppSDK.Base.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.WindowsAppSDK.Base.2.0.2-preview\build\native\Microsoft.WindowsAppSDK.Base.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.WindowsAppSDK.Base.2.0.2-preview\build\native\Microsoft.WindowsAppSDK.Base.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.WindowsAppSDK.Base.2.0.2-preview\build\native\Microsoft.WindowsAppSDK.Base.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.WindowsAppSDK.InteractiveExperiences.2.0.6-preview\build\native\Microsoft.WindowsAppSDK.InteractiveExperiences.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.WindowsAppSDK.InteractiveExperiences.2.0.6-preview\build\native\Microsoft.WindowsAppSDK.InteractiveExperiences.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.WindowsAppSDK.InteractiveExperiences.2.0.6-preview\build\native\Microsoft.WindowsAppSDK.InteractiveExperiences.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.WindowsAppSDK.InteractiveExperiences.2.0.6-preview\build\native\Microsoft.WindowsAppSDK.InteractiveExperiences.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.WindowsAppSDK.Foundation.2.0.15-preview\build\native\Microsoft.WindowsAppSDK.Foundation.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.WindowsAppSDK.Foundation.2.0.15-preview\build\native\Microsoft.WindowsAppSDK.Foundation.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.WindowsAppSDK.Foundation.2.0.15-preview\build\native\Microsoft.WindowsAppSDK.Foundation.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.WindowsAppSDK.Foundation.2.0.15-preview\build\native\Microsoft.WindowsAppSDK.Foundation.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.WindowsAppSDK.WinUI.2.0.7-preview\build\native\Microsoft.WindowsAppSDK.WinUI.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.WindowsAppSDK.WinUI.2.0.7-preview\build\native\Microsoft.WindowsAppSDK.WinUI.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.WindowsAppSDK.WinUI.2.0.7-preview\build\native\Microsoft.WindowsAppSDK.WinUI.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.WindowsAppSDK.WinUI.2.0.7-preview\build\native\Microsoft.WindowsAppSDK.WinUI.targets'))" />
+  </Target>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="dotnet fsi PreBuild.fsx" />
+  </Target>
+</Project>

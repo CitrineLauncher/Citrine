@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Application
+    x:Class="Citrine.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Citrine">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="UI/Controls/TextBoxEx_ThemeResources.xaml" />
+                <ResourceDictionary Source="UI/Controls/NumberBoxEx_ThemeResources.xaml" />
+                <ResourceDictionary Source="UI/Controls/ProgressBarEx_ThemeResources.xaml" />
+                <!-- Other merged dictionaries here -->
+            </ResourceDictionary.MergedDictionaries>
+            <!-- Other app resources here -->
+
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <ImageSource x:Key="GitHubIcon">Assets/Icons/GitHub_Light.png</ImageSource>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast">
+                    <ImageSource x:Key="GitHubIcon">Assets/Icons/GitHub_Light.png</ImageSource>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <ImageSource x:Key="GitHubIcon">Assets/Icons/GitHub.png</ImageSource>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+            
+            <ImageSource x:Key="CitrineIcon">/Assets/Icons/Citrine.ico</ImageSource>
+            
+            <ImageSource x:Key="MinecraftJavaIcon">Assets/Icons/Minecraft_Java.png</ImageSource>
+            <ImageSource x:Key="MinecraftJavaSnapshotIcon">Assets/Icons/Minecraft_Java_Snapshot.png</ImageSource>
+            <ImageSource x:Key="MinecraftJavaLogo">Assets/Logos/Minecraft_Java.svg</ImageSource>
+            <ImageSource x:Key="MinecraftBedrockIcon">Assets/Icons/Minecraft_Bedrock.png</ImageSource>
+            <ImageSource x:Key="MinecraftBedrockPreviewIcon">Assets/Icons/Minecraft_Bedrock_Preview.png</ImageSource>
+            <ImageSource x:Key="MinecraftBedrockLogo">Assets/Logos/Minecraft_Bedrock.svg</ImageSource>
+
+            <BitmapImage x:Key="MinecraftBedrockPackIcon" UriSource="Assets/Icons/Minecraft_Bedrock_Pack.png" />
+
+            <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+
+            <x:Double x:Key="ContentDialogMaxWidth">624</x:Double>
+            <Thickness x:Key="ContentDialogPadding">20</Thickness>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

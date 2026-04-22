@@ -1,0 +1,16 @@
+import "Models/MinecraftBedrockGamePackageItem.idl";
+
+namespace Citrine {
+
+	interface IMinecraftBedrockGamePackageViewBase
+	{
+		Microsoft.UI.Xaml.Media.ImageSource GetPackageIconSource(MinecraftBedrockGamePackageItem item);
+		String GetPackageTitleString(MinecraftBedrockGamePackageItem item);
+		String GetPackageTitleString(MinecraftBedrockGamePackageItem item, String nameTag);
+		Int32 GetNameTagLength(MinecraftBedrockGamePackageItem item);
+		String GetPackageDescriptionString(MinecraftBedrockGamePackageItem item);
+		String GetPackageStatusString(MinecraftBedrockGamePackageStatus status);
+		Double GetOperationProgressPercentage(ByteProgress progress);
+		String GetOperationProgressString(ByteProgress progress);
+	};
+}

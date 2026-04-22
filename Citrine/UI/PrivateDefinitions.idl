@@ -1,0 +1,15 @@
+namespace Microsoft.UI.Xaml.Media.Animation
+{
+    enum NavigationTrigger
+    {
+        NavigatingAway,
+        NavigatingTo,
+        BackNavigatingAway,
+        BackNavigatingTo,
+    };
+
+    interface INavigationTransitionInfoPrivate
+    {
+        void CreateStoryboards(Microsoft.UI.Xaml.UIElement element, Microsoft.UI.Xaml.Media.Animation.NavigationTrigger trigger, Windows.Foundation.Collections.IVector<Microsoft.UI.Xaml.Media.Animation.Storyboard> storyboards);
+    };
+}

@@ -1,0 +1,42 @@
+
+import "Models/MinecraftBedrockGamePackageItem.idl";
+import "Models/MinecraftBedrockServerDownloads.idl";
+import "Models/MinecraftBedrockGamePackageImportContext.idl";
+import "Models/MinecraftBedrockGameLaunchArgs.idl";
+import "Models/InstallLocationValidationResult.idl";
+import "Collections/IObservableCollectionView.idl";
+import "Collections/IFilterableCollectionView.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftBedrockGamePackagesViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        MinecraftBedrockGamePackagesViewModel(String packageSourceId);
+
+        IObservableCollectionView GamePackages{ get; };
+        IFilterableCollectionView FilteredGamePackages{ get; };
+
+        String CurrentInstallLocation{ get; };
+        InstallLocationValidationResult ValidateInstallLocation(String path);
+
+        Boolean SupportsImporting{ get; };
+        Boolean CanStartImporting{ get; };
+
+        void InstallGamePackage(MinecraftBedrockGamePackageItem gamePackage, String installLocation);
+        Windows.Foundation.IAsyncOperation<MinecraftBedrockGamePackageImportContext> InitiateGamePackageImport(String gamePackageLocation);
+        void ImportGamePackage(MinecraftBedrockGamePackageImportContext importContext, String installLocation, String nameTag);
+        void LaunchGamePackage(MinecraftBedrockGameLaunchArgs launchArgs);
+        void RenameGamePackage(MinecraftBedrockGamePackageItem gamePackage, String nameTag);
+        void UninstallGamePackage(MinecraftBedrockGamePackageItem gamePackage);
+
+        void OpenGameDirectory(MinecraftBedrockGamePackageItem gamePackage);
+        void OpenGameDataDirectory(MinecraftBedrockGamePackageItem gamePackage);
+
+        void PauseGamePackageOperation(MinecraftBedrockGamePackageItem gamePackage);
+        void ResumeGamePackageOperation(MinecraftBedrockGamePackageItem gamePackage);
+        void CancelGamePackageOperation(MinecraftBedrockGamePackageItem gamePackage);
+
+        String PackageSourceId{ get; };
+    }
+}

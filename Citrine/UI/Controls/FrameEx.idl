@@ -1,0 +1,8 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass FrameEx : Microsoft.UI.Xaml.Controls.Frame
+    {
+        FrameEx();
+    }
+}

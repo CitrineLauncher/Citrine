@@ -1,0 +1,9 @@
+namespace Citrine
+{
+    interface IObservableCollectionView requires IVectorView<Object>, Microsoft.UI.Xaml.Interop.INotifyCollectionChanged
+    {
+        Boolean IsEmpty{ get; };
+
+        Windows.UI.Xaml.Interop.TypeName ItemType{ get; };
+    }
+}

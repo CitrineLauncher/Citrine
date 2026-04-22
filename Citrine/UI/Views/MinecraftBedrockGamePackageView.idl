@@ -1,0 +1,17 @@
+import "UI/Views/IMinecraftBedrockGamePackageViewBase.idl";
+import "Models/MinecraftBedrockGamePackageItem.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftBedrockGamePackageView : Microsoft.UI.Xaml.Controls.UserControl, IMinecraftBedrockGamePackageViewBase
+    {
+        MinecraftBedrockGamePackageView();
+
+        MinecraftBedrockGamePackageItem GamePackage;
+        static Microsoft.UI.Xaml.DependencyProperty GamePackageProperty{ get; };
+
+        Microsoft.UI.Xaml.Input.ICommand InvokeActionCommand;
+        static Microsoft.UI.Xaml.DependencyProperty InvokeActionCommandProperty{ get; };
+    }
+}

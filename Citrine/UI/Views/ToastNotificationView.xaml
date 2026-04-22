@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="Citrine.ToastNotificationView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Citrine"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <Thickness x:Key="ToastNotificationProgressIndicatorMargin">0</Thickness>
+                    <Thickness x:Key="ToastNotificationProgressIndicatorBorderThickness">0</Thickness>
+                    <CornerRadius x:Key="ToastNotificationProgressIndicatorCornerRadius">0</CornerRadius>
+                    <StaticResource x:Key="ToastNotificationProgressIndicatorBorderBrush" ResourceKey="ControlFillColorTransparentBrush" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast">
+                    <Thickness x:Key="ToastNotificationProgressIndicatorMargin">16,8,16,16</Thickness>
+                    <Thickness x:Key="ToastNotificationProgressIndicatorBorderThickness">1</Thickness>
+                    <CornerRadius x:Key="ToastNotificationProgressIndicatorCornerRadius">1.5</CornerRadius>
+                    <StaticResource x:Key="ToastNotificationProgressIndicatorBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <Thickness x:Key="ToastNotificationProgressIndicatorMargin">0</Thickness>
+                    <Thickness x:Key="ToastNotificationProgressIndicatorBorderThickness">0</Thickness>
+                    <CornerRadius x:Key="ToastNotificationProgressIndicatorCornerRadius">0</CornerRadius>
+                    <StaticResource x:Key="ToastNotificationProgressIndicatorBorderBrush" ResourceKey="ControlFillColorTransparentBrush" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+            <Thickness x:Key="ToastNotificationProgressIndicatorHeight">4</Thickness>
+            <x:Double x:Key="ToastNotificationProgressIndicatorRadiusX">1.5</x:Double>
+            <x:Double x:Key="ToastNotificationProgressIndicatorRadiusY">1.5</x:Double>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border x:Name="ContentRoot" VerticalAlignment="Top" Background="{ThemeResource SolidBackgroundFillColorSenaryBrush}" BorderBrush="{ThemeResource InfoBarBorderBrush}" BorderThickness="{ThemeResource InfoBarBorderThickness}" CornerRadius="{ThemeResource ControlCornerRadius}">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="SeverityLevels">
+                <VisualState x:Name="Info" />
+                <VisualState x:Name="Success">
+                    <VisualState.Setters>
+                        <Setter Target="ContentRoot.Background" Value="{ThemeResource InfoBarSuccessSeverityBackgroundBrush}" />
+                        <Setter Target="IconBackground.Foreground" Value="{ThemeResource InfoBarSuccessSeverityIconBackground}" />
+                        <Setter Target="StandardIcon.Text" Value="{StaticResource InfoBarSuccessIconGlyph}" />
+                        <Setter Target="StandardIcon.Foreground" Value="{ThemeResource InfoBarSuccessSeverityIconForeground}" />
+                        <Setter Target="ProgressIndicator.Fill" Value="{ThemeResource SystemFillColorSuccessBrush}" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Warning">
+                    <VisualState.Setters>
+                        <Setter Target="ContentRoot.Background" Value="{ThemeResource InfoBarWarningSeverityBackgroundBrush}" />
+                        <Setter Target="IconBackground.Foreground" Value="{ThemeResource InfoBarWarningSeverityIconBackground}" />
+                        <Setter Target="StandardIcon.Text" Value="{StaticResource InfoBarWarningIconGlyph}" />
+                        <Setter Target="StandardIcon.Foreground" Value="{ThemeResource InfoBarWarningSeverityIconForeground}" />
+                        <Setter Target="ProgressIndicator.Fill" Value="{ThemeResource SystemFillColorCautionBrush}" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Error">
+                    <VisualState.Setters>
+                        <Setter Target="ContentRoot.Background" Value="{ThemeResource InfoBarErrorSeverityBackgroundBrush}" />
+                        <Setter Target="IconBackground.Foreground" Value="{ThemeResource InfoBarErrorSeverityIconBackground}" />
+                        <Setter Target="StandardIcon.Text" Value="{StaticResource InfoBarErrorIconGlyph}" />
+                        <Setter Target="StandardIcon.Foreground" Value="{ThemeResource InfoBarErrorSeverityIconForeground}" />
+                        <Setter Target="ProgressIndicator.Fill" Value="{ThemeResource SystemFillColorCriticalBrush}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <!-- Background is used here so that it overrides the severity status color if set. -->
+        <StackPanel CornerRadius="{ThemeResource ControlCornerRadius}">
+            <Grid HorizontalAlignment="Stretch" MinHeight="{ThemeResource InfoBarMinHeight}" Background="Transparent" Padding="{StaticResource InfoBarContentRootPadding}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <!-- Icon -->
+                    <ColumnDefinition Width="*" />
+                    <!-- Title, message, and action -->
+                    <ColumnDefinition Width="Auto" />
+                    <!-- Close button -->
+                </Grid.ColumnDefinitions>
+                <Grid x:Name="StandardIconArea">
+                    <TextBlock x:Name="IconBackground" Grid.Column="0" VerticalAlignment="Top" Margin="{StaticResource InfoBarIconMargin}" FontSize="{StaticResource InfoBarIconFontSize}" Text="{StaticResource InfoBarIconBackgroundGlyph}" Foreground="{ThemeResource InfoBarInformationalSeverityIconBackground}" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                    <TextBlock x:Name="StandardIcon" Grid.Column="0" VerticalAlignment="Top" Margin="{StaticResource InfoBarIconMargin}" FontSize="{StaticResource InfoBarIconFontSize}" Text="{StaticResource InfoBarInformationalIconGlyph}" Foreground="{ThemeResource InfoBarInformationalSeverityIconForeground}" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                </Grid>
+                <InfoBarPanel Grid.Column="1" Margin="{StaticResource InfoBarPanelMargin}" HorizontalOrientationPadding="{StaticResource InfoBarPanelHorizontalOrientationPadding}" VerticalOrientationPadding="{StaticResource InfoBarPanelVerticalOrientationPadding}">
+                    <TextBlock x:Name="Title" Text="{x:Bind Notification.Title, Mode=OneWay}" Foreground="{ThemeResource InfoBarTitleForeground}" InfoBarPanel.HorizontalOrientationMargin="{StaticResource InfoBarTitleHorizontalOrientationMargin}" InfoBarPanel.VerticalOrientationMargin="{StaticResource InfoBarTitleVerticalOrientationMargin}" TextWrapping="WrapWholeWords" FontWeight="{StaticResource InfoBarTitleFontWeight}" FontSize="{StaticResource InfoBarTitleFontSize}" />
+                    <TextBlock x:Name="Message" Text="{x:Bind Notification.Message, Mode=OneWay}" Foreground="{ThemeResource InfoBarMessageForeground}" InfoBarPanel.HorizontalOrientationMargin="{StaticResource InfoBarMessageHorizontalOrientationMargin}" InfoBarPanel.VerticalOrientationMargin="{StaticResource InfoBarMessageVerticalOrientationMargin}" TextWrapping="WrapWholeWords" FontWeight="{StaticResource InfoBarMessageFontWeight}" FontSize="{StaticResource InfoBarMessageFontSize}" />
+                </InfoBarPanel>
+                <Button Name="CloseButton" Grid.Column="2" Style="{StaticResource InfoBarCloseButtonStyle}" GotFocus="CloseButton_GotFocus" LostFocus="CloseButton_LostFocus" PointerCaptureLost="CloseButton_PointerCaptureLost" Click="CloseButton_Click">
+                    <Button.Resources>
+                        <ResourceDictionary>
+                            <ResourceDictionary.ThemeDictionaries>
+                                <ResourceDictionary x:Key="Default">
+                                    <StaticResource x:Key="ButtonBackground" ResourceKey="AppBarButtonBackground" />
+                                    <StaticResource x:Key="ButtonBackgroundPointerOver" ResourceKey="AppBarButtonBackgroundPointerOver" />
+                                    <StaticResource x:Key="ButtonBackgroundPressed" ResourceKey="AppBarButtonBackgroundPressed" />
+                                    <StaticResource x:Key="ButtonBackgroundDisabled" ResourceKey="AppBarButtonBackgroundDisabled" />
+                                    <StaticResource x:Key="ButtonForeground" ResourceKey="AppBarButtonForeground" />
+                                    <StaticResource x:Key="ButtonForegroundPointerOver" ResourceKey="AppBarButtonForegroundPointerOver" />
+                                    <StaticResource x:Key="ButtonForegroundPressed" ResourceKey="AppBarButtonForegroundPressed" />
+                                    <StaticResource x:Key="ButtonForegroundDisabled" ResourceKey="AppBarButtonForegroundDisabled" />
+                                    <StaticResource x:Key="ButtonBorderBrush" ResourceKey="AppBarButtonBorderBrush" />
+                                    <StaticResource x:Key="ButtonBorderBrushPointerOver" ResourceKey="AppBarButtonBorderBrushPointerOver" />
+                                    <StaticResource x:Key="ButtonBorderBrushPressed" ResourceKey="AppBarButtonBorderBrushPressed" />
+                                    <StaticResource x:Key="ButtonBorderBrushDisabled" ResourceKey="AppBarButtonBorderBrushDisabled" />
+                                </ResourceDictionary>
+                                <ResourceDictionary x:Key="HighContrast">
+                                    <StaticResource x:Key="ButtonBackground" ResourceKey="AppBarButtonBackground" />
+                                    <StaticResource x:Key="ButtonBackgroundPointerOver" ResourceKey="AppBarButtonBackgroundPointerOver" />
+                                    <StaticResource x:Key="ButtonBackgroundPressed" ResourceKey="AppBarButtonBackgroundPressed" />
+                                    <StaticResource x:Key="ButtonBackgroundDisabled" ResourceKey="AppBarButtonBackgroundDisabled" />
+                                    <StaticResource x:Key="ButtonForeground" ResourceKey="AppBarButtonForeground" />
+                                    <StaticResource x:Key="ButtonForegroundPointerOver" ResourceKey="AppBarButtonForegroundPointerOver" />
+                                    <StaticResource x:Key="ButtonForegroundPressed" ResourceKey="AppBarButtonForegroundPressed" />
+                                    <StaticResource x:Key="ButtonForegroundDisabled" ResourceKey="AppBarButtonForegroundDisabled" />
+                                    <StaticResource x:Key="ButtonBorderBrush" ResourceKey="AppBarButtonBorderBrush" />
+                                    <StaticResource x:Key="ButtonBorderBrushPointerOver" ResourceKey="AppBarButtonBorderBrushPointerOver" />
+                                    <StaticResource x:Key="ButtonBorderBrushPressed" ResourceKey="AppBarButtonBorderBrushPressed" />
+                                    <StaticResource x:Key="ButtonBorderBrushDisabled" ResourceKey="AppBarButtonBorderBrushDisabled" />
+                                </ResourceDictionary>
+                                <ResourceDictionary x:Key="Light">
+                                    <StaticResource x:Key="ButtonBackground" ResourceKey="AppBarButtonBackground" />
+                                    <StaticResource x:Key="ButtonBackgroundPointerOver" ResourceKey="AppBarButtonBackgroundPointerOver" />
+                                    <StaticResource x:Key="ButtonBackgroundPressed" ResourceKey="AppBarButtonBackgroundPressed" />
+                                    <StaticResource x:Key="ButtonBackgroundDisabled" ResourceKey="AppBarButtonBackgroundDisabled" />
+                                    <StaticResource x:Key="ButtonForeground" ResourceKey="AppBarButtonForeground" />
+                                    <StaticResource x:Key="ButtonForegroundPointerOver" ResourceKey="AppBarButtonForegroundPointerOver" />
+                                    <StaticResource x:Key="ButtonForegroundPressed" ResourceKey="AppBarButtonForegroundPressed" />
+                                    <StaticResource x:Key="ButtonForegroundDisabled" ResourceKey="AppBarButtonForegroundDisabled" />
+                                    <StaticResource x:Key="ButtonBorderBrush" ResourceKey="AppBarButtonBorderBrush" />
+                                    <StaticResource x:Key="ButtonBorderBrushPointerOver" ResourceKey="AppBarButtonBorderBrushPointerOver" />
+                                    <StaticResource x:Key="ButtonBorderBrushPressed" ResourceKey="AppBarButtonBorderBrushPressed" />
+                                    <StaticResource x:Key="ButtonBorderBrushDisabled" ResourceKey="AppBarButtonBorderBrushDisabled" />
+                                </ResourceDictionary>
+                            </ResourceDictionary.ThemeDictionaries>
+                        </ResourceDictionary>
+                    </Button.Resources>
+                    <Viewbox Width="{StaticResource InfoBarCloseButtonGlyphSize}" Height="{StaticResource InfoBarCloseButtonGlyphSize}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <SymbolIcon Symbol="{StaticResource InfoBarCloseButtonSymbol}" />
+                    </Viewbox>
+                </Button>
+            </Grid>
+            <Border Margin="{ThemeResource ToastNotificationProgressIndicatorMargin}" BorderBrush="{ThemeResource ToastNotificationProgressIndicatorBorderBrush}" BorderThickness="{ThemeResource ToastNotificationProgressIndicatorBorderThickness}" CornerRadius="{ThemeResource ToastNotificationProgressIndicatorCornerRadius}">
+                <Rectangle x:Name="ProgressIndicator" Height="{ThemeResource ToastNotificationProgressIndicatorHeight}" RadiusX="{ThemeResource ToastNotificationProgressIndicatorRadiusX}" RadiusY="{ThemeResource ToastNotificationProgressIndicatorRadiusY}" Fill="{ThemeResource SystemFillColorAttentionBrush}">
+                    <Rectangle.RenderTransform>
+                        <ScaleTransform ScaleX="0.0" ScaleY="1.0" />
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+            </Border>
+        </StackPanel>
+    </Border>
+</UserControl>

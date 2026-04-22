@@ -1,0 +1,18 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass GeneralSettingsViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        GeneralSettingsViewModel();
+
+        Int32 Theme;
+        Int32 Backdrop;
+
+        IVector<IInspectable> Languages{ get; };
+        Int32 Language;
+        Boolean LanguageHasChanged{ get; };
+
+        Microsoft.UI.Xaml.Input.ICommand RestartAppCommand{ get; };
+        Microsoft.UI.Xaml.Input.ICommand OpenAppDataDirectoryCommand{ get; };
+    }
+}

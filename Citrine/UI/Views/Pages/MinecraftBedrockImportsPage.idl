@@ -1,0 +1,10 @@
+import "UI/Views/Pages/MinecraftBedrockGamePackagesPage.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftBedrockImportsPage : MinecraftBedrockGamePackagesPage
+    {
+        MinecraftBedrockImportsPage();
+    }
+}

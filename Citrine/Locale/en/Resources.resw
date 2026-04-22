@@ -1,0 +1,333 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppTheme_Light.Content" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="AppTheme_SystemTheme.Content" xml:space="preserve">
+    <value>System theme</value>
+  </data>
+  <data name="AppTheme_Dark.Content" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="MinecraftBedrock_Imports.Content" xml:space="preserve">
+    <value>Imports</value>
+  </data>
+  <data name="MinecraftBedrock_Previews.Content" xml:space="preserve">
+    <value>Previews</value>
+  </data>
+  <data name="MinecraftBedrock_Releases.Content" xml:space="preserve">
+    <value>Releases</value>
+  </data>
+  <data name="MinecraftJava_Installations.Content" xml:space="preserve">
+    <value>Installations</value>
+  </data>
+  <data name="MinecraftJava_Play.Content" xml:space="preserve">
+    <value>Play</value>
+  </data>
+  <data name="RatioDelimiterString" xml:space="preserve">
+    <value>of</value>
+  </data>
+  <data name="Settings_About.Content" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Settings_Accounts.Content" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
+  <data name="Settings_General.Content" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="GeneralSettings_Theme.Text" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="GeneralSettings_Backdrop.Text" xml:space="preserve">
+    <value>Backdrop</value>
+  </data>
+  <data name="Language_SystemLanguage" xml:space="preserve">
+    <value>System language</value>
+  </data>
+  <data name="GeneralSettings_Language.Text" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="GeneralSettings_Localization.Text" xml:space="preserve">
+    <value>Localization</value>
+  </data>
+  <data name="GeneralSettings_Appearance.Text" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="Settings_AppRestartRequired.Title" xml:space="preserve">
+    <value>The application must be restarted for the change to take effect.</value>
+  </data>
+  <data name="Settings_RestartApp.Content" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="BuildType_Release" xml:space="preserve">
+    <value>Release</value>
+  </data>
+  <data name="BuildType_Preview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="BuildType_Beta" xml:space="preserve">
+    <value>Beta</value>
+  </data>
+  <data name="Platform_Xbox" xml:space="preserve">
+    <value>Xbox</value>
+  </data>
+  <data name="Platform_Windows" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="Platform_Linux" xml:space="preserve">
+    <value>Linux</value>
+  </data>
+  <data name="Platform_GDK" xml:space="preserve">
+    <value>GDK</value>
+  </data>
+  <data name="Platform_UWP" xml:space="preserve">
+    <value>UWP</value>
+  </data>
+  <data name="Status_NotInstalled" xml:space="preserve">
+    <value>Not installed</value>
+  </data>
+  <data name="Status_PreparingDownload" xml:space="preserve">
+    <value>Preparing download</value>
+  </data>
+  <data name="Status_Downloading" xml:space="preserve">
+    <value>Downloading</value>
+  </data>
+  <data name="Status_Extracting" xml:space="preserve">
+    <value>Extracting</value>
+  </data>
+  <data name="Status_InstallationPaused" xml:space="preserve">
+    <value>Installation paused</value>
+  </data>
+  <data name="Status_CancellingInstallation" xml:space="preserve">
+    <value>Cancelling installation</value>
+  </data>
+  <data name="Status_InstallationFailed" xml:space="preserve">
+    <value>Installation failed</value>
+  </data>
+  <data name="Status_Installed" xml:space="preserve">
+    <value>Installed</value>
+  </data>
+  <data name="Status_Repairing" xml:space="preserve">
+    <value>Repairing</value>
+  </data>
+  <data name="Status_RepairFailed" xml:space="preserve">
+    <value>Repair failed</value>
+  </data>
+  <data name="Status_PreparingRepair" xml:space="preserve">
+    <value>Preparing repair</value>
+  </data>
+  <data name="Status_Registering" xml:space="preserve">
+    <value>Registering</value>
+  </data>
+  <data name="Status_Launching" xml:space="preserve">
+    <value>Launching</value>
+  </data>
+  <data name="Status_Uninstalling" xml:space="preserve">
+    <value>Uninstalling</value>
+  </data>
+  <data name="Status_UninstallationPending" xml:space="preserve">
+    <value>Uninstallation pending</value>
+  </data>
+  <data name="Status_UninstallationFailed" xml:space="preserve">
+    <value>UninstallationFailed</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackages_Search.PlaceholderText" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="ErrorMessage_DirectoryNotFound" xml:space="preserve">
+    <value>Directory not found.</value>
+  </data>
+  <data name="ErrorMessage_InvalidPath" xml:space="preserve">
+    <value>Invalid path.</value>
+  </data>
+  <data name="ErrorMessage_MaxPathLengthExceeded" xml:space="preserve">
+    <value>Path too long.</value>
+  </data>
+  <data name="Action_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Action_Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Action_Uninstall" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
+  <data name="MinecraftBedrock_GameInstallLocation.Text" xml:space="preserve">
+    <value>Install location</value>
+  </data>
+  <data name="ErrorMessage_Unknown" xml:space="preserve">
+    <value>Unknown error.</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackages_Import.Content" xml:space="preserve">
+    <value>Import game package</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_Rename.Text" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_OpenDataDirectory.Text" xml:space="preserve">
+    <value>Open data directory</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_LaunchEditor.Text" xml:space="preserve">
+    <value>Launch Editor</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_Manage.Text" xml:space="preserve">
+    <value>Manage</value>
+  </data>
+  <data name="ErrorMessage_OpeningGamePackageFailed" xml:space="preserve">
+    <value>Opening game package failed.</value>
+  </data>
+  <data name="Action_Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="Action_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="ErrorMessage_LaunchingGameFailed" xml:space="preserve">
+    <value>Launching game failed.</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_Installation.Text" xml:space="preserve">
+    <value>Installation</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_Uninstall.Content" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_ConfirmUninstallMessage" xml:space="preserve">
+    <value>Uninstall this game package?</value>
+  </data>
+  <data name="About_About.Text" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="About_Runtime.Text" xml:space="preserve">
+    <value>Runtime</value>
+  </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="About_GitHubRepository.Text" xml:space="preserve">
+    <value>GitHub repository</value>
+  </data>
+  <data name="GeneralSettings_FileManagement.Text" xml:space="preserve">
+    <value>File management</value>
+  </data>
+  <data name="GeneralSettings_OpenAppDataDirectory.Text" xml:space="preserve">
+    <value>Open app data directory</value>
+  </data>
+</root>

@@ -1,0 +1,7 @@
+namespace Citrine
+{
+    static runtimeclass MinecraftBedrockGameInfo
+    {
+        static IVectorView<String> AssociatedFileTypes{ get; };
+    }
+}
