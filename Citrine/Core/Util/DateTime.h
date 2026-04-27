@@ -223,10 +223,10 @@ namespace Citrine {
 				auto subseconds = std::uint32_t{};
 				do {
 
-					auto digit = DigitFromChar(*it++);
+					auto digit = DigitFromChar(*it);
 					if (digit >= 10) break;
 					subseconds = subseconds * 10 + digit;
-				} while (it < last);
+				} while (++it < last);
 
 				auto digits = it - first;
 				if (digits < 1 || digits > 9) return false;
