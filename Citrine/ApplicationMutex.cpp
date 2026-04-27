@@ -42,6 +42,7 @@ namespace Citrine {
 
             ::CloseHandle(handle);
             handle = nullptr;
+            locked = false;
         }
     }
 
