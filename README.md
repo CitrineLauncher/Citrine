@@ -11,3 +11,8 @@ Modern launcher for Minecraft Bedrock Edition
     <td><img src=".github/Screenshot%20-%20Mica%20Alt%20Dark.png"/></td>
   </tr>
 </table>
+
+### How can I import packs?
+Drag and drop a pack on the desired version to import it:
+
+<img src=".github/PackImport.webp" />
