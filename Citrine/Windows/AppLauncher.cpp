@@ -30,7 +30,7 @@ namespace Citrine::Windows {
 
 		co_await winrt::resume_background();
 
-		static auto activationManager = GetActivationManager();
+		auto activationManager = GetActivationManager();
 		if (!activationManager) {
 
 			Logger::Error("Instantiating ApplicationActivationManager failed");
@@ -57,7 +57,7 @@ namespace Citrine::Windows {
 
 		co_await winrt::resume_background();
 
-		static auto activationManager = GetActivationManager();
+		auto activationManager = GetActivationManager();
 		if (!activationManager) {
 
 			Logger::Error("Instantiating ApplicationActivationManager failed");
