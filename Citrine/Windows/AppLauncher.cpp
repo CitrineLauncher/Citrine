@@ -90,4 +90,22 @@ namespace Citrine::Windows {
 		}
 		co_return processId;
 	}
+
+	auto AppLauncher::EnableDebugging(std::string_view packageFullName) -> bool {
+
+		auto packageDebugSettings = wil::CoCreateInstanceNoThrow<IPackageDebugSettings>(CLSID_PackageDebugSettings, CLSCTX_INPROC_SERVER);
+		if (!packageDebugSettings)
+			return false;
+
+		return packageDebugSettings->EnableDebugging(ToUtf16(packageFullName).data(), nullptr, nullptr) == S_OK;
+	}
+
+	auto AppLauncher::DisableDebugging(std::string_view packageFullName) -> bool {
+
+		auto packageDebugSettings = wil::CoCreateInstanceNoThrow<IPackageDebugSettings>(CLSID_PackageDebugSettings, CLSCTX_INPROC_SERVER);
+		if (!packageDebugSettings)
+			return false;
+
+		return packageDebugSettings->DisableDebugging(ToUtf16(packageFullName).data()) == S_OK;
+	}
 }

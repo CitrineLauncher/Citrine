@@ -1884,6 +1884,8 @@ namespace {
 
 				progressToken(Launching);
 
+				Windows::AppLauncher::EnableDebugging(manifest->Identity().FullName());
+
 				auto launchTask = Windows::AsyncAppLaunchResult{ nullptr };
 				if (auto fileToImport = launchArgs.FileToImport(); !fileToImport.empty()) {
 

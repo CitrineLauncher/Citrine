@@ -16,5 +16,7 @@ namespace Citrine::Windows {
 
 		static auto LaunchAsync(std::string_view aumid, std::string_view arguments = {}) -> AsyncAppLaunchResult;
 		static auto LaunchForFileAsync(std::string_view aumid, std::filesystem::path filePath, std::string_view verb = {}) -> AsyncAppLaunchResult;
+		static auto EnableDebugging(std::string_view packageFullName) -> bool;
+		static auto DisableDebugging(std::string_view packageFullName) -> bool;
 	};
 }
