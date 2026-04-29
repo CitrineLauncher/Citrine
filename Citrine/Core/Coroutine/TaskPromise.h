@@ -162,7 +162,7 @@ namespace Citrine {
 
 			self.CancelInternal();
 
-			self.cancelling.clear(std::memory_order::seq_cst);
+			self.cancelling.clear(std::memory_order::release);
 			self.cancelling.notify_one();
 		}
 
@@ -260,9 +260,10 @@ namespace Citrine {
 		template<typename T>
 		auto Abandon(this TaskPromise<T>& self) noexcept -> void {
 
-			self.cancelling.wait(true, std::memory_order::acquire);
-			if (self.state.exchange(State::Abandoned, std::memory_order::acq_rel) != State::Running) {
+			self.cancelling.wait(true, std::memory_order::relaxed);
+			if (self.state.exchange(State::Abandoned, std::memory_order::release) != State::Running) {
 
+				std::atomic_thread_fence(std::memory_order::acquire);
 				std::coroutine_handle<TaskPromise<T>>::from_promise(self).destroy();
 			}
 		}
