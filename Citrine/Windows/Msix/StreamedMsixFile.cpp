@@ -398,6 +398,9 @@ namespace Citrine::Windows {
 			if (!destinationDirectory.is_absolute())
 				throw std::invalid_argument{ "Absolute path required" };
 
+			if (!stream)
+				co_return MsixError::StreamNotOpen;
+
 			auto strongSelf = shared_from_this();
 			co_await winrt::resume_background();
 
@@ -637,6 +640,11 @@ namespace Citrine::Windows {
 		catch (winrt::hresult_error const&) {
 
 			co_return MsixError::ReadingFailed;
+		}
+
+		auto DetachStream() noexcept -> winrt::IRandomAccessStream {
+
+			return std::move(stream);
 		}
 
 	private:
@@ -1099,5 +1107,15 @@ namespace Citrine::Windows {
 	auto StreamedMsixFile::Release() noexcept -> void {
 
 		impl.reset();
+	}
+
+	auto StreamedMsixFile::Stream() && noexcept -> winrt::Windows::Storage::Streams::IRandomAccessStream {
+
+		return impl->DetachStream();
+	}
+
+	auto StreamedMsixFile::swap(StreamedMsixFile& other) noexcept -> void {
+
+		impl.swap(other.impl);
 	}
 }

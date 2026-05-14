@@ -352,4 +352,9 @@ namespace Citrine::Windows {
 
 		return impl->DetachFile();
 	}
+
+	auto MsixManifest::swap(MsixManifest& other) -> void {
+
+		impl.swap(other.impl);
+	}
 }

@@ -382,6 +382,9 @@ namespace Citrine::Xbox {
 			if (encryptionEnabled && !cik)
 				throw std::invalid_argument{ "Cik required" };
 
+			if (!stream)
+				co_return XvcError::StreamNotOpen;
+
 			if (xvcSegments.empty())
 				co_return {};
 
@@ -669,6 +672,11 @@ namespace Citrine::Xbox {
 		catch (winrt::hresult_error const&) {
 
 			co_return XvcError::ReadingFailed;
+		}
+
+		auto DetachStream() noexcept -> winrt::IRandomAccessStream {
+
+			return std::move(stream);
 		}
 
 	protected:
@@ -978,8 +986,13 @@ namespace Citrine::Xbox {
 		impl.reset();
 	}
 
-	auto StreamedXvcFile::Stream() const noexcept -> winrt::IRandomAccessStream {
+	auto StreamedXvcFile::Stream() && noexcept -> winrt::Windows::Storage::Streams::IRandomAccessStream {
 
-		return nullptr;
+		return impl->DetachStream();
+	}
+
+	auto StreamedXvcFile::swap(StreamedXvcFile& other) noexcept -> void {
+
+		impl.swap(other.impl);
 	}
 }

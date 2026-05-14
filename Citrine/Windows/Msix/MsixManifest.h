@@ -44,6 +44,7 @@ namespace Citrine::Windows {
 		auto Release() noexcept -> void;
 
 		auto File() && noexcept -> File;
+		auto swap(MsixManifest& other) -> void;
 
 	private:
 

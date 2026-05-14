@@ -43,6 +43,9 @@ namespace Citrine::Windows {
 		operator bool() const noexcept;
 		auto Release() noexcept -> void;
 
+		auto Stream() && noexcept -> winrt::Windows::Storage::Streams::IRandomAccessStream;
+		auto swap(StreamedMsixFile& other) noexcept -> void;
+
 	private:
 
 		class Impl;

@@ -49,7 +49,8 @@ namespace Citrine::Xbox {
 		operator bool() const noexcept;
 		auto Release() noexcept -> void;
 
-		auto Stream() const noexcept -> winrt::Windows::Storage::Streams::IRandomAccessStream;
+		auto Stream() && noexcept -> winrt::Windows::Storage::Streams::IRandomAccessStream;
+		auto swap(StreamedXvcFile& other) noexcept -> void;
 
 	private:
 
