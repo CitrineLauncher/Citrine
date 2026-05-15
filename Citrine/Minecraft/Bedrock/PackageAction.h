@@ -13,9 +13,9 @@ namespace Citrine::Minecraft::Bedrock {
 		None,
 		Install,
 		Import,
+		Repair,
 		Register,
 		Launch,
-		Repair,
 		Unregister,
 		Uninstall
 	};
@@ -32,9 +32,9 @@ namespace glz {
 			"None", None,
 			"Install", Install,
 			"Import", Import,
+			"Repair", Repair,
 			"Register", Register,
 			"Launch", Launch,
-			"Repair", Repair,
 			"Unregister", Unregister,
 			"Uninstall", Uninstall
 		);
@@ -60,9 +60,9 @@ namespace std {
 			case None:			str = "None";		break;
 			case Install:		str = "Install";	break;
 			case Import:		str = "Import";		break;
+			case Repair:		str = "Repair";		break;
 			case Register:		str = "Register";	break;
 			case Launch:		str = "Launch";		break;
-			case Repair:		str = "Repair";		break;
 			case Unregister:	str = "Unregister";	break;
 			case Uninstall:		str = "Uninstall";	break;
 			}
