@@ -13,8 +13,10 @@ namespace Citrine::Minecraft::Bedrock {
 		None,
 		Install,
 		Import,
+		Register,
 		Launch,
 		Repair,
+		Unregister,
 		Uninstall
 	};
 }
@@ -30,8 +32,10 @@ namespace glz {
 			"None", None,
 			"Install", Install,
 			"Import", Import,
+			"Register", Register,
 			"Launch", Launch,
 			"Repair", Repair,
+			"Unregister", Unregister,
 			"Uninstall", Uninstall
 		);
 	};
@@ -53,12 +57,14 @@ namespace std {
 
 			auto str = std::string_view{ "<unknown>" };
 			switch (buildType) {
-			case None:		str = "None";		break;
-			case Install:	str = "Install";	break;
-			case Import:	str = "Import";		break;
-			case Launch:	str = "Launch";		break;
-			case Repair:	str = "Repair";		break;
-			case Uninstall:	str = "Uninstall";	break;
+			case None:			str = "None";		break;
+			case Install:		str = "Install";	break;
+			case Import:		str = "Import";		break;
+			case Register:		str = "Register";	break;
+			case Launch:		str = "Launch";		break;
+			case Repair:		str = "Repair";		break;
+			case Unregister:	str = "Unregister";	break;
+			case Uninstall:		str = "Uninstall";	break;
 			}
 
 			return std::ranges::copy(str, ctx.out()).out;
