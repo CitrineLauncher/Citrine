@@ -15,6 +15,7 @@ namespace Citrine
         RepairFailed,
         Registering,
         Launching,
+        Unregistering,
         Uninstalling,
         UninstallationPending,
         UninstallationFailed,
