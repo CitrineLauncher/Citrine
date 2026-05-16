@@ -200,6 +200,20 @@ namespace winrt::Citrine::implementation
         }
     }
 
+    auto MinecraftBedrockGamePackageItem::IsRegistered() const noexcept -> bool {
+
+        return registered;
+    }
+
+    auto MinecraftBedrockGamePackageItem::IsRegistered(bool value) -> void {
+
+        if (registered != value) {
+
+            registered = value;
+            OnPropertyChanged(isRegisteredProperty);
+        }
+    }
+
     auto MinecraftBedrockGamePackageItem::Status() const noexcept -> Citrine::MinecraftBedrockGamePackageStatus {
 
         return status;
@@ -314,6 +328,7 @@ namespace winrt::Citrine::implementation
 
     winrt::hstring const MinecraftBedrockGamePackageItem::nameTagProperty                           = L"NameTag";
     winrt::hstring const MinecraftBedrockGamePackageItem::isInstalledProperty                       = L"IsInstalled";
+    winrt::hstring const MinecraftBedrockGamePackageItem::isRegisteredProperty                      = L"IsRegistered";
     winrt::hstring const MinecraftBedrockGamePackageItem::statusProperty                            = L"Status";
     winrt::hstring const MinecraftBedrockGamePackageItem::operationProgressProperty                 = L"OperationProgress";
     winrt::hstring const MinecraftBedrockGamePackageItem::operationProgressIsIndeterminateProperty  = L"OperationProgressIsIndeterminate";

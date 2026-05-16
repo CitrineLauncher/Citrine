@@ -19,6 +19,7 @@ namespace Citrine
         Boolean IsSupported{ get; };
         Boolean IsRenamable{ get; };
         Boolean IsInstalled{ get; };
+        Boolean IsRegistered{ get; };
         MinecraftBedrockGamePackageStatus Status{ get; };
 
         ByteProgress OperationProgress{ get; };
