@@ -10,7 +10,7 @@
 
 namespace Citrine::Minecraft::Bedrock {
 
-	enum struct GameCapabilities : std::uint16_t {
+	enum struct GameCapabilities : std::uint8_t {
 
 		None			= 0,
 		Editor			= 1 << 0,
