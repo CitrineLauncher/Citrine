@@ -330,4 +330,16 @@
   <data name="GeneralSettings_OpenAppDataDirectory.Text" xml:space="preserve">
     <value>Open app data directory</value>
   </data>
+  <data name="Status_Unregistering" xml:space="preserve">
+    <value>Unregistering</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_RegisterInWindows.Text" xml:space="preserve">
+    <value>Register in Windows</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_Unregister.Text" xml:space="preserve">
+    <value>Unregister</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_Badge_Registered.Text" xml:space="preserve">
+    <value>Registered</value>
+  </data>
 </root>
