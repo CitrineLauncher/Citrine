@@ -2325,11 +2325,6 @@ namespace {
 		template<typename Args>
 		auto OnPackageCatalogUpdate(auto const&, Args args) -> FireAndForget try {
 
-			constexpr auto getPath = [](winrt::Package const& package) static -> winrt::hstring {
-
-				return package ? package.InstalledPath() : L"";
-			};
-
 			auto appPackage = [&] {
 
 				if constexpr (std::same_as<Args, winrt::PackageUpdatingEventArgs>) {
@@ -2375,10 +2370,11 @@ namespace {
 
 			if constexpr (IsAnyOf<Args, winrt::PackageInstallingEventArgs, winrt::PackageUpdatingEventArgs>) {
 
-				if (registeredPackage && getPath(registeredPackage) != getPath(appPackage)) {
+				if (registeredPackage && registeredPackage.InstalledPath() == appPackage.InstalledPath())
+					co_return;
 
+				if (registeredPackage)
 					updatePackageRegistrationStatus(std::exchange(registeredPackage, nullptr), false);
-				}
 
 				if (!args.IsComplete())
 					co_return;
@@ -2387,10 +2383,8 @@ namespace {
 			}
 			else {
 
-				if (!registeredPackage)
-					co_return;
-
-				updatePackageRegistrationStatus(std::exchange(registeredPackage, nullptr), false);
+				if (registeredPackage)
+					updatePackageRegistrationStatus(std::exchange(registeredPackage, nullptr), false);
 			}
 		}
 		catch (winrt::hresult_error const&) {}
