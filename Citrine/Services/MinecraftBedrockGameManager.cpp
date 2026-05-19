@@ -12,6 +12,7 @@
 #include "Core/Coroutine/FireAndForget.h"
 #include "Core/Util/Scope.h"
 #include "Core/Util/Ascii.h"
+#include "Core/Util/Concepts.h"
 #include "Core/Unicode/Utf.h"
 #include "Core/Logging/Logger.h"
 #include "Core/IO/File.h"
@@ -62,6 +63,7 @@ namespace winrt {
 	using namespace Windows::Management::Deployment;
 	using namespace Windows::ApplicationModel;
 	using namespace Microsoft::UI::Xaml;
+	using namespace Microsoft::UI::Dispatching;
 }
 
 namespace {
@@ -409,9 +411,9 @@ namespace {
 					settings.Save();
 			}
 
+			dispatcherQueue = winrt::DispatcherQueue::GetForCurrentThread();
 			progressDispatcher.Initialize();
 
-			auto context = winrt::apartment_context{};
 			co_await winrt::resume_background();
 
 			auto loadMetaAsync = [this](this auto self, auto& meta, std::filesystem::path fileName) -> Task<> {
@@ -566,8 +568,8 @@ namespace {
 					auto destPos = destination.begin();
 					while (destPos != destination.end()) {
 
-						auto& itemImpl = *winrt::get_self<GamePackageItemImpl>(*destPos);
-						if (itemImpl.Id().Version <= package->Version)
+						auto itemImpl = winrt::get_self<GamePackageItemImpl>(*destPos);
+						if (itemImpl->Id().Version <= package->Version)
 							break;
 
 						++destPos;
@@ -576,11 +578,11 @@ namespace {
 					auto packageFound = false;
 					while (destPos != destination.end()) {
 
-						auto& itemImpl = *winrt::get_self<GamePackageItemImpl>(*destPos);
-						if (itemImpl.Id().Version != package->Version)
+						auto itemImpl = winrt::get_self<GamePackageItemImpl>(*destPos);
+						if (itemImpl->Id().Version != package->Version)
 							break;
 
-						if (packageEqual(itemImpl.Id(), *package)) {
+						if (packageEqual(itemImpl->Id(), *package)) {
 
 							packageFound = true;
 							break;
@@ -655,6 +657,49 @@ namespace {
 			};
 			deleteProgressionsFile(L"Minecraft Bedrock", releaseBuildProgressionsFile);
 			deleteProgressionsFile(L"Minecraft Bedrock Preview", previewBuildProgressionsFile);
+
+			try {
+
+				packageCatalog = winrt::PackageCatalog::OpenForCurrentUser();
+				packageCatalog.PackageInstalling([this](auto const&... args) { OnPackageCatalogUpdate(args...); });
+				packageCatalog.PackageUpdating([this](auto const&... args) { OnPackageCatalogUpdate(args...); });
+				packageCatalog.PackageUninstalling([this](auto const&... args) { OnPackageCatalogUpdate(args...); });
+			}
+			catch (winrt::hresult_error const& error) {
+
+				auto code = std::int32_t{ error.code() };
+				auto message = winrt::to_string(error.message());
+
+				Logger::Warn("Opening package catalog for current user failed (code: {}, message : {})", code, message);
+				co_return;
+			}
+
+			auto registeredPackages = [this] {
+
+				struct RegisteredPackages {
+
+					winrt::Package Release{ nullptr };
+					winrt::Package Preview{ nullptr };
+				};
+
+				auto getRegisteredPackage = [this](KnownPackageFamily pfn) -> winrt::Package {
+
+					try {
+
+						return GetRegisteredPackage(pfn.Name);
+					}
+					catch (winrt::hresult_error const& error) {
+
+						auto code = std::int32_t{ error.code() };
+						auto message = winrt::to_string(error.message());
+
+						Logger::Warn("Registered package retrieval for package family {} failed (code: {}, message: {})", pfn.Name, code, message);
+						return nullptr;
+					}
+				};
+
+				return RegisteredPackages{ getRegisteredPackage(KnownPackageFamilies::MinecraftUWP), getRegisteredPackage(KnownPackageFamilies::MinecraftWindowsBeta) };
+			}();
 
 			co_await std::move(loadGameMetaTask);
 
@@ -753,7 +798,15 @@ namespace {
 			std::ranges::sort(previews, GamePackageItemGreater{});
 
 			co_await std::move(loadServerMetaTask);
-			co_await context;
+
+			try {
+
+				co_await wil::resume_foreground(dispatcherQueue, winrt::DispatcherQueuePriority::Low);
+			}
+			catch (winrt::hresult_error const&) {
+
+				co_return;
+			}
 
 			releaseGamePackages->Underlying(std::move(releases));
 			previewGamePackages->Underlying(std::move(previews));
@@ -773,6 +826,20 @@ namespace {
 
 					ExecuteUninstallGamePackageOperation(std::move(item), std::to_address(op));
 				}
+			}
+
+			if (auto const& releaseBuild = std::holds_alternative<winrt::Package>(registeredReleaseBuild)
+				? std::get<winrt::Package>(registeredReleaseBuild)
+				: registeredReleaseBuild.emplace<winrt::Package>(registeredPackages.Release))
+			{
+				UpdatePackageRegistrationStatus(releaseBuild, true);
+			}
+
+			if (auto const& previewBuild = std::holds_alternative<winrt::Package>(registeredPreviewBuild)
+				? std::get<winrt::Package>(registeredPreviewBuild)
+				: registeredPreviewBuild.emplace<winrt::Package>(registeredPackages.Preview))
+			{
+				UpdatePackageRegistrationStatus(previewBuild, true);
 			}
 
 			initialized = true;
@@ -1506,6 +1573,7 @@ namespace {
 			}
 			else {
 
+				itemImpl->IsRegistered(false);
 				itemImpl->Status(NotInstalled);
 			}
 
@@ -2254,6 +2322,173 @@ namespace {
 				: releaseBuildDeploymentMutex;
 		}
 
+		template<typename Args>
+		auto OnPackageCatalogUpdate(auto const&, Args args) -> FireAndForget try {
+
+			constexpr auto getPath = [](winrt::Package const& package) static -> winrt::hstring {
+
+				return package ? package.InstalledPath() : L"";
+			};
+
+			auto appPackage = [&] {
+
+				if constexpr (std::same_as<Args, winrt::PackageUpdatingEventArgs>) {
+
+					return args.TargetPackage();
+				}
+				else {
+
+					return args.Package();
+				}
+			}();
+
+			auto packageFullName = winrt::to_string(appPackage.Id().FullName());
+			auto appPackageId = Windows::PackageIdentity{ packageFullName };
+			auto packageFamily = Windows::GetPackageFamilyNameFromId(appPackageId);
+
+			if (packageFamily != KnownPackageFamilies::MinecraftUWP &&
+				packageFamily != KnownPackageFamilies::MinecraftWindowsBeta)
+			{
+				co_return;
+			}
+
+			co_await wil::resume_foreground(dispatcherQueue);
+
+			auto& registeredPackage = [&, this] -> winrt::Package& {
+
+				auto& registeredPackage = (packageFamily == KnownPackageFamilies::MinecraftWindowsBeta)
+					? registeredPreviewBuild
+					: registeredReleaseBuild;
+
+				return std::holds_alternative<winrt::Package>(registeredPackage)
+					? std::get<winrt::Package>(registeredPackage)
+					: registeredPackage.emplace<winrt::Package>(nullptr);
+			}();
+
+			auto updatePackageRegistrationStatus = [this](auto const&... args) {
+
+				if (!initialized)
+					return;
+
+				UpdatePackageRegistrationStatus(args...);
+			};
+
+			if constexpr (IsAnyOf<Args, winrt::PackageInstallingEventArgs, winrt::PackageUpdatingEventArgs>) {
+
+				if (registeredPackage && getPath(registeredPackage) != getPath(appPackage)) {
+
+					updatePackageRegistrationStatus(std::exchange(registeredPackage, nullptr), false);
+				}
+
+				if (!args.IsComplete())
+					co_return;
+
+				updatePackageRegistrationStatus((registeredPackage = appPackage), true);
+			}
+			else {
+
+				if (!registeredPackage)
+					co_return;
+
+				updatePackageRegistrationStatus(std::exchange(registeredPackage, nullptr), false);
+			}
+		}
+		catch (winrt::hresult_error const&) {}
+
+		auto UpdatePackageRegistrationStatus(winrt::Package const& appPackage, bool registered) -> void {
+
+			auto packageFullName = winrt::to_string(appPackage.Id().FullName());
+			auto packagePath = std::filesystem::path{ std::wstring{ appPackage.InstalledPath() } };
+
+			auto appPackageId = Windows::PackageIdentity{ packageFullName };
+			auto packageFamily = Windows::GetPackageFamilyNameFromId(appPackageId);
+
+			auto packageId = GamePackageIdentity{
+
+				.Version = GameVersion::FromWindowsAppPackageVersion(appPackageId.Version()),
+				.BuildType = (packageFamily == KnownPackageFamilies::MinecraftWindowsBeta)
+					? GameBuildType::Preview
+					: GameBuildType::Release,
+				.Architecture = appPackageId.Architecture()
+			};
+			auto found = false;
+
+			for (auto const& gamePackage : gameInstallations->FindByVersion(packageId.Version)) {
+
+				if (found)
+					break;
+
+				auto buildType = gamePackage.BuildType;
+				if (buildType != packageId.BuildType)
+					continue;
+
+				auto architecture = gamePackage.Architecture;
+				if (architecture != packageId.Architecture)
+					continue;
+
+				auto ec = std::error_code{};
+				if (!std::filesystem::equivalent(packagePath, gamePackage.InstallLocation / GetGameDirectoryName(gamePackage), ec))
+					continue;
+
+				packageId = gamePackage;
+				found = true;
+			}
+
+			for (auto const& op : *gamePackageOperations) {
+
+				if (found)
+					break;
+
+				auto gamePackage = std::get_if<GamePackage>(&op.Package);
+				if (!gamePackage)
+					continue;
+
+				auto version = gamePackage->Version;
+				if (version != packageId.Version)
+					continue;
+
+				auto buildType = gamePackage->BuildType;
+				if (buildType != packageId.BuildType)
+					continue;
+
+				auto architecture = gamePackage->Architecture;
+				if (architecture != packageId.Architecture)
+					continue;
+
+				auto ec = std::error_code{};
+				if (!std::filesystem::equivalent(packagePath, gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage), ec))
+					continue;
+
+				packageId = *gamePackage;
+				found = true;
+			}
+
+			if (!found)
+				return;
+
+			auto& gamePackages = [&] -> ObservableCollection<GamePackageItem>& {
+
+				if (packageId.Origin == GamePackageOrigin::Import)
+					return *importedGamePackages;
+
+				return (packageId.BuildType == GameBuildType::Preview)
+					? *previewGamePackages
+					: *releaseGamePackages;
+			}();
+
+			constexpr auto packageEqual = GamePackageEqualityComparer{};
+
+			for (auto const& item : gamePackages.Underlying()) {
+
+				auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+				if (!packageEqual(itemImpl->Id(), packageId))
+					continue;
+
+				itemImpl->IsRegistered(registered);
+				break;
+			}
+		}
+
 		struct SettingsT : public MinecraftBedrockGameManagerSettings {
 
 			friend GameManagerInternal;
@@ -2278,6 +2513,11 @@ namespace {
 		std::binary_semaphore releaseBuildDeploymentMutex{ 1 };
 		std::binary_semaphore previewBuildDeploymentMutex{ 1 };
 
+		winrt::PackageCatalog packageCatalog{ nullptr };
+		std::variant<std::monostate, winrt::Package> registeredReleaseBuild;
+		std::variant<std::monostate, winrt::Package> registeredPreviewBuild;
+
+		winrt::DispatcherQueue dispatcherQueue{ nullptr };
 		ProgressDispatcher progressDispatcher;
 		Event<EventHandler<>> initializationCompletedEvent;
 	};
