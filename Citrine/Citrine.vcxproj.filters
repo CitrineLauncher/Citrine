@@ -264,6 +264,7 @@
     <Midl Include="Models\MinecraftBedrockGameLaunchArgs.idl" />
     <Midl Include="Models\MinecraftBedrockGameLaunchResult.idl" />
     <Midl Include="UI\ViewModels\AboutViewModel.idl" />
+    <Midl Include="Models\MinecraftBedrockGamePackageRegisterResult.idl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Citrine.rc" />
