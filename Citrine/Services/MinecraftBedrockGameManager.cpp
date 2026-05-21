@@ -58,6 +58,7 @@ using namespace std::string_view_literals;
 namespace winrt {
 
 	using namespace Windows::Foundation;
+	using namespace Windows::Foundation::Collections;
 	using namespace Windows::Storage;
 	using namespace Windows::Management::Core;
 	using namespace Windows::Management::Deployment;
@@ -1210,21 +1211,6 @@ namespace {
 			Logger::Info("Renaming game package {} completed", packageId);
 		}
 
-		auto GetGameDirectory(GamePackageItem const& item) -> std::filesystem::path {
-
-			if (!initialized)
-				return {};
-
-			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
-			auto packageId = itemImpl->Id();
-
-			auto gamePackage = gameInstallations->Find(packageId);
-			if (gamePackage == gameInstallations->end())
-				return {};
-
-			return gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
-		}
-
 		auto UnregisterGamePackageAsync(GamePackageItem&& item) -> void {
 
 			if (!initialized)
@@ -1250,6 +1236,7 @@ namespace {
 				return;
 			}
 
+			ExecuteUnregisterGamePackageOperation(std::move(item), std::to_address(op));
 		}
 
 		auto UninstallGamePackageAsync(GamePackageItem&& item) -> void {
@@ -1287,6 +1274,21 @@ namespace {
 			gameInstallations.Save();
 
 			ExecuteUninstallGamePackageOperation(std::move(item), std::to_address(op));
+		}
+
+		auto GetGameDirectory(GamePackageItem const& item) -> std::filesystem::path {
+
+			if (!initialized)
+				return {};
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			auto gamePackage = gameInstallations->Find(packageId);
+			if (gamePackage == gameInstallations->end())
+				return {};
+
+			return gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
 		}
 
 		auto GetGameDataDirectory(GamePackageItem const& item) -> std::filesystem::path {
@@ -1625,6 +1627,46 @@ namespace {
 				Logger::Error("Launch of game package {} cancelled", packageId);
 				throw;
 			}
+		}
+
+		auto ExecuteUnregisterGamePackageOperation(GamePackageItem item, GamePackageOperation const* op) -> FireAndForget {
+
+			using enum GamePackageStatus;
+			using enum PackageOperationStatus;
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			auto clearStatus = ScopeExit{ [&] { itemImpl->Status(Installed); } };
+			auto removeOp = ScopeExit{ [&] { gamePackageOperations->Remove(*op); } };
+
+			auto progressToken = progressDispatcher.Register(item);
+			auto revokeProgressToken = ScopeExit{ [&] { progressDispatcher.Unregister(progressToken); } };
+
+			auto gamePackage = gameInstallations->Find(packageId);
+			if (gamePackage == gameInstallations->end()) {
+
+				Logger::Error("Unregistering game package {} failed: not found", packageId);
+				co_return;
+			}
+
+			auto& deploymentMutex = GetDeploymentMutex(*gamePackage);
+
+			if (!deploymentMutex.try_acquire())
+				co_return;
+
+			auto releaseDeploymentMutex = ScopeExit{ [&] { deploymentMutex.release(); } };
+
+			op->Task = UnregisterGamePackageAsync(std::to_address(gamePackage), progressToken);
+			op->Status = Running;
+			progressDispatcher.Sync(progressToken);
+
+			auto result = co_await std::move(op->Task);
+			if (!result)
+				co_return;
+
+			Logger::Info("Unregistration of game package {} completed", packageId);
+			co_return;
 		}
 
 		auto ExecuteUninstallGamePackageOperation(GamePackageItem item, GamePackageOperation const* op) -> FireAndForget {
@@ -2139,6 +2181,78 @@ namespace {
 			co_return true;
 		}
 
+		auto UnregisterGamePackageAsync(GamePackage const* gamePackage, ProgressToken progressToken) -> Task<bool> {
+
+			using enum GamePackageStatus;
+
+			progressToken(Unregistering);
+			co_await winrt::resume_background();
+
+			auto gameDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
+			auto packageFamilyName = std::string{};
+
+			{
+				auto manifest = Windows::MsixManifest::OpenFromFile(File{ gameDirectory / L"AppxManifest.xml", FileMode::OpenExisting, FileAccess::Read });
+				if (manifest) {
+
+					packageFamilyName = Windows::GetPackageFamilyNameFromId(manifest->Identity());
+				}
+			}
+
+			auto registeredPackage = winrt::Package{ nullptr };
+			try {
+
+				if (packageFamilyName.empty()) {
+
+					for (auto const& appPackage : GetRegisteredPackages()) {
+
+						if (auto ec = std::error_code{}; !std::filesystem::equivalent(std::wstring{ appPackage.InstalledPath() }, gameDirectory, ec))
+							continue;
+
+						registeredPackage = appPackage;
+						packageFamilyName = Windows::GetPackageFamilyNameFromFullName(winrt::to_string(appPackage.Id().FullName()));
+						break;
+					}
+				}
+				else {
+
+					registeredPackage = GetRegisteredPackage(packageFamilyName);
+				}
+			}
+			catch (winrt::hresult_error const& error) {
+
+				auto code = std::int32_t{ error.code() };
+				auto message = error.message();
+
+				Logger::Error(L"Unregistering game package {} failed: registered package retrieval failed (code: {}, message: {})", *gamePackage, code, message);
+				co_return false;
+			}
+
+			if (registeredPackage) {
+
+				if (auto ec = std::error_code{}; std::filesystem::equivalent(std::wstring{ registeredPackage.InstalledPath() }, gameDirectory, ec)) {
+
+					auto packageFullName = registeredPackage.Id().FullName();
+					Logger::Info(L"Removing registered package ({})", packageFullName);
+
+					auto deploymentOperation = packageManager.RemovePackageAsync(packageFullName, winrt::RemovalOptions::PreserveApplicationData);
+					auto result = co_await deploymentOperation;
+					if (deploymentOperation.Status() != winrt::AsyncStatus::Completed) {
+
+						auto code = std::int32_t{ result.ExtendedErrorCode() };
+						auto message = result.ErrorText();
+
+						Logger::Error(L"Unregistering game package {} failed: removing registered package ({}) failed (code: {}, message: {})", *gamePackage, packageFullName, code, message);
+						co_return false;
+					}
+
+					Logger::Info("Registered package removal completed");
+				}
+			}
+
+			co_return true;
+		}
+
 		auto UninstallGamePackageAsync(GamePackage const* gamePackage, ProgressToken progressToken) -> Task<bool> {
 
 			using enum GamePackageStatus;
@@ -2235,9 +2349,24 @@ namespace {
 			}
 
 			auto registeredPackage = winrt::Package{ nullptr };
-			if (!packageFamilyName.empty()) try {
+			try {
 
-				registeredPackage = GetRegisteredPackage(packageFamilyName);
+				if (packageFamilyName.empty()) {
+
+					for (auto const& appPackage : GetRegisteredPackages()) {
+
+						if (auto ec = std::error_code{}; !std::filesystem::equivalent(std::wstring{ appPackage.InstalledPath() }, gameDirectory, ec))
+							continue;
+
+						registeredPackage = appPackage;
+						packageFamilyName = Windows::GetPackageFamilyNameFromFullName(winrt::to_string(appPackage.Id().FullName()));
+						break;
+					}
+				}
+				else {
+
+					registeredPackage = GetRegisteredPackage(packageFamilyName);
+				}
 			}
 			catch (winrt::hresult_error const& error) {
 
@@ -2460,6 +2589,13 @@ namespace {
 			return registeredPackage;
 		}
 
+		auto GetRegisteredPackages() -> winrt::IIterable<winrt::Package> {
+
+			auto& currentUser = Windows::GetCurrentUser();
+
+			return packageManager.FindPackagesForUserWithPackageTypes(winrt::to_hstring(currentUser.Sid), winrt::PackageTypes::Main);
+		}
+
 		auto GetDeploymentMutex(GamePackageIdentity const& packageId) -> std::binary_semaphore& {
 
 			return packageId.BuildType == GameBuildType::Preview
@@ -2565,8 +2701,7 @@ namespace {
 				if (architecture != packageId.Architecture)
 					continue;
 
-				auto ec = std::error_code{};
-				if (!std::filesystem::equivalent(packagePath, gamePackage.InstallLocation / GetGameDirectoryName(gamePackage), ec))
+				if (auto ec = std::error_code{}; !std::filesystem::equivalent(packagePath, gamePackage.InstallLocation / GetGameDirectoryName(gamePackage), ec))
 					continue;
 
 				packageId = gamePackage;
@@ -2594,8 +2729,7 @@ namespace {
 				if (architecture != packageId.Architecture)
 					continue;
 
-				auto ec = std::error_code{};
-				if (!std::filesystem::equivalent(packagePath, gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage), ec))
+				if (auto ec = std::error_code{}; !std::filesystem::equivalent(packagePath, gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage), ec))
 					continue;
 
 				packageId = *gamePackage;
