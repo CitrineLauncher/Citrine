@@ -73,6 +73,7 @@ namespace {
 	using GamePackageStatus = winrt::Citrine::MinecraftBedrockGamePackageStatus;
 	using GamePackageImportContext = winrt::Citrine::MinecraftBedrockGamePackageImportContext;
 	using GamePackageImportContextImpl = winrt::Citrine::implementation::MinecraftBedrockGamePackageImportContext;
+	using GamePackageRegisterResult = winrt::Citrine::MinecraftBedrockGamePackageRegisterResult;
 	using GameLaunchArgs = winrt::Citrine::MinecraftBedrockGameLaunchArgs;
 	using GameLaunchArgsImpl = winrt::Citrine::implementation::MinecraftBedrockGameLaunchArgs;
 	using GameLaunchResult = winrt::Citrine::MinecraftBedrockGameLaunchResult;
@@ -1130,6 +1131,32 @@ namespace {
 			ExecuteInstallGamePackageOperation(std::move(item), std::to_address(op));
 		}
 
+		auto RegisterGamePackageAsync(GamePackageItem item) -> Task<GamePackageRegisterResult> {
+
+			if (!initialized)
+				co_return GamePackageRegisterResult::Blocked;
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			if (!gameInstallations->Contains(packageId)) {
+
+				Logger::Error("Registering game package {} failed: not found", packageId);
+				co_return GamePackageRegisterResult::Failed;
+			}
+
+			auto [op, inserted] = gamePackageOperations->Emplace(
+				packageId,
+				L"",
+				PackageAction::Register
+			);
+			if (!inserted) {
+
+				Logger::Warn("Game package {} is already in use", packageId);
+				co_return GamePackageRegisterResult::Failed;
+			}
+		}
+
 		auto LaunchGamePackageAsync(GameLaunchArgs&& launchArgs) -> Task<GameLaunchResult> {
 
 			if (!initialized)
@@ -1196,6 +1223,33 @@ namespace {
 				return {};
 
 			return gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
+		}
+
+		auto UnregisterGamePackageAsync(GamePackageItem&& item) -> void {
+
+			if (!initialized)
+				return;
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			if (!gameInstallations->Contains(packageId)) {
+
+				Logger::Error("Unregistering game package {} failed: not found", packageId);
+				return;
+			}
+
+			auto [op, inserted] = gamePackageOperations->Emplace(
+				packageId,
+				L"",
+				PackageAction::Unregister
+			);
+			if (!inserted) {
+
+				Logger::Warn("Game package {} is already in use", packageId);
+				return;
+			}
+
 		}
 
 		auto UninstallGamePackageAsync(GamePackageItem&& item) -> void {
@@ -1397,7 +1451,6 @@ namespace {
 
 		auto ExecuteInstallGamePackageOperation(GamePackageItem item, GamePackageOperation const* op) -> FireAndForget {
 
-			using enum PackageAction;
 			using enum GamePackageStatus;
 			using enum PackageOperationStatus;
 
@@ -1474,9 +1527,56 @@ namespace {
 			}
 		}
 
+		auto ExecuteRegisterGamePackageOperation(GamePackageItem item, GamePackageOperation const* op) -> Task<GamePackageRegisterResult> {
+
+			using enum GamePackageStatus;
+			using enum PackageOperationStatus;
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			auto clearStatus = ScopeExit{ [&] { itemImpl->Status(Installed); } };
+			auto removeOp = ScopeExit{ [&] { gamePackageOperations->Remove(*op); } };
+
+			auto progressToken = progressDispatcher.Register(item);
+			auto revokeProgressToken = ScopeExit{ [&] { progressDispatcher.Unregister(progressToken); } };
+
+			auto gamePackage = gameInstallations->Find(packageId);
+			if (gamePackage == gameInstallations->end()) {
+
+				Logger::Error("Registering game package {} failed: not found", packageId);
+				co_return GamePackageRegisterResult::Failed;
+			}
+
+			auto& deploymentMutex = GetDeploymentMutex(*gamePackage);
+
+			if (!deploymentMutex.try_acquire())
+				co_return GamePackageRegisterResult::Blocked;
+
+			auto releaseDeploymentMutex = ScopeExit{ [&] { deploymentMutex.release(); } };
+
+			op->Task = RegisterGamePackageAsync(std::to_address(gamePackage), progressToken);
+			op->Status = Running;
+			progressDispatcher.Sync(progressToken);
+
+			try {
+
+				auto result = co_await std::move(op->Task);
+				if (!result)
+					co_return GamePackageRegisterResult::Failed;
+
+				Logger::Info("Registration of game package {} completed", packageId);
+				co_return GamePackageRegisterResult::Success;
+			}
+			catch (TaskCancelledException) {
+
+				Logger::Error("Registration of game package {} cancelled", packageId);
+				throw;
+			}
+		}
+
 		auto ExecuteLaunchGamePackageOperation(GameLaunchArgs launchArgs, GamePackageOperation const* op) -> Task<GameLaunchResult> {
 
-			using enum PackageAction;
 			using enum GamePackageStatus;
 			using enum PackageOperationStatus;
 
@@ -1529,7 +1629,6 @@ namespace {
 
 		auto ExecuteUninstallGamePackageOperation(GamePackageItem item, GamePackageOperation const* op) -> FireAndForget {
 
-			using enum PackageAction;
 			using enum GamePackageStatus;
 			using enum PackageOperationStatus;
 
@@ -1775,6 +1874,174 @@ namespace {
 
 				Logger::Warn("Removing extraction context file ({}) for game package {} failed: {}", contextFilePath, *gamePackage, ec.value());
 			}
+		}
+
+		auto RegisterGamePackageAsync(GamePackage const* gamePackage, ProgressToken progressToken) -> Task<bool> {
+
+			using enum GamePackageStatus;
+
+			Logger::Info("Registering game package {}", *gamePackage);
+
+			if (gamePackage->Platform != GamePlatform::WindowsGDK && gamePackage->Platform != GamePlatform::WindowsUWP) {
+
+				Logger::Error("Registering game package {} failed: unsupported platform", *gamePackage);
+				co_return false;
+			}
+
+			progressToken(Registering);
+			co_await winrt::resume_background();
+
+			auto gameDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
+			if (auto ec = std::error_code{}; !std::filesystem::is_directory(gameDirectory, ec)) {
+
+				Logger::Error("Registering game package {} failed: game directory ({}) not found: {}", *gamePackage, gameDirectory, ec.value());
+				co_return false;
+			}
+
+			auto manifestPath = gameDirectory / "AppxManifest.xml";
+			if (gamePackage->Platform == GamePlatform::WindowsGDK) {
+
+				auto opts = std::filesystem::copy_options::skip_existing;
+				if (auto ec = std::error_code{}; !std::filesystem::copy_file(manifestPath, gameDirectory / L"AppxManifest_Original.xml", opts, ec)) {
+
+					Logger::Error("Registering game package {} failed: package manifest backup creation failed ({})", *gamePackage, ec.value());
+					co_return false;
+				}
+			}
+
+			auto manifest = Windows::MsixManifest::OpenFromFile(File{ manifestPath, FileMode::OpenExisting, FileAccess::Read });
+			if (!manifest) {
+
+				Logger::Error("Registering game package {} failed: package manifest opening failed ({})", *gamePackage, manifest.error());
+				co_return false;
+			}
+
+			if (gamePackage->Platform == GamePlatform::WindowsGDK) {
+
+				manifest->RemoveCustomInstallExtension();
+				if (!manifest->SaveToFile()) {
+
+					Logger::Error("Registering game package {} failed: package manifest saving failed", *gamePackage);
+					co_return false;
+				}
+			}
+
+			auto packageFamilyName = Windows::GetPackageFamilyNameFromId(manifest->Identity());
+
+			co_return co_await RegisterGamePackageAsync(gamePackage, &gameDirectory, &packageFamilyName, &manifestPath);
+		}
+
+		auto RegisterGamePackageAsync(GamePackage const* gamePackage, std::filesystem::path const* gameDirectory, std::string const* packageFamilyName, std::filesystem::path const* manifestPath) -> Task<bool> {
+
+			auto registeredPackage = winrt::Package{ nullptr };
+			try {
+
+				registeredPackage = GetRegisteredPackage(*packageFamilyName);
+			}
+			catch (winrt::hresult_error const& error) {
+
+				auto code = std::int32_t{ error.code() };
+				auto message = error.message();
+
+				Logger::Error(L"Registering game package {} failed: registered package retrieval failed (code: {}, message: {})", *gamePackage, code, message);
+				co_return false;
+			}
+
+			auto alreadyRegistered = false;
+			auto dataBackupDirectory = std::filesystem::path{};
+
+			if (registeredPackage) try {
+
+				auto packageFullName = registeredPackage.Id().FullName();
+				auto packagePath = registeredPackage.InstalledPath();
+				auto deploymentOperation = winrt::IAsyncOperationWithProgress<winrt::DeploymentResult, winrt::DeploymentProgress>{ nullptr };
+
+				if (!registeredPackage.IsDevelopmentMode()) {
+
+					auto dataBackupResult = BackupGameData(*packageFamilyName, gamePackage->BuildType == GameBuildType::Preview ? "PreviewData" : "ReleaseData");
+					if (!dataBackupResult) {
+
+						Logger::Error("Registering game package {} failed: data backup creation failed", *gamePackage);
+						co_return false;
+					}
+					dataBackupDirectory = *std::move(dataBackupResult);
+					deploymentOperation = packageManager.RemovePackageAsync(packageFullName);
+				}
+				else if (auto ec = std::error_code{}; !std::filesystem::equivalent(std::wstring{ packagePath }, *gameDirectory, ec)) {
+
+					if (ec) {
+
+						Logger::Error("Registering game package {} failed: filesystem error ({})", *gamePackage, ec.value());
+						co_return false;
+					}
+					deploymentOperation = packageManager.RemovePackageAsync(packageFullName, winrt::RemovalOptions::PreserveApplicationData);
+				}
+				else {
+
+					alreadyRegistered = true;
+				}
+
+				if (deploymentOperation) {
+
+					Logger::Info(L"Removing registered package ({})", packageFullName);
+
+					auto result = co_await deploymentOperation;
+					if (deploymentOperation.Status() != winrt::AsyncStatus::Completed) {
+
+						auto code = std::int32_t{ result.ExtendedErrorCode() };
+						auto message = result.ErrorText();
+
+						Logger::Error(L"Registering game package {} failed: removing registered package ({}) failed (code: {}, message: {})", *gamePackage, packageFullName, code, message);
+						co_return false;
+					}
+
+					Logger::Info("Registered package removal completed");
+				}
+			}
+			catch (winrt::hresult_error const& error) {
+
+				auto code = std::int32_t{ error.code() };
+				auto message = error.message();
+
+				Logger::Error(L"Registering game package {} failed: registered package handling failure (code: {}, message: {})", *gamePackage, code, message);
+				co_return false;
+			}
+
+			if (!alreadyRegistered) try {
+
+				Logger::Info("Registering game package {}", *gamePackage);
+
+				auto deploymentOpts = winrt::DeploymentOptions::DevelopmentMode | winrt::DeploymentOptions::ForceTargetApplicationShutdown;
+				auto deploymentOperation = packageManager.RegisterPackageAsync(winrt::Uri{ manifestPath->native() }, nullptr, deploymentOpts);
+
+				auto result = co_await deploymentOperation;
+				if (deploymentOperation.Status() != winrt::AsyncStatus::Completed) {
+
+					auto code = std::int32_t{ result.ExtendedErrorCode() };
+					auto message = result.ErrorText();
+
+					Logger::Error(L"Registering game package {} failed (code: {}, message: {})", *gamePackage, code, message);
+					co_return false;
+				}
+
+				Logger::Info("Registration of game package {} completed", *gamePackage);
+
+				if (!dataBackupDirectory.empty() && !RestoreGameData(*packageFamilyName, dataBackupDirectory)) {
+
+					Logger::Error("Registering game package {} failed: data restoration failed", *gamePackage);
+					co_return false;
+				}
+			}
+			catch (winrt::hresult_error const& error) {
+
+				auto code = std::int32_t{ error.code() };
+				auto message = error.message();
+
+				Logger::Error(L"Registering game package {} failed (code: {}, message: {})", *gamePackage, code, message);
+				co_return false;
+			}
+
+			co_return true;
 		}
 
 		auto LaunchGamePackageAsync(GamePackage const* gamePackage, GameLaunchArgs launchArgs, ProgressToken progressToken) -> Task<bool> {
@@ -2576,6 +2843,11 @@ namespace Citrine {
 		return gameManagerInternal.ImportGamePackageAsync(std::move(importContext), std::move(nameTag));
 	}
 
+	auto MinecraftBedrockGameManager::RegisterGamePackageAsync(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> Task<winrt::Citrine::MinecraftBedrockGamePackageRegisterResult> {
+
+		return gameManagerInternal.RegisterGamePackageAsync(std::move(item));
+	}
+
 	auto MinecraftBedrockGameManager::LaunchGamePackageAsync(winrt::Citrine::MinecraftBedrockGameLaunchArgs launchArgs) -> Task<winrt::Citrine::MinecraftBedrockGameLaunchResult> {
 
 		return gameManagerInternal.LaunchGamePackageAsync(std::move(launchArgs));
@@ -2584,6 +2856,11 @@ namespace Citrine {
 	auto MinecraftBedrockGameManager::RenameGamePackage(winrt::Citrine::MinecraftBedrockGamePackageItem const& item, winrt::hstring const& nameTag) -> void {
 
 		gameManagerInternal.RenameGamePackage(item, nameTag);
+	}
+
+	auto MinecraftBedrockGameManager::UnregisterGamePackageAsync(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> void {
+
+		gameManagerInternal.UnregisterGamePackageAsync(std::move(item));
 	}
 
 	auto MinecraftBedrockGameManager::UninstallGamePackageAsync(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> void {
