@@ -107,6 +107,20 @@ namespace winrt::Citrine::implementation
 
 			viewModel->OpenGameDataDirectory(gamePackage);
 		}
+		else if (action == L"Register") {
+
+			if (!gamePackage)
+				co_return;
+
+			viewModel->RegisterGamePackage(gamePackage);
+		}
+		else if (action == L"Unregister") {
+
+			if (!gamePackage)
+				co_return;
+
+			viewModel->UnregisterGamePackage(gamePackage);
+		}
 		else if (action == L"Manage") {
 
 			if (!gamePackage)

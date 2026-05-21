@@ -342,4 +342,7 @@
   <data name="MinecraftBedrock_GamePackage_Badge_Registered.Text" xml:space="preserve">
     <value>Registriert</value>
   </data>
+  <data name="ErrorMessage_RegisteringGamePackageFailed" xml:space="preserve">
+    <value>Registrieren des Spielpaketes fehlgeschlagen.</value>
+  </data>
 </root>
