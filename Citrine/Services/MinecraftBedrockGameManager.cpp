@@ -1946,31 +1946,36 @@ namespace {
 			if (gamePackage->Platform == GamePlatform::WindowsGDK) {
 
 				auto opts = std::filesystem::copy_options::skip_existing;
-				if (auto ec = std::error_code{}; !std::filesystem::copy_file(manifestPath, gameDirectory / L"AppxManifest_Original.xml", opts, ec)) {
+				auto ec = std::error_code{};
+
+				if (std::filesystem::copy_file(manifestPath, gameDirectory / L"AppxManifest_Original.xml", opts, ec); ec) {
 
 					Logger::Error("Registering game package {} failed: package manifest backup creation failed ({})", *gamePackage, ec.value());
 					co_return false;
 				}
 			}
 
-			auto manifest = Windows::MsixManifest::OpenFromFile(File{ manifestPath, FileMode::OpenExisting, FileAccess::Read });
-			if (!manifest) {
+			auto packageFamilyName = std::string{};
+			{
+				auto manifest = Windows::MsixManifest::OpenFromFile(File{ manifestPath, FileMode::OpenExisting, FileAccess::ReadWrite });
+				if (!manifest) {
 
-				Logger::Error("Registering game package {} failed: package manifest opening failed ({})", *gamePackage, manifest.error());
-				co_return false;
-			}
-
-			if (gamePackage->Platform == GamePlatform::WindowsGDK) {
-
-				manifest->RemoveCustomInstallExtension();
-				if (!manifest->SaveToFile()) {
-
-					Logger::Error("Registering game package {} failed: package manifest saving failed", *gamePackage);
+					Logger::Error("Registering game package {} failed: package manifest opening failed ({})", *gamePackage, manifest.error());
 					co_return false;
 				}
-			}
 
-			auto packageFamilyName = Windows::GetPackageFamilyNameFromId(manifest->Identity());
+				if (gamePackage->Platform == GamePlatform::WindowsGDK) {
+
+					manifest->RemoveCustomInstallExtension();
+					if (!manifest->SaveToFile()) {
+
+						Logger::Error("Registering game package {} failed: package manifest saving failed", *gamePackage);
+						co_return false;
+					}
+				}
+
+				packageFamilyName = Windows::GetPackageFamilyNameFromId(manifest->Identity());
+			}
 
 			co_return co_await RegisterGamePackageAsync(gamePackage, &gameDirectory, &packageFamilyName, &manifestPath);
 		}
