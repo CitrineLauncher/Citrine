@@ -2232,13 +2232,101 @@ namespace {
 						}
 					}
 				}
+			}
+
+			auto registeredPackage = winrt::Package{ nullptr };
+			if (!packageFamilyName.empty()) try {
+
+				registeredPackage = GetRegisteredPackage(packageFamilyName);
+			}
+			catch (winrt::hresult_error const& error) {
+
+				auto code = std::int32_t{ error.code() };
+				auto message = error.message();
+
+				Logger::Error(L"Uninstalling game package {} failed: registered package retrieval failed (code: {}, message: {})", *gamePackage, code, message);
+				co_return false;
+			}
+
+			if (registeredPackage) try {
+
+				auto& deploymentMutex = GetDeploymentMutex(*gamePackage);
+				auto deploymentMutexAcquired = false;
+				auto releaseDeploymentMutex = ScopeExit{ [&] { if (deploymentMutexAcquired) deploymentMutex.release(); } };
+
+				auto ec = std::error_code{};
+				if (std::filesystem::equivalent(std::wstring{ registeredPackage.InstalledPath() }, gameDirectory, ec)) {
+
+					deploymentMutexAcquired = deploymentMutex.try_acquire();
+					if (!deploymentMutexAcquired) {
+
+						progressToken(UninstallationPending);
+						deploymentMutex.acquire();
+						deploymentMutexAcquired = true;
+						progressToken(Uninstalling);
+					}
+
+					registeredPackage = GetRegisteredPackage(packageFamilyName);
+				}
+				else if (ec) {
+
+					Logger::Error("Uninstalling game package {} failed: filesystem error ({})", *gamePackage, ec.value());
+					co_return false;
+				}
+
+				if (deploymentMutexAcquired && registeredPackage && std::filesystem::equivalent(std::wstring{ registeredPackage.InstalledPath() }, gameDirectory, ec)) {
+
+					auto packageFullName = registeredPackage.Id().FullName();
+					Logger::Info(L"Removing registered package ({})", packageFullName);
+
+					auto deploymentOperation = packageManager.RemovePackageAsync(packageFullName, winrt::RemovalOptions::PreserveApplicationData);
+					auto result = co_await deploymentOperation;
+					if (deploymentOperation.Status() != winrt::AsyncStatus::Completed) {
+
+						auto code = std::int32_t{ result.ExtendedErrorCode() };
+						auto message = result.ErrorText();
+
+						Logger::Error(L"Uninstalling game package {} failed: removing registered package ({}) failed (code: {}, message: {})", *gamePackage, packageFullName, code, message);
+						co_return false;
+					}
+
+					Logger::Info("Registered package removal completed");
+				}
+				else if (ec) {
+
+					Logger::Error("Uninstalling game package {} failed: filesystem error ({})", *gamePackage, ec.value());
+					co_return false;
+				}
+			}
+			catch (winrt::hresult_error const& error) {
+
+				auto code = std::int32_t{ error.code() };
+				auto message = error.message();
+
+				Logger::Error(L"Uninstalling game package {} failed: registered package handling failure (code: {}, message: {})", *gamePackage, code, message);
+				co_return false;
+			}
+
+			auto ec = std::error_code{};
+			if (std::filesystem::remove_all(gameDirectory, ec); ec) {
+
+				if (ec.value() != ERROR_SHARING_VIOLATION) {
+
+					Logger::Error("Uninstalling game package {} failed: files removal failed ({})", *gamePackage, ec.value());
+					co_return false;
+				}
+
+				progressToken(UninstallationPending);
+				auto& deploymentMutex = GetDeploymentMutex(*gamePackage);
+				deploymentMutex.acquire();
+				deploymentMutex.release();
+				progressToken(Uninstalling);
 
 				auto delay = 50ms;
 				for (auto attempts = 5; attempts > 0; --attempts) {
 
 					co_await winrt::resume_after(delay);
 
-					auto ec = std::error_code{};
 					if (std::filesystem::remove_all(gameDirectory, ec); ec) {
 
 						if (ec.value() == ERROR_SHARING_VIOLATION && attempts > 1) {
@@ -2252,114 +2340,6 @@ namespace {
 					}
 					break;
 				}
-
-				auto ec = std::error_code{};
-				if (std::filesystem::remove_all(gameDirectory, ec); ec) {
-
-					Logger::Error("Uninstalling game package {} failed: files removal failed ({})", *gamePackage, ec.value());
-					co_return false;
-				}
-			}
-			else if (gamePackage->Platform == GamePlatform::WindowsUWP) {
-
-				auto registeredPackage = winrt::Package{ nullptr };
-				if (!packageFamilyName.empty()) try {
-
-					registeredPackage = GetRegisteredPackage(packageFamilyName);
-				}
-				catch (winrt::hresult_error const& error) {
-
-					auto code = std::int32_t{ error.code() };
-					auto message = error.message();
-
-					Logger::Error(L"Uninstalling game package {} failed: registered package retrieval failed (code: {}, message: {})", *gamePackage, code, message);
-					co_return false;
-				}
-
-				if (registeredPackage) try {
-
-					auto& deploymentMutex = GetDeploymentMutex(*gamePackage);
-					auto deploymentMutexAcquired = false;
-					auto releaseDeploymentMutex = ScopeExit{ [&] { if (deploymentMutexAcquired) deploymentMutex.release(); } };
-
-					auto ec = std::error_code{};
-					if (std::filesystem::equivalent(std::wstring{ registeredPackage.InstalledPath() }, gameDirectory, ec)) {
-
-						deploymentMutexAcquired = deploymentMutex.try_acquire();
-						if (!deploymentMutexAcquired) {
-
-							progressToken(UninstallationPending);
-							deploymentMutex.acquire();
-							deploymentMutexAcquired = true;
-							progressToken(Uninstalling);
-						}
-
-						registeredPackage = GetRegisteredPackage(packageFamilyName);
-					}
-					else if (ec) {
-
-						Logger::Error("Uninstalling game package {} failed: filesystem error ({})", *gamePackage, ec.value());
-						co_return false;
-					}
-
-					if (deploymentMutexAcquired && registeredPackage && std::filesystem::equivalent(std::wstring{ registeredPackage.InstalledPath() }, gameDirectory, ec)) {
-
-						auto packageFullName = registeredPackage.Id().FullName();
-						Logger::Info(L"Removing registered package ({})", packageFullName);
-
-						auto deploymentOperation = packageManager.RemovePackageAsync(packageFullName, winrt::RemovalOptions::PreserveApplicationData);
-						auto result = co_await deploymentOperation;
-						if (deploymentOperation.Status() != winrt::AsyncStatus::Completed) {
-
-							auto code = std::int32_t{ result.ExtendedErrorCode() };
-							auto message = result.ErrorText();
-
-							Logger::Error(L"Uninstalling game package {} failed: removing registered package ({}) failed (code: {}, message: {})", *gamePackage, packageFullName, code, message);
-							co_return false;
-						}
-
-						Logger::Info("Registered package removal completed");
-					}
-					else if (ec) {
-
-						Logger::Error("Uninstalling game package {} failed: filesystem error ({})", *gamePackage, ec.value());
-						co_return false;
-					}
-				}
-				catch (winrt::hresult_error const& error) {
-
-					auto code = std::int32_t{ error.code() };
-					auto message = error.message();
-
-					Logger::Error(L"Uninstalling game package {} failed: registered package handling failure (code: {}, message: {})", *gamePackage, code, message);
-					co_return false;
-				}
-
-				auto ec = std::error_code{};
-				if (std::filesystem::remove_all(gameDirectory, ec); ec) {
-
-					if (ec.value() != ERROR_SHARING_VIOLATION) {
-
-						Logger::Error("Uninstalling game package {} failed: files removal failed ({})", *gamePackage, ec.value());
-						co_return false;
-					}
-
-					progressToken(UninstallationPending);
-					auto& deploymentMutex = GetDeploymentMutex(*gamePackage);
-					deploymentMutex.acquire();
-					deploymentMutex.release();
-					progressToken(Uninstalling);
-
-					if (std::filesystem::remove_all(gameDirectory, ec); ec) {
-
-						Logger::Error("Uninstalling game package {} failed: files removal failed ({})", *gamePackage, ec.value());
-						co_return false;
-					}
-				}
-			}
-			else {
-
-				Logger::Warn("Removal of game package {} from system not handled", *gamePackage);
 			}
 
 			co_return true;
