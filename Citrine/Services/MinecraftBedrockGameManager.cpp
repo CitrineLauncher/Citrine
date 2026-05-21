@@ -1132,7 +1132,7 @@ namespace {
 			ExecuteInstallGamePackageOperation(std::move(item), std::to_address(op));
 		}
 
-		auto RegisterGamePackageAsync(GamePackageItem item) -> Task<GamePackageRegisterResult> {
+		auto RegisterGamePackageAsync(GamePackageItem&& item) -> Task<GamePackageRegisterResult> {
 
 			if (!initialized)
 				co_return GamePackageRegisterResult::Blocked;
@@ -1156,6 +1156,8 @@ namespace {
 				Logger::Warn("Game package {} is already in use", packageId);
 				co_return GamePackageRegisterResult::Failed;
 			}
+
+			co_return co_await ExecuteRegisterGamePackageOperation(std::move(item), std::to_address(op));
 		}
 
 		auto LaunchGamePackageAsync(GameLaunchArgs&& launchArgs) -> Task<GameLaunchResult> {
