@@ -48,6 +48,65 @@ namespace Citrine::Windows {
 			return customInstallExtension;
 		}
 
+		auto RemoveCustomInstallExtension() -> void {
+
+			for (auto const& extensionElement : xmlDocument.child("Package").child("Extensions")) {
+
+				if (std::string_view{ extensionElement.name() } != "desktop6:Extension")
+					continue;
+
+				if (std::string_view{ extensionElement.attribute("Category").as_string() } != "windows.customInstall")
+					continue;
+
+				extensionElement.parent().remove_child(extensionElement);
+				break;
+			}
+
+			customInstallExtension = {};
+		}
+
+		auto SaveToFile() -> MsixOperationResult<> {
+
+			class Writer : public pugi::xml_writer {
+			public:
+
+				Writer(Citrine::File& file) : file(file) {}
+
+				auto write(void const* data, std::size_t size) -> void final override {
+
+					if (hasError)
+						return;
+
+					if (!file.Write({ reinterpret_cast<std::uint8_t const*>(data), size }))
+						hasError = true;
+				}
+
+				auto HasError() const noexcept -> bool {
+
+					return hasError;
+				}
+
+			private:
+
+				Citrine::File& file;
+				bool hasError = false;
+			};
+
+			if (!file)
+				return MsixError::FileNotOpen;
+
+			if (!file.SeekToBegin())
+				return MsixError::WritingFailed;
+
+			auto writer = Writer{ file };
+			xmlDocument.save(writer);
+
+			if (writer.HasError() || !file.Truncate())
+				return MsixError::WritingFailed;
+
+			return {};
+		}
+
 		auto DetachFile() noexcept -> Citrine::File {
 
 			return std::move(file);
@@ -150,16 +209,16 @@ namespace Citrine::Windows {
 			if (!applicationsElement)
 				return MsixError::ParsingFailed;
 
-			auto applicationElement = applicationsElement.begin();
-			if (applicationElement == applicationsElement.end())
+			auto applicationElement = applicationsElement.first_child();
+			if (!applicationElement)
 				return MsixError::ParsingFailed;
 
-			if (std::string_view{ applicationElement->name() } != "Application")
+			if (std::string_view{ applicationElement.name() } != "Application")
 				return MsixError::ParsingFailed;
 
-			auto idAttribute = applicationElement->attribute("Id");
-			auto executableAttribute = applicationElement->attribute("Executable");
-			auto entryPointAttribute = applicationElement->attribute("EntryPoint");
+			auto idAttribute = applicationElement.attribute("Id");
+			auto executableAttribute = applicationElement.attribute("Executable");
+			auto entryPointAttribute = applicationElement.attribute("EntryPoint");
 
 			if (!idAttribute)
 				return MsixError::ParsingFailed;
@@ -168,7 +227,7 @@ namespace Citrine::Windows {
 			application.Executable = executableAttribute.as_string();
 			application.EntryPoint = entryPointAttribute.as_string();
 
-			for (auto const& extensionElement : applicationElement->child("Extensions")) {
+			for (auto const& extensionElement : applicationElement.child("Extensions")) {
 
 				if (std::string_view{ extensionElement.name() } != "uap:Extension")
 					continue;
@@ -178,14 +237,14 @@ namespace Citrine::Windows {
 
 				auto entryPoint = extensionElement.attribute("EntryPoint").as_string();
 
-				auto fileTypeAssociationElement = extensionElement.begin();
-				if (fileTypeAssociationElement == extensionElement.end())
+				auto fileTypeAssociationElement = extensionElement.first_child();
+				if (!fileTypeAssociationElement)
 					return MsixError::ParsingFailed;
 
-				if (std::string_view{ fileTypeAssociationElement->name() } != "uap:FileTypeAssociation")
+				if (std::string_view{ fileTypeAssociationElement.name() } != "uap:FileTypeAssociation")
 					return MsixError::ParsingFailed;
 
-				for (auto const& fileTypeElement : fileTypeAssociationElement->child("uap:SupportedFileTypes")) {
+				for (auto const& fileTypeElement : fileTypeAssociationElement.child("uap:SupportedFileTypes")) {
 
 					auto fileTypeText = fileTypeElement.text();
 					if (!fileTypeText)
@@ -194,11 +253,11 @@ namespace Citrine::Windows {
 					application.AssociatedFileTypes.emplace_back(fileTypeText.as_string(), entryPoint);
 				}
 
-				if (++fileTypeAssociationElement != extensionElement.end())
+				if (fileTypeAssociationElement.next_sibling())
 					return MsixError::ParsingFailed;
 			}
 
-			if (++applicationElement != applicationsElement.end())
+			if (applicationElement.next_sibling())
 				return MsixError::UnsupportedFormat;
 
 			return {};
@@ -244,15 +303,15 @@ namespace Citrine::Windows {
 				if (std::string_view{ extensionElement.attribute("Category").as_string() } != "windows.customInstall")
 					continue;
 
-				auto customInstallElement = extensionElement.begin();
-				if (customInstallElement == extensionElement.end())
+				auto customInstallElement = extensionElement.first_child();
+				if (!customInstallElement)
 					return MsixError::ParsingFailed;
 
-				if (std::string_view{ customInstallElement->name() } != "desktop6:CustomInstall")
+				if (std::string_view{ customInstallElement.name() } != "desktop6:CustomInstall")
 					return MsixError::ParsingFailed;
 
-				auto folderAttribute = customInstallElement->attribute("Folder");
-				auto runAsUserAttribute = customInstallElement->attribute("RunAsUser");
+				auto folderAttribute = customInstallElement.attribute("Folder");
+				auto runAsUserAttribute = customInstallElement.attribute("RunAsUser");
 
 				if (!folderAttribute)
 					return MsixError::ParsingFailed;
@@ -260,7 +319,7 @@ namespace Citrine::Windows {
 				customInstallExtension.FileDirectory = folderAttribute.as_string();
 				customInstallExtension.RunAsUser = runAsUserAttribute.as_bool();
 
-				for (auto const& actionsElement : *customInstallElement) {
+				for (auto const& actionsElement : customInstallElement) {
 
 					auto elementName = std::string_view{ actionsElement.name() };
 					if (elementName == "desktop6:InstallActions") {
@@ -280,7 +339,7 @@ namespace Citrine::Windows {
 					}
 				}
 
-				if (++customInstallElement != extensionElement.end())
+				if (customInstallElement.next_sibling())
 					return MsixError::ParsingFailed;
 			}
 
@@ -336,6 +395,16 @@ namespace Citrine::Windows {
 	auto MsixManifest::CustomInstallExtension() const noexcept -> MsixCustomInstallExtension const& {
 
 		return impl->CustomInstallExtension();
+	}
+
+	auto MsixManifest::RemoveCustomInstallExtension() -> void {
+
+		impl->RemoveCustomInstallExtension();
+	}
+
+	auto MsixManifest::SaveToFile() -> MsixOperationResult<> {
+
+		return impl->SaveToFile();
 	}
 
 	MsixManifest::operator bool() const noexcept {

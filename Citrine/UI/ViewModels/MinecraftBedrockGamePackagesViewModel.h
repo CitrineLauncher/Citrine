@@ -23,8 +23,10 @@ namespace winrt::Citrine::implementation
         auto InstallGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage, winrt::hstring const& installLocation) -> void;
         auto InitiateGamePackageImport(winrt::hstring gamePackageLocation) -> winrt::Windows::Foundation::IAsyncOperation<Citrine::MinecraftBedrockGamePackageImportContext>;
         auto ImportGamePackage(Citrine::MinecraftBedrockGamePackageImportContext const& context, winrt::hstring const& installLocation, winrt::hstring const& nameTag) -> void;
+        auto RegisterGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> winrt::fire_and_forget;
         auto LaunchGamePackage(Citrine::MinecraftBedrockGameLaunchArgs launchArgs) -> winrt::fire_and_forget;
         auto RenameGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage, winrt::hstring const& nameTag) -> void;
+        auto UnregisterGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void;
         auto UninstallGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void;
 
         auto OpenGameDirectory(Citrine::MinecraftBedrockGamePackageItem gamePackage) -> winrt::fire_and_forget;

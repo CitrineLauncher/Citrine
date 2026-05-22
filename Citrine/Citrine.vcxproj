@@ -740,6 +740,7 @@
     <Midl Include="Models\MinecraftBedrockGamePackageItem.idl">
       <SubType>Designer</SubType>
     </Midl>
+    <Midl Include="Models\MinecraftBedrockGamePackageRegisterResult.idl" />
     <Midl Include="Models\MinecraftBedrockGamePackageStatus.idl" />
     <Midl Include="Models\MinecraftBedrockServerDownloads.idl">
       <SubType>Designer</SubType>

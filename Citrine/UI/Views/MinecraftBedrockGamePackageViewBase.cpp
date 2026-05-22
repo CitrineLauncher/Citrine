@@ -93,6 +93,7 @@ namespace {
 			RepairFailed			= Localizer::GetString(L"Status_RepairFailed");
 			Registering				= Localizer::GetString(L"Status_Registering");
 			Launching				= Localizer::GetString(L"Status_Launching");
+			Unregistering			= Localizer::GetString(L"Status_Unregistering");
 			Uninstalling			= Localizer::GetString(L"Status_Uninstalling");
 			UninstallationPending	= Localizer::GetString(L"Status_UninstallationPending");
 			UninstallationFailed	= Localizer::GetString(L"Status_UninstallationFailed");
@@ -121,6 +122,7 @@ namespace {
 		winrt::hstring RepairFailed;
 		winrt::hstring Registering;
 		winrt::hstring Launching;
+		winrt::hstring Unregistering;
 		winrt::hstring Uninstalling;
 		winrt::hstring UninstallationPending;
 		winrt::hstring UninstallationFailed;
@@ -316,6 +318,7 @@ namespace winrt::Citrine::implementation {
 		case RepairFailed:				statusStr = strings.RepairFailed;			break;
 		case Registering:				statusStr = strings.Registering;			break;
 		case Launching:					statusStr = strings.Launching;				break;
+		case Unregistering:				statusStr = strings.Unregistering;			break;
 		case Uninstalling:				statusStr = strings.Uninstalling;			break;
 		case UninstallationPending:		statusStr = strings.UninstallationPending;	break;
 		case UninstallationFailed:		statusStr = strings.UninstallationFailed;	break;

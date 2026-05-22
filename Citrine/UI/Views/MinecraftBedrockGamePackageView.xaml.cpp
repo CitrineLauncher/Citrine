@@ -64,6 +64,7 @@ namespace {
         case RepairFailed:              state = Failed;         break;
         case Registering:               state = Running;        break;
         case Launching:                 state = Running;        break;
+        case Unregistering:             state = Running;        break;
         case Uninstalling:              state = Running;        break;
         case UninstallationPending:     state = Running;        break;
         case UninstallationFailed:      state = Failed;         break;
@@ -177,7 +178,7 @@ namespace winrt::Citrine::implementation
         winrt::FlyoutBase::ShowAttachedFlyout(MoreOptionsButton());
     }
 
-    auto MinecraftBedrockGamePackageView::LaunchEditorButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&) -> void {
+    auto MinecraftBedrockGamePackageView::LaunchEditorButton_Click(winrt::IInspectable const&, winrt::RoutedEventArgs const&) -> void {
 
         auto gamePackage = GetValue(gamePackageProperty).try_as<GamePackageItem>();
         if (!gamePackage)
@@ -196,7 +197,7 @@ namespace winrt::Citrine::implementation
         ExecuteInvokeActionCommand(L"Launch", { launchArgs.detach()->get_abi<GameLaunchArgs>(), winrt::take_ownership_from_abi });
     }
 
-    auto MinecraftBedrockGamePackageView::RenameButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&) -> void {
+    auto MinecraftBedrockGamePackageView::RenameButton_Click(winrt::IInspectable const&, winrt::RoutedEventArgs const&) -> void {
 
         auto gamePackage = GetValue(gamePackageProperty).try_as<GamePackageItem>();
         if (!gamePackage)
@@ -212,7 +213,7 @@ namespace winrt::Citrine::implementation
         ExecuteInvokeActionCommand(L"Rename");
     }
 
-    auto MinecraftBedrockGamePackageView::OpenDataDirectoryButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&) -> void {
+    auto MinecraftBedrockGamePackageView::OpenDataDirectoryButton_Click(winrt::IInspectable const&, winrt::RoutedEventArgs const&) -> void {
 
         auto gamePackage = GetValue(gamePackageProperty).try_as<GamePackageItem>();
         if (!gamePackage)
@@ -228,7 +229,39 @@ namespace winrt::Citrine::implementation
         ExecuteInvokeActionCommand(L"OpenGameDataDirectory");
     }
 
-    auto MinecraftBedrockGamePackageView::ManageButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&) -> void {
+    auto MinecraftBedrockGamePackageView::RegisterButton_Click(winrt::IInspectable const&, winrt::RoutedEventArgs const&) -> void {
+
+        auto gamePackage = GetValue(gamePackageProperty).try_as<GamePackageItem>();
+        if (!gamePackage)
+            return;
+
+        auto gamePackageImpl = winrt::get_self<GamePackageItemImpl>(gamePackage);
+        auto operationState = GetOperationState(gamePackageImpl->Status());
+        using enum OperationState;
+
+        if (operationState != NoOperation)
+            return;
+
+        ExecuteInvokeActionCommand(L"Register");
+    }
+
+    auto MinecraftBedrockGamePackageView::UnregisterButton_Click(winrt::IInspectable const&, winrt::RoutedEventArgs const&) -> void {
+        
+        auto gamePackage = GetValue(gamePackageProperty).try_as<GamePackageItem>();
+        if (!gamePackage)
+            return;
+
+        auto gamePackageImpl = winrt::get_self<GamePackageItemImpl>(gamePackage);
+        auto operationState = GetOperationState(gamePackageImpl->Status());
+        using enum OperationState;
+
+        if (operationState != NoOperation)
+            return;
+
+        ExecuteInvokeActionCommand(L"Unregister");
+    }
+
+    auto MinecraftBedrockGamePackageView::ManageButton_Click(winrt::IInspectable const&, winrt::RoutedEventArgs const&) -> void {
 
         auto gamePackage = GetValue(gamePackageProperty).try_as<GamePackageItem>();
         if (!gamePackage)

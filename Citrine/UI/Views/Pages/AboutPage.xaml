@@ -38,7 +38,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <ImageIcon Margin="2,0" Source="{ThemeResource GitHubIcon}" Grid.Column="0" Width="24" Height="24" />
+                    <FontIcon Glyph="&#xE902;" Margin="2,0" VerticalAlignment="Center" Grid.Column="0" HorizontalAlignment="Right" FontSize="24" FontFamily="{StaticResource Brands}" />
                     <TextBlock x:Uid="About_GitHubRepository" VerticalAlignment="Center" FontSize="16" Grid.Column="1" />
                     <FontIcon Glyph="&#xE8A7;" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Right" FontSize="14" />
                 </Grid>

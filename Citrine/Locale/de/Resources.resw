@@ -330,4 +330,19 @@
   <data name="GeneralSettings_OpenAppDataDirectory.Text" xml:space="preserve">
     <value>App-Datenverzeichnis öffnen</value>
   </data>
+  <data name="Status_Unregistering" xml:space="preserve">
+    <value>Registrierung aufheben</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_RegisterInWindows.Text" xml:space="preserve">
+    <value>In Windows registrieren</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_Unregister.Text" xml:space="preserve">
+    <value>Registrierung aufheben</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_Badge_Registered.Text" xml:space="preserve">
+    <value>Registriert</value>
+  </data>
+  <data name="ErrorMessage_RegisteringGamePackageFailed" xml:space="preserve">
+    <value>Registrieren des Spielpaketes fehlgeschlagen.</value>
+  </data>
 </root>

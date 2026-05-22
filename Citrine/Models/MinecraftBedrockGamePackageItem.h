@@ -39,6 +39,9 @@ namespace winrt::Citrine::implementation
         auto IsInstalled() const noexcept -> bool;
         auto IsInstalled(bool value) -> void;
 
+        auto IsRegistered() const noexcept -> bool;
+        auto IsRegistered(bool value) -> void;
+
         auto Status() const noexcept -> Citrine::MinecraftBedrockGamePackageStatus;
         auto Status(Citrine::MinecraftBedrockGamePackageStatus value) -> void;
 
@@ -64,6 +67,7 @@ namespace winrt::Citrine::implementation
 
         static winrt::hstring const nameTagProperty;
         static winrt::hstring const isInstalledProperty;
+        static winrt::hstring const isRegisteredProperty;
         static winrt::hstring const statusProperty;
         static winrt::hstring const operationProgressProperty;
         static winrt::hstring const operationProgressIsIndeterminateProperty;
@@ -76,6 +80,7 @@ namespace winrt::Citrine::implementation
         winrt::hstring nameTag;
         ::Citrine::Minecraft::Bedrock::GamePackageCompatibility compatibility;
         bool installed{};
+        bool registered{};
         ::Citrine::Minecraft::Bedrock::GameCapabilities gameCapabilities;
         Citrine::MinecraftBedrockGamePackageStatus status{};
         Citrine::ByteProgress operationProgress;

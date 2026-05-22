@@ -26,8 +26,10 @@ namespace Citrine
         void InstallGamePackage(MinecraftBedrockGamePackageItem gamePackage, String installLocation);
         Windows.Foundation.IAsyncOperation<MinecraftBedrockGamePackageImportContext> InitiateGamePackageImport(String gamePackageLocation);
         void ImportGamePackage(MinecraftBedrockGamePackageImportContext importContext, String installLocation, String nameTag);
+        void RegisterGamePackage(MinecraftBedrockGamePackageItem gamePackage);
         void LaunchGamePackage(MinecraftBedrockGameLaunchArgs launchArgs);
         void RenameGamePackage(MinecraftBedrockGamePackageItem gamePackage, String nameTag);
+        void UnregisterGamePackage(MinecraftBedrockGamePackageItem gamePackage);
         void UninstallGamePackage(MinecraftBedrockGamePackageItem gamePackage);
 
         void OpenGameDirectory(MinecraftBedrockGamePackageItem gamePackage);

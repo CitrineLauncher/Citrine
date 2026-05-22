@@ -225,6 +225,15 @@ namespace winrt::Citrine::implementation
 		MinecraftBedrockGameManager::ImportGamePackageAsync(context, nameTag);
 	}
 
+	auto MinecraftBedrockGamePackagesViewModel::RegisterGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> winrt::fire_and_forget {
+
+		auto result = co_await MinecraftBedrockGameManager::RegisterGamePackageAsync(gamePackage);
+		if (result == MinecraftBedrockGamePackageRegisterResult::Failed) {
+
+			ToastNotificationService::SendNotification(NotificationSeverity::Error, Localizer::GetString(L"ErrorMessage_RegisteringGamePackageFailed"), {});
+		}
+	}
+
 	auto MinecraftBedrockGamePackagesViewModel::LaunchGamePackage(Citrine::MinecraftBedrockGameLaunchArgs launchArgs) -> winrt::fire_and_forget {
 
 		auto result = co_await MinecraftBedrockGameManager::LaunchGamePackageAsync(launchArgs);
@@ -238,6 +247,11 @@ namespace winrt::Citrine::implementation
 
 		MinecraftBedrockGameManager::RenameGamePackage(gamePackage, nameTag);
 		filteredGamePackages.Refresh();
+	}
+
+	auto MinecraftBedrockGamePackagesViewModel::UnregisterGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void {
+
+		MinecraftBedrockGameManager::UnregisterGamePackageAsync(gamePackage);
 	}
 
 	auto MinecraftBedrockGamePackagesViewModel::UninstallGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void {

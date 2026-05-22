@@ -15,19 +15,9 @@
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->
 
-            <ResourceDictionary.ThemeDictionaries>
-                <ResourceDictionary x:Key="Default">
-                    <ImageSource x:Key="GitHubIcon">Assets/Icons/GitHub_Light.png</ImageSource>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="HighContrast">
-                    <ImageSource x:Key="GitHubIcon">Assets/Icons/GitHub_Light.png</ImageSource>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Light">
-                    <ImageSource x:Key="GitHubIcon">Assets/Icons/GitHub.png</ImageSource>
-                </ResourceDictionary>
-            </ResourceDictionary.ThemeDictionaries>
-            
-            <ImageSource x:Key="CitrineIcon">/Assets/Icons/Citrine.ico</ImageSource>
+            <FontFamily x:Key="Brands">ms-appx:///Assets/Fonts/Brands.ttf#Brands</FontFamily>
+
+            <ImageSource x:Key="CitrineIcon">Assets/Icons/Citrine.ico</ImageSource>
             
             <ImageSource x:Key="MinecraftJavaIcon">Assets/Icons/Minecraft_Java.png</ImageSource>
             <ImageSource x:Key="MinecraftJavaSnapshotIcon">Assets/Icons/Minecraft_Java_Snapshot.png</ImageSource>
