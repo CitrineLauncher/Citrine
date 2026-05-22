@@ -195,10 +195,6 @@
     <None Include="PreBuild.fsx" />
   </ItemGroup>
   <ItemGroup>
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natstepfilter" />
-  </ItemGroup>
-  <ItemGroup>
     <PRIResource Include="Locale\en\Resources.resw" />
     <PRIResource Include="Locale\de\Resources.resw" />
   </ItemGroup>
