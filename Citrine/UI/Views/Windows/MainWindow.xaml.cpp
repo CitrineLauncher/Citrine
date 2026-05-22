@@ -37,6 +37,7 @@ namespace winrt::Citrine::implementation
 
 		redirectEventId = RegisterWindowMessageW(App::RedirectEventName);
 
+		AppWindow().SetIcon(LR"(Assets\Icons\Citrine.ico)");
 		titleBarSizeChangedRevoker = TitleBar().SizeChanged(winrt::auto_revoke, [this](auto const&...) {
 
 			UpdateTitleBarDragArea();
