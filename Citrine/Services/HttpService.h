@@ -24,7 +24,7 @@ namespace Citrine {
 
 		HttpContentParameter(HttpContentParameter&&) noexcept = default;
 
-		operator bool() const noexcept;
+		explicit operator bool() const noexcept;
 		auto operator*() noexcept -> HttpContent&;
 		auto operator->() noexcept -> HttpContent*;
 

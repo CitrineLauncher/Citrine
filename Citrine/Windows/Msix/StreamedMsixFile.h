@@ -40,7 +40,7 @@ namespace Citrine::Windows {
 
 		auto ExtractAllFilesAsync(std::filesystem::path destinationDirectory, MsixExtractionProgressCallback progressCallback = nullptr, File contextFile = {}) -> AsyncMsixOperationResult<>;
 
-		operator bool() const noexcept;
+		explicit operator bool() const noexcept;
 		auto Release() noexcept -> void;
 
 		auto Stream() && noexcept -> winrt::Windows::Storage::Streams::IRandomAccessStream;

@@ -52,7 +52,7 @@ namespace Citrine::Minecraft::Bedrock {
 
 	struct GamePackageCompatibility {
 
-		operator bool() const noexcept {
+		explicit operator bool() const noexcept {
 
 			return Score > 0;
 		}

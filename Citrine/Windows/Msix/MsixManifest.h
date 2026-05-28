@@ -44,7 +44,7 @@ namespace Citrine::Windows {
 
 		auto SaveToFile() -> MsixOperationResult<>;
 
-		operator bool() const noexcept;
+		explicit operator bool() const noexcept;
 		auto Release() noexcept -> void;
 
 		auto File() && noexcept -> File;

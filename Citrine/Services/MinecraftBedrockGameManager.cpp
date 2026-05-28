@@ -709,7 +709,7 @@ namespace {
 
 				struct SelectedPackageInfo {
 
-					operator bool() const noexcept {
+					explicit operator bool() const noexcept {
 
 						return static_cast<bool>(PackageInfo);
 					}

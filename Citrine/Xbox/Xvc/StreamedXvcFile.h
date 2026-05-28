@@ -46,7 +46,7 @@ namespace Citrine::Xbox {
 
 		auto ExtractAllFilesAsync(std::filesystem::path destinationDirectory, std::optional<CikEntry> cik, XvcExtractionProgressCallback progressCallback = nullptr, File contextFile = {}) -> AsyncXvcOperationResult<>;
 
-		operator bool() const noexcept;
+		explicit operator bool() const noexcept;
 		auto Release() noexcept -> void;
 
 		auto Stream() && noexcept -> winrt::Windows::Storage::Streams::IRandomAccessStream;

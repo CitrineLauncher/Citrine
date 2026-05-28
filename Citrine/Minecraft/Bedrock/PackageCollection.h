@@ -48,7 +48,7 @@ namespace Citrine::Minecraft::Bedrock {
 				return ptr == nullptr;
 			}
 
-			operator bool() const noexcept {
+			explicit operator bool() const noexcept {
 
 				return ptr != nullptr;
 			}
