@@ -156,6 +156,13 @@ namespace Citrine {
 		}
 
 		template<typename T>
+		auto EnsureStart(this TaskPromise<T>& self) noexcept -> void {
+
+			if (self.state.load(std::memory_order::relaxed) == State::Idle)
+				self.Start();
+		}
+
+		template<typename T>
 		auto Cancel(this TaskPromise<T>& self) -> void {
 
 			if (self.state.load(std::memory_order::relaxed) == State::Completed)

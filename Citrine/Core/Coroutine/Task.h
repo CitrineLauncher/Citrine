@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TaskPromise.h"
+#include "LazyTask.h"
 
 namespace Citrine {
 
@@ -19,6 +20,13 @@ namespace Citrine {
 			: handle(handle)
 		{
 			handle.promise().Start();
+		}
+
+		explicit Task(LazyTask<T>&& lazyTask) noexcept
+
+			: handle(std::exchange(lazyTask.handle, nullptr))
+		{
+			handle.promise().EnsureStart();
 		}
 
 		Task(Task const&) = delete;
@@ -123,4 +131,7 @@ namespace Citrine {
 
 		std::coroutine_handle<promise_type> handle{ nullptr };
 	};
+
+	template<typename T>
+	Task(LazyTask<T>) -> Task<T>;
 }

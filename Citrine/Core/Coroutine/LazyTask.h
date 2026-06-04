@@ -117,6 +117,9 @@ namespace Citrine {
 
 	private:
 
+		template<typename>
+		friend class Task;
+
 		auto Abandon() noexcept -> void {
 
 			if (handle)
