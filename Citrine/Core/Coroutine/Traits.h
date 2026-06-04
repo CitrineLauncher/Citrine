@@ -28,6 +28,6 @@ namespace Citrine {
 	struct AwaitableTraits<A> {
 
 		using Awaiter = decltype(GetAwaiter(std::declval<A>()));
-		using AwaiterResult = decltype(std::declval<A>().await_resume());
+		using AwaiterResult = decltype(std::declval<Awaiter>().await_resume());
 	};
 }
