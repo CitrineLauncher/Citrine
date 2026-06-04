@@ -4,30 +4,30 @@
 
 namespace Citrine {
 
-	template<Awaitable AwaitableT>
-	auto GetAwaiter(AwaitableT&& awaitable) -> decltype(auto) {
+	template<Awaitable A>
+	auto GetAwaiter(A&& awaitable) -> decltype(auto) {
 
-		if constexpr (MemberAwaitable<AwaitableT>) {
+		if constexpr (MemberAwaitable<A>) {
 
-			return std::forward<AwaitableT>(awaitable).operator co_await();
+			return std::forward<A(awaitable).operator co_await();
 		}
-		else if constexpr (NonMemberAwaitable<AwaitableT>) {
+		else if constexpr (NonMemberAwaitable<A>) {
 
-			return operator co_await(std::forward<AwaitableT>(awaitable));
+			return operator co_await(std::forward<A>(awaitable));
 		}
 		else {
 
-			return std::forward<AwaitableT>(awaitable);
+			return std::forward<A>(awaitable);
 		}
 	}
 
 	template<Awaitable AwaitableT, typename = void>
 	struct AwaitableTraits {};
 
-	template<Awaitable AwaitableT>
-	struct AwaitableTraits<AwaitableT> {
+	template<Awaitable A>
+	struct AwaitableTraits<A> {
 
-		using Awaiter = decltype(GetAwaiter(std::declval<AwaitableT>()));
-		using AwaiterResult = decltype(std::declval<Awaiter>().await_resume());
+		using Awaiter = decltype(GetAwaiter(std::declval<A>()));
+		using AwaiterResult = decltype(std::declval<A>().await_resume());
 	};
 }
