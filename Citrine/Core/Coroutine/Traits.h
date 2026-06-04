@@ -9,7 +9,7 @@ namespace Citrine {
 
 		if constexpr (MemberAwaitable<A>) {
 
-			return std::forward<A(awaitable).operator co_await();
+			return std::forward<A>(awaitable).operator co_await();
 		}
 		else if constexpr (NonMemberAwaitable<A>) {
 
