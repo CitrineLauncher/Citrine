@@ -129,8 +129,13 @@ namespace Citrine {
 		template<typename Expression>
 		auto await_transform(Expression&& expression) -> Expression&& {
 
-			if (IsCancelled())
+			if (IsCancelled()) {
+
+				if constexpr (requires{ expression.Cancel(); })
+					expression.Cancel();
+
 				throw TaskCancelledException{};
+			}
 
 			return std::forward<Expression>(expression);
 		}
