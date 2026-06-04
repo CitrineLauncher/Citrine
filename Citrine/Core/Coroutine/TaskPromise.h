@@ -129,12 +129,10 @@ namespace Citrine {
 		template<typename Expression>
 		auto await_transform(Expression&& expression) -> Expression&& {
 
-			if (IsCancelled()) {
+			if constexpr (requires{ expression.Cancel(); }) {
 
-				if constexpr (requires{ expression.Cancel(); })
+				if (IsCancelled())
 					expression.Cancel();
-
-				throw TaskCancelledException{};
 			}
 			return std::forward<Expression>(expression);
 		}
@@ -158,7 +156,7 @@ namespace Citrine {
 		template<typename T>
 		auto EnsureStart(this TaskPromise<T>& self) noexcept -> void {
 
-			if (self.state.load(std::memory_order::relaxed) == State::Idle)
+			if (self.state.load(std::memory_order::relaxed) == State::Idle && !IsCancelled())
 				self.Start();
 		}
 
@@ -250,7 +248,9 @@ namespace Citrine {
 
 		auto AwaitReady() const noexcept -> bool {
 
-			return state.load(std::memory_order::relaxed) == State::Completed || IsCancelled();
+			return
+				(state.load(std::memory_order::relaxed) == State::Completed) ||
+				(state.load(std::memory_order::relaxed) == State::Idle && IsCancelled());
 		}
 
 		auto AwaitSuspend(std::coroutine_handle<> continuation) noexcept -> bool {
