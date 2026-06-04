@@ -136,7 +136,6 @@ namespace Citrine {
 
 				throw TaskCancelledException{};
 			}
-
 			return std::forward<Expression>(expression);
 		}
 
