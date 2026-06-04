@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Concepts.h"
+
 #include <cstdint>
 #include <variant>
 #include <stdexcept>
@@ -126,15 +128,27 @@ namespace Citrine {
 
 		auto final_suspend() noexcept -> FinalAwaitable { return {}; }
 
-		template<typename Expression>
-		auto await_transform(Expression&& expression) -> Expression&& {
+		template<Awaitable A>
+		auto await_transform(A&& awaitable) -> A&& {
 
-			if constexpr (requires{ expression.Cancel(); }) {
+			using AwaitableT = A;
 
-				if (IsCancelled())
-					expression.Cancel();
+			if constexpr (requires{ awaitable.Cancel(); }) {
+
+				if (IsCancelled()) {
+
+					awaitable.Cancel();
+				}
 			}
-			return std::forward<Expression>(expression);
+			else if constexpr (std::derived_from<AwaitableT, winrt::cancellable_awaiter<AwaitableT>>) {
+
+				if (IsCancelled()) {
+
+					awaitable.enable_cancellation(this);
+					cancellable_promise::cancel();
+				}
+			}
+			return std::forward<A>(awaitable);
 		}
 
 		template<typename T>
