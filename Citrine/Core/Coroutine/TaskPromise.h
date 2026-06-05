@@ -148,6 +148,13 @@ namespace Citrine {
 					cancellable_promise::cancel();
 				}
 			}
+			else {
+
+				if (IsCancelled()) {
+
+					throw TaskCancelledException{};
+				}
+			}
 			return std::forward<A>(awaitable);
 		}
 
