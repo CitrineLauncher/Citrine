@@ -686,12 +686,12 @@ namespace Citrine::Xbox {
 			: stream(std::move(stream))
 		{}
 
-		auto InitializeAsync() -> AsyncXvcOperationResult<> {
+		auto InitializeAsync() -> LazyTask<XvcOperationResult<>> {
 
 			return ParseAsync();
 		}
 
-		auto ParseAsync() -> AsyncXvcOperationResult<> {
+		auto ParseAsync() -> LazyTask<XvcOperationResult<>> {
 
 			if (!stream)
 				co_return XvcError::StreamNotOpen;
@@ -729,7 +729,7 @@ namespace Citrine::Xbox {
 			co_return {};
 		}
 
-		auto ParseXvdHeaderAsync() -> AsyncXvcOperationResult<> try {
+		auto ParseXvdHeaderAsync() -> LazyTask<XvcOperationResult<>> try {
 
 			stream.Seek(0);
 			xvdHeaderBuffer = co_await stream.ReadAsync(winrt::Buffer{ sizeof(XvdHeader) }, sizeof(XvdHeader), {});
@@ -770,7 +770,7 @@ namespace Citrine::Xbox {
 			co_return XvcError::ReadingFailed;
 		}
 
-		auto ParseUserDataAsync() -> AsyncXvcOperationResult<> try {
+		auto ParseUserDataAsync() -> LazyTask<XvcOperationResult<>> try {
 
 			stream.Seek(userDataOffset);
 			userDataBuffer = co_await stream.ReadAsync(winrt::Buffer{ xvdHeader->UserDataLength }, xvdHeader->UserDataLength, {});
@@ -860,7 +860,7 @@ namespace Citrine::Xbox {
 			return {};
 		}
 
-		auto ParseXvcDataAsync() -> AsyncXvcOperationResult<> try {
+		auto ParseXvcDataAsync() -> LazyTask<XvcOperationResult<>> try {
 
 			stream.Seek(xvcHeaderOffset);
 			xvcDataBuffer = co_await stream.ReadAsync(winrt::Buffer{ xvdHeader->XvcDataLength }, xvdHeader->XvcDataLength, {});

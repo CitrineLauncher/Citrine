@@ -654,12 +654,12 @@ namespace Citrine::Windows {
 			: stream(std::move(stream))
 		{}
 
-		auto InitializeAsync() -> AsyncMsixOperationResult<> {
+		auto InitializeAsync() -> LazyTask<MsixOperationResult<>> {
 
 			return ParseAsync();
 		}
 
-		auto ParseAsync() -> AsyncMsixOperationResult<> {
+		auto ParseAsync() -> LazyTask<MsixOperationResult<>> {
 
 			if (!stream)
 				co_return MsixError::StreamNotOpen;
@@ -682,7 +682,7 @@ namespace Citrine::Windows {
 			co_return {};
 		}
 
-		auto ParseCentralDirectoryAsync() -> AsyncMsixOperationResult<> try {
+		auto ParseCentralDirectoryAsync() -> LazyTask<MsixOperationResult<>> try {
 
 			constexpr auto eocdDataSize = sizeof(Zip64EndOfCentralDirectory) + sizeof(Zip64EndOfCentralDirectoryLocator) + sizeof(ZipEndOfCentralDirectory);
 
@@ -791,7 +791,7 @@ namespace Citrine::Windows {
 			co_return MsixError::ReadingFailed;
 		}
 
-		auto ParseBlockMapAsync() -> AsyncMsixOperationResult<> {
+		auto ParseBlockMapAsync() -> LazyTask<MsixOperationResult<>> {
 
 			auto fileContent = co_await ExtractFootprintFileAsync(&*blockMapFileInfo);
 			if (!fileContent)
@@ -856,7 +856,7 @@ namespace Citrine::Windows {
 			co_return {};
 		}
 
-		auto ParseManifestAsync() -> AsyncMsixOperationResult<> {
+		auto ParseManifestAsync() -> LazyTask<MsixOperationResult<>> {
 
 			auto fileContent = co_await ExtractFootprintFileAsync(&*manifestFileInfo);
 			if (!fileContent)
@@ -929,7 +929,7 @@ namespace Citrine::Windows {
 			pugi::xml_node BlockMapEntry;
 		};
 
-		auto ExtractFootprintFileAsync(FileInfo const* fileInfo) -> AsyncMsixOperationResult<winrt::IBuffer> try {
+		auto ExtractFootprintFileAsync(FileInfo const* fileInfo) -> LazyTask<MsixOperationResult<winrt::IBuffer>> try {
 
 			if (fileInfo->UncompressedSize > 0xFFFFFFFF || fileInfo->CompressedSize > 0xFFFFFFFF)
 				co_return MsixError::UnsupportedFormat;
