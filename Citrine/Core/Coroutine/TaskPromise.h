@@ -131,26 +131,13 @@ namespace Citrine {
 		template<Awaitable A>
 		auto await_transform(A&& awaitable) -> A&& {
 
-			using AwaitableT = std::remove_cvref_t<A>;
+			if (IsCancelled()) {
 
-			if constexpr (requires{ awaitable.Cancel(); }) {
-
-				if (IsCancelled()) {
+				if constexpr (requires{ awaitable.Cancel(); }) {
 
 					awaitable.Cancel();
 				}
-			}
-			else if constexpr (std::derived_from<AwaitableT, winrt::cancellable_awaiter<AwaitableT>>) {
-
-				if (IsCancelled()) {
-
-					awaitable.enable_cancellation(this);
-					cancellable_promise::cancel();
-				}
-			}
-			else {
-
-				if (IsCancelled()) {
+				else {
 
 					throw TaskCancelledException{};
 				}
