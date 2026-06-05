@@ -14,12 +14,12 @@
     </Page.Resources>
     <Grid MaxWidth="720" VerticalAlignment="Top">
         <Grid.RowDefinitions>
-            <RowDefinition Height="48"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Image Source="{StaticResource MinecraftBedrockLogo}" />
+        <Image Source="{StaticResource MinecraftBedrockLogo}" Height="48" />
         <TextBox x:Uid="MinecraftBedrock_GamePackages_Search" Text="{x:Bind ViewModel.FilteredGamePackages.Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" Margin="0,8,0,4" FontSize="17" Height="36" IsSpellCheckEnabled="False" />
         <ScrollViewer Grid.Row="2" Visibility="{x:Bind local:Convert.BoolToInverseVisibility(ViewModel.FilteredGamePackages.IsEmpty), Mode=OneWay}">
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.FilteredGamePackages}">
