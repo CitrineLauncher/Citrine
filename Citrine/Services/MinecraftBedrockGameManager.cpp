@@ -1863,6 +1863,7 @@ namespace {
 					if (!url) {
 
 						Logger::Error("Installing game package {} failed: fetching url failed", *gamePackage);
+						co_return false;
 					}
 
 					auto packageStreamResponse = co_await HttpService::GetRandomAccessStreamAsync(std::move(*url));
