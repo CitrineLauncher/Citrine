@@ -131,7 +131,7 @@ namespace Citrine {
 		template<Awaitable A>
 		auto await_transform(A&& awaitable) -> A&& {
 
-			using AwaitableT = A;
+			using AwaitableT = std::remove_cvref_t<A>;
 
 			if constexpr (requires{ awaitable.Cancel(); }) {
 
