@@ -21,7 +21,7 @@ namespace Citrine {
 		}
 	}
 
-	template<Awaitable AwaitableT, typename = void>
+	template<Awaitable A, typename = void>
 	struct AwaitableTraits {};
 
 	template<Awaitable A>
