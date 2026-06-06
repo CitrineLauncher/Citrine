@@ -120,6 +120,13 @@ namespace Citrine {
 		template<typename>
 		friend class Task;
 
+		friend TaskPromiseBase;
+
+		auto GetPromise() const -> promise_type const& {
+
+			return handle.promise();
+		}
+
 		auto Abandon() noexcept -> void {
 
 			if (handle)

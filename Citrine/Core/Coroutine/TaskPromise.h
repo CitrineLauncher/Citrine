@@ -133,14 +133,26 @@ namespace Citrine {
 
 			if (IsCancelled()) {
 
-				if constexpr (requires{ awaitable.Cancel(); }) {
+				using WinRTAsyncStatus = winrt::Windows::Foundation::AsyncStatus;
 
-					awaitable.Cancel();
-				}
-				else {
+				if constexpr (requires{ typename A::promise_type; requires std::derived_from<typename A::promise_type, TaskPromiseBase>; }) {
 
-					throw TaskCancelledException{};
+					if (awaitable.GetPromise().state.load(std::memory_order::relaxed) == State::Running) {
+
+						awaitable.Cancel();
+						return std::forward<A>(awaitable);
+					}
 				}
+				else if constexpr (requires{ { awaitable.Status() } -> std::same_as<WinRTAsyncStatus>; awaitable.Cancel(); }) {
+
+					if (awaitable.Status() == WinRTAsyncStatus::Started) {
+						
+						awaitable.Cancel();
+						return std::forward<A>(awaitable);
+					}
+				}
+
+				throw TaskCancelledException{};
 			}
 			return std::forward<A>(awaitable);
 		}
