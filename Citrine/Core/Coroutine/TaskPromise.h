@@ -135,24 +135,25 @@ namespace Citrine {
 
 				using WinRTAsyncStatus = winrt::Windows::Foundation::AsyncStatus;
 
-				if constexpr (requires{ typename A::promise_type; requires std::derived_from<typename A::promise_type, TaskPromiseBase>; }) {
+				if constexpr (requires{ requires std::derived_from<typename A::promise_type, TaskPromiseBase>; }) {
 
-					if (awaitable.GetPromise().state.load(std::memory_order::relaxed) == State::Running) {
-
-						awaitable.Cancel();
-						return std::forward<A>(awaitable);
-					}
+					awaitable.GetPromise().CancelInternal();
 				}
 				else if constexpr (requires{ { awaitable.Status() } -> std::same_as<WinRTAsyncStatus>; awaitable.Cancel(); }) {
 
 					if (awaitable.Status() == WinRTAsyncStatus::Started) {
 						
 						awaitable.Cancel();
-						return std::forward<A>(awaitable);
+					}
+					else {
+
+						throw TaskCancelledException{};
 					}
 				}
+				else {
 
-				throw TaskCancelledException{};
+					throw TaskCancelledException{};
+				}
 			}
 			return std::forward<A>(awaitable);
 		}
@@ -388,6 +389,10 @@ namespace Citrine {
 
 				CancelInternal();
 			}
+			catch (winrt::hresult_canceled const&) {
+
+				CancelInternal();
+			}
 			catch (...) {}
 		}
 
@@ -427,6 +432,10 @@ namespace Citrine {
 			}
 			catch (TaskCancelledException const&) {
 			
+				CancelInternal();
+			}
+			catch (winrt::hresult_canceled const&) {
+
 				CancelInternal();
 			}
 			catch(...) {}

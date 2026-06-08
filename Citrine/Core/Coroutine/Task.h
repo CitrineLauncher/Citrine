@@ -125,7 +125,7 @@ namespace Citrine {
 
 		friend TaskPromiseBase;
 
-		auto GetPromise() const -> promise_type const& {
+		auto GetPromise() -> promise_type& {
 
 			return handle.promise();
 		}
