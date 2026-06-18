@@ -175,6 +175,7 @@ namespace Citrine {
 			if (self.state.load(std::memory_order::relaxed) == State::Completed)
 				return;
 
+			// Temporary workaround for race conditions in winrt
 			if (self.cancelling.test_and_set(std::memory_order::seq_cst))
 				return;
 
