@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Concepts.h"
+#include "Promise.h"
 
 #include <cstdint>
 #include <variant>
@@ -81,13 +82,10 @@ namespace Citrine {
 		std::unique_ptr<IDelegate> delegate;
 	};
 
-	class TaskPromiseBase : public winrt::cancellable_promise {
+	class TaskPromiseBase : public CancellablePromiseBase {
 	public:
 
-		TaskPromiseBase() noexcept {
-
-			enable_cancellation_propagation(true);
-		}
+		TaskPromiseBase() noexcept = default;
 
 		TaskPromiseBase(TaskPromiseBase const&) = delete;
 		auto operator=(TaskPromiseBase const&) = delete;
@@ -175,14 +173,7 @@ namespace Citrine {
 			if (self.state.load(std::memory_order::relaxed) == State::Completed)
 				return;
 
-			// Temporary workaround for race conditions in winrt
-			if (self.cancelling.test_and_set(std::memory_order::seq_cst))
-				return;
-
 			self.CancelInternal();
-
-			self.cancelling.clear(std::memory_order::release);
-			self.cancelling.notify_one();
 		}
 
 		auto IsCancelled() const noexcept -> bool {
@@ -281,7 +272,6 @@ namespace Citrine {
 		template<typename T>
 		auto Abandon(this TaskPromise<T>& self) noexcept -> void {
 
-			self.cancelling.wait(true, std::memory_order::acquire);
 			if (self.state.exchange(State::Abandoned, std::memory_order::acq_rel) != State::Running) {
 
 				std::coroutine_handle<TaskPromise<T>>::from_promise(self).destroy();
@@ -298,16 +288,6 @@ namespace Citrine {
 		}
 
 	protected:
-
-		struct StateSentinel {
-
-			operator void* (this StateSentinel self) noexcept {
-
-				return reinterpret_cast<void*>(self.Value);
-			}
-
-			std::uintptr_t Value{};
-		};
 
 		struct State {
 
@@ -338,8 +318,7 @@ namespace Citrine {
 				delete delegate;
 			}
 
-			std::atomic_thread_fence(std::memory_order::seq_cst);
-			cancellable_promise::cancel();
+			CancellablePromiseBase::Cancel();
 		}
 
 		auto CaptureContext() -> void;
@@ -348,7 +327,6 @@ namespace Citrine {
 
 		std::atomic<void*> state{ State::Idle };
 		std::atomic<void*> cancellationState{ nullptr };
-		std::atomic_flag cancelling{};
 		bool preserveContext{ true };
 		bool useCustomContinuationHandler{ false };
 		void* context{ nullptr };
@@ -453,35 +431,17 @@ namespace Citrine {
 	};
 
 	template<typename T>
-	class TaskAwaiterBase : public winrt::cancellable_awaiter<TaskAwaiterBase<T>> {
+	class TaskAwaiterBase : public CancellableAwaiterBase {
 	public:
 
 		TaskAwaiterBase(std::coroutine_handle<TaskPromise<T>> handle) noexcept : handle(handle) {}
 
-		auto enable_cancellation(winrt::cancellable_promise* promise) -> void {
+		auto EnableCancellation(CancellablePromiseBase* promise) -> bool {
 
-			promise->set_canceller([](void* parameter) static {
+			return promise->SetCanceller([](void* parameter) static {
 
-				std::coroutine_handle<TaskPromise<T>>::from_address(parameter).promise().Cancel();
+				std::coroutine_handle<TaskPromise<T>>::from_address(parameter).promise().CancelInternal();
 			}, handle.address());
-		}
-
-		template<typename Promise>
-		auto SetCanceller(std::coroutine_handle<Promise> canceller) -> bool {
-
-			// This winrt method isn't atomic so we defer the cancellation check
-			this->set_cancellable_promise_from_handle(canceller);
-
-			if constexpr (std::derived_from<Promise, TaskPromiseBase>) {
-
-				std::atomic_thread_fence(std::memory_order::seq_cst);
-				if (canceller.promise().IsCancelled()) {
-
-					handle.promise().CancelInternal();
-					return true;
-				}
-			}
-			return false;
 		}
 
 	protected:

@@ -151,6 +151,7 @@
     <ClInclude Include="Core\Compression\Zip\ZipLocalFileHeader.h" />
     <ClInclude Include="Core\Coroutine\Concepts.h" />
     <ClInclude Include="Core\Coroutine\LazyTask.h" />
+    <ClInclude Include="Core\Coroutine\Promise.h" />
     <ClInclude Include="Core\Coroutine\Traits.h" />
     <ClInclude Include="Core\Util\JsonWrappers.h" />
     <ClInclude Include="Core\Util\Memory.h" />

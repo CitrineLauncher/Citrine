@@ -183,6 +183,7 @@
     <ClInclude Include="Core\Coroutine\LazyTask.h" />
     <ClInclude Include="Core\Coroutine\Traits.h" />
     <ClInclude Include="Core\Coroutine\Concepts.h" />
+    <ClInclude Include="Core\Coroutine\Promise.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
