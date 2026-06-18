@@ -32,7 +32,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
-OutputBaseFilename=CitrineLauncherSetup
+OutputBaseFilename=CitrineLauncher-{#MyAppVersion}_Setup
 SolidCompression=True
 Compression=lzma2/ultra64
 InternalCompressLevel=ultra64
