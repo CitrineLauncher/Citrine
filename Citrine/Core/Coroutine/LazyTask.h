@@ -61,43 +61,34 @@ namespace Citrine {
 			return std::forward_like<Self>(self);
 		}
 
-		class Awaitable : public winrt::cancellable_awaiter<Awaitable> {
+		class Awaitable : public TaskAwaiterBase<T>{
 		public:
 
-			Awaitable(std::coroutine_handle<promise_type> handle) noexcept : handle(handle) {}
-
-			auto enable_cancellation(winrt::cancellable_promise* promise) -> void {
-
-				promise->set_canceller([](void* parameter) static {
-
-					std::coroutine_handle<promise_type>::from_address(parameter).promise().Cancel();
-				}, handle.address());
-			}
+			using TaskAwaiterBase<T>::TaskAwaiterBase;
 
 			auto await_ready() const noexcept -> bool {
 
-				return handle.promise().AwaitReady();
+				return this->GetPromise().AwaitReady();
 			}
 
 			template<typename Promise>
 			auto await_suspend(std::coroutine_handle<Promise> continuation) noexcept -> bool {
 
-				handle.promise().Start();
-				if (handle.promise().AwaitReady())
+				if (auto cancelled = this->SetCanceller(continuation))
 					return false;
 
-				this->set_cancellable_promise_from_handle(continuation);
-				return handle.promise().AwaitSuspend(continuation);
+				this->GetPromise().Start();
+
+				if (this->GetPromise().AwaitReady())
+					return false;
+
+				return this->GetPromise().AwaitSuspend(continuation);
 			}
 
 			auto await_resume() -> decltype(auto) {
 
-				return handle.promise().GetResult();
+				return this->GetPromise().GetResult();
 			}
-
-		private:
-
-			std::coroutine_handle<promise_type> handle;
 		};
 
 		auto operator co_await() && -> Awaitable {
@@ -119,13 +110,6 @@ namespace Citrine {
 
 		template<typename>
 		friend class Task;
-
-		friend TaskPromiseBase;
-
-		auto GetPromise() -> promise_type& {
-
-			return handle.promise();
-		}
 
 		auto Abandon() noexcept -> void {
 

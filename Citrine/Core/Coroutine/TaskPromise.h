@@ -131,29 +131,17 @@ namespace Citrine {
 		template<Awaitable A>
 		auto await_transform(A&& awaitable) -> A&& {
 
-			if (IsCancelled()) {
+			if constexpr (requires{ requires std::derived_from<typename A::promise_type, TaskPromiseBase>; }) {
 
-				using WinRTAsyncStatus = winrt::Windows::Foundation::AsyncStatus;
+				// Handled in awaiter
+			}
+			else if (IsCancelled()) {
 
-				if constexpr (requires{ requires std::derived_from<typename A::promise_type, TaskPromiseBase>; }) {
-
-					awaitable.GetPromise().CancelInternal();
+				if constexpr (requires{ awaitable.Cancel(); }) {
+#
+					awaitable.Cancel();
 				}
-				else if constexpr (requires{ { awaitable.Status() } -> std::same_as<WinRTAsyncStatus>; awaitable.Cancel(); }) {
-
-					if (awaitable.Status() == WinRTAsyncStatus::Started) {
-						
-						awaitable.Cancel();
-					}
-					else {
-
-						throw TaskCancelledException{};
-					}
-				}
-				else {
-
-					throw TaskCancelledException{};
-				}
+				throw TaskCancelledException{};
 			}
 			return std::forward<A>(awaitable);
 		}
@@ -333,6 +321,9 @@ namespace Citrine {
 			static constexpr auto Cancelled = StateSentinel{ 1 };
 		};
 
+		template<typename>
+		friend class TaskAwaiterBase;
+
 		auto CancelInternal() -> void {
 
 			auto callback = cancellationState.exchange(CancellationState::Cancelled, std::memory_order::acquire);
@@ -456,5 +447,47 @@ namespace Citrine {
 
 		using Storage = std::variant<std::monostate, std::exception_ptr>;
 		Storage storage;
+	};
+
+	template<typename T>
+	class TaskAwaiterBase : public winrt::cancellable_awaiter<TaskAwaiterBase<T>> {
+	public:
+
+		TaskAwaiterBase(std::coroutine_handle<TaskPromise<T>> handle) noexcept : handle(handle) {}
+
+		auto enable_cancellation(winrt::cancellable_promise* promise) -> void {
+
+			promise->set_canceller([](void* parameter) static {
+
+				std::coroutine_handle<TaskPromise<T>>::from_address(parameter).promise().Cancel();
+			}, handle.address());
+		}
+
+		template<typename Promise>
+		auto SetCanceller(std::coroutine_handle<Promise> canceller) -> bool {
+
+			// This winrt method isn't atomic so we defer the cancellation check
+			this->set_cancellable_promise_from_handle(canceller);
+
+			if constexpr (std::derived_from<Promise, TaskPromiseBase>) {
+
+				std::atomic_thread_fence(std::memory_order::seq_cst);
+				if (canceller.promise().IsCancelled()) {
+
+					handle.promise().CancelInternal();
+					return true;
+				}
+			}
+			return false;
+		}
+
+	protected:
+
+		auto GetPromise() const& -> TaskPromise<T>& {
+
+			return handle.promise();
+		}
+
+		std::coroutine_handle<TaskPromise<T>> handle;
 	};
 }
