@@ -336,6 +336,8 @@ namespace Citrine {
 				delegate->Invoke();
 				delete delegate;
 			}
+
+			std::atomic_thread_fence(std::memory_order::seq_cst);
 			cancellable_promise::cancel();
 		}
 
