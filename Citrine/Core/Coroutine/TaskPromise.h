@@ -462,7 +462,7 @@ namespace Citrine {
 
 			promise->set_canceller([](void* parameter) static {
 
-				std::coroutine_handle<TaskPromise<T>>::from_address(parameter).promise().CancelInternal();
+				std::coroutine_handle<TaskPromise<T>>::from_address(parameter).promise().Cancel();
 			}, handle.address());
 		}
 
