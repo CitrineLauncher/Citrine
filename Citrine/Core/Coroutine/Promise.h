@@ -24,8 +24,6 @@ namespace Citrine {
 	class CancellablePromiseBase : public PromiseBase, public winrt::cancellable_promise {
 	public:
 
-		using CancellerT = auto(*)(void*) -> void;
-
 		CancellablePromiseBase() noexcept {
 
 			enable_cancellation_propagation(true);
@@ -34,7 +32,7 @@ namespace Citrine {
 		CancellablePromiseBase(CancellablePromiseBase const&) = delete;
 		auto operator=(CancellablePromiseBase const&) = delete;
 
-		auto SetCanceller(CancellerT canceller, void* param) -> bool {
+		auto set_canceller(canceller_t canceller, void* param) -> bool {
 
 			auto expected = static_cast<void*>(nullptr);
 
@@ -47,7 +45,7 @@ namespace Citrine {
 			return false;
 		}
 
-		auto RevokeCanceller() -> void {
+		auto revoke_canceller() -> void {
 
 			auto canceller = cancellerState.load(std::memory_order::relaxed);
 			do {
@@ -89,7 +87,7 @@ namespace Citrine {
 			auto lock = Lock{ *this };
 			if (canceller) {
 
-				reinterpret_cast<CancellerT>(canceller)(cancellerParam);
+				reinterpret_cast<canceller_t>(canceller)(cancellerParam);
 			}
 
 			cancellable_promise::cancel();
@@ -117,8 +115,14 @@ namespace Citrine {
 
 		~CancellableAwaiterBase() {
 
-			if (promise)
-				promise->RevokeCanceller();
+			if (promise) {
+
+				promise->revoke_canceller();
+			}
+			else if (winRTPromise) {
+
+				winRTPromise->revoke_canceller();
+			}
 		}
 
 	protected:
@@ -129,7 +133,14 @@ namespace Citrine {
 			if constexpr (std::derived_from<Promise, CancellablePromiseBase>) {
 
 				self.promise = &canceller.promise();
-				return self.EnableCancellation(self.promise);
+				return self.enable_cancellation(self.promise);
+			}
+			else if constexpr (std::derived_from<Promise, winrt::cancellable_promise>) {
+
+				self.winRTPromise = &canceller.promise();
+				self.enable_cancellation(self.winRTPromise);
+
+				return false;
 			}
 			else {
 
@@ -140,5 +151,6 @@ namespace Citrine {
 	private:
 
 		CancellablePromiseBase* promise{ nullptr };
+		winrt::cancellable_promise* winRTPromise{ nullptr };
 	};
 }

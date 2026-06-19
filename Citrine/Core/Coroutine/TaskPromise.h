@@ -436,9 +436,9 @@ namespace Citrine {
 
 		TaskAwaiterBase(std::coroutine_handle<TaskPromise<T>> handle) noexcept : handle(handle) {}
 
-		auto EnableCancellation(CancellablePromiseBase* promise) -> bool {
+		auto enable_cancellation(auto* promise) -> decltype(auto) {
 
-			return promise->SetCanceller([](void* parameter) static {
+			return promise->set_canceller([](void* parameter) static {
 
 				std::coroutine_handle<TaskPromise<T>>::from_address(parameter).promise().CancelInternal();
 			}, handle.address());
