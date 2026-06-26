@@ -1,0 +1,9 @@
+namespace Citrine
+{
+    interface IItemFilter
+    {
+        Boolean Match(Object item);
+
+        Windows.UI.Xaml.Interop.TypeName ItemType{ get; };
+    }
+}

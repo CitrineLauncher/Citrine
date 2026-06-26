@@ -184,6 +184,7 @@
     <ClInclude Include="Core\Coroutine\Traits.h" />
     <ClInclude Include="Core\Coroutine\Concepts.h" />
     <ClInclude Include="Core\Coroutine\Promise.h" />
+    <ClInclude Include="Collections\ItemFilter.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
@@ -264,6 +265,7 @@
     <Midl Include="Models\MinecraftBedrockGameLaunchResult.idl" />
     <Midl Include="UI\ViewModels\AboutViewModel.idl" />
     <Midl Include="Models\MinecraftBedrockGamePackageRegisterResult.idl" />
+    <Midl Include="Collections\IItemFilter.idl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Citrine.rc" />

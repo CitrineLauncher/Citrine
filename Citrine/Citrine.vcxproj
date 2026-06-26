@@ -141,6 +141,7 @@
     <ClInclude Include="Citrine.h" />
     <ClInclude Include="Collections\BindableVector.h" />
     <ClInclude Include="Collections\FilterableCollectionView.h" />
+    <ClInclude Include="Collections\ItemFilter.h" />
     <ClInclude Include="Collections\ObservableCollection.h" />
     <ClInclude Include="Core\Compression\Zip\ZipCentralDirectoryFileHeader.h" />
     <ClInclude Include="Core\Compression\Zip\ZipDataDescriptor.h" />
@@ -724,6 +725,7 @@
     <Midl Include="Collections\IFilterableCollectionView.idl" />
     <Midl Include="Collections\IObservableCollection.idl" />
     <Midl Include="Collections\IObservableCollectionView.idl" />
+    <Midl Include="Collections\IItemFilter.idl" />
     <Midl Include="Helpers\ByteProgressFormatter.idl">
       <SubType>Designer</SubType>
     </Midl>

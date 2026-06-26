@@ -1,4 +1,5 @@
 import "Collections/IObservableCollectionView.idl";
+import "Collections/IItemFilter.idl";
 
 namespace Citrine
 {
@@ -8,7 +9,9 @@ namespace Citrine
 
         IObservableCollectionView Source{ get; };
         String Filter;
+        IItemFilter SecondaryFilter;
         void Refresh();
+        void Refresh(Object mutatedItem);
 
         Windows.UI.Xaml.Interop.TypeName ItemType{ get; };
     }
