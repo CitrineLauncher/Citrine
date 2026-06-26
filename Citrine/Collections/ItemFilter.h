@@ -26,19 +26,7 @@ namespace Citrine {
 
 		auto Match(winrt::Windows::Foundation::IInspectable const& item) const -> bool {
 
-			decltype(auto) obj = [&] -> decltype(auto) {
-
-				if constexpr (std::same_as<T, winrt::Windows::Foundation::IInspectable>) {
-
-					return (item);
-				}
-				else {
-
-					return item.as<T>();
-				}
-			}();
-
-			return predicate(obj);
+			return predicate(item.as<T>());
 		}
 
 		auto Match(void const* item) const -> bool final override {
