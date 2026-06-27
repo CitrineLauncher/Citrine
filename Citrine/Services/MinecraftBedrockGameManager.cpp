@@ -1445,6 +1445,9 @@ namespace {
 			}
 			gamePackageOperations.Close();
 
+			settings.Save();
+			settings.Close();
+
 			releaseBuildProgressionsFile.Close();
 			previewBuildProgressionsFile.Close();
 

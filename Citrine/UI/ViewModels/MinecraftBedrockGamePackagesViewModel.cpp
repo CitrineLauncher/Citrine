@@ -194,7 +194,10 @@ namespace winrt::Citrine::implementation
 
 	auto MinecraftBedrockGamePackagesViewModel::InstallGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage, winrt::hstring const& installLocation) -> void {
 
-		MinecraftBedrockGameManager::Settings().GameInstallLocation(std::wstring{ installLocation });
+		auto& settings = MinecraftBedrockGameManager::Settings();
+		settings.GameInstallLocation(std::wstring{ installLocation });
+		settings.Save();
+
 		MinecraftBedrockGameManager::InstallGamePackageAsync(gamePackage);
 	}
 
@@ -221,7 +224,10 @@ namespace winrt::Citrine::implementation
 
 	auto MinecraftBedrockGamePackagesViewModel::ImportGamePackage(Citrine::MinecraftBedrockGamePackageImportContext const& context, winrt::hstring const& installLocation, winrt::hstring const& nameTag) -> void {
 
-		MinecraftBedrockGameManager::Settings().GameInstallLocation(std::wstring{ installLocation });
+		auto& settings = MinecraftBedrockGameManager::Settings();
+		settings.GameInstallLocation(std::wstring{ installLocation });
+		settings.Save();
+
 		MinecraftBedrockGameManager::ImportGamePackageAsync(context, nameTag);
 	}
 
