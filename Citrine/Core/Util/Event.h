@@ -405,11 +405,6 @@ namespace Citrine {
 
 	private:
 
-		auto Initialize() -> void {
-
-			delegates = std::make_shared<EventDelegateList<Args...>>();
-		}
-
 		EventDelegateList<Args...> delegates;
 	};
 
