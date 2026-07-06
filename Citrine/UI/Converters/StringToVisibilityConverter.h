@@ -9,14 +9,14 @@ namespace winrt::Citrine::implementation
         StringToVisibilityConverter() = default;
 
         auto Convert(
-            winrt::Windows::Foundation::IInspectable value,
+            winrt::Windows::Foundation::IInspectable const& value,
             winrt::Windows::UI::Xaml::Interop::TypeName const&,
             winrt::Windows::Foundation::IInspectable const& parameter,
             winrt::hstring const&
         ) -> winrt::Windows::Foundation::IInspectable;
 
         auto ConvertBack(
-            winrt::Windows::Foundation::IInspectable,
+            winrt::Windows::Foundation::IInspectable const&,
             winrt::Windows::UI::Xaml::Interop::TypeName const&,
             winrt::Windows::Foundation::IInspectable const&,
             winrt::hstring const&

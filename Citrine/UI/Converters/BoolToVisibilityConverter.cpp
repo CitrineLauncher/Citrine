@@ -13,7 +13,7 @@ namespace winrt {
 
 namespace winrt::Citrine::implementation
 {
-    auto BoolToVisibilityConverter::Convert(winrt::IInspectable value, winrt::TypeName const&, winrt::IInspectable const& parameter, winrt::hstring const&) -> winrt::IInspectable {
+    auto BoolToVisibilityConverter::Convert(winrt::IInspectable const& value, winrt::TypeName const&, winrt::IInspectable const& parameter, winrt::hstring const&) -> winrt::IInspectable {
 
         auto visible = value && winrt::unbox_value<bool>(value);
         auto inverted = parameter && winrt::unbox_value<winrt::hstring>(parameter) == L"Inverted";
@@ -21,8 +21,11 @@ namespace winrt::Citrine::implementation
         return winrt::box_value(visible != inverted ? winrt::Visibility::Visible : winrt::Visibility::Collapsed);
     }
 
-    auto BoolToVisibilityConverter::ConvertBack(winrt::IInspectable, winrt::TypeName const&, winrt::IInspectable const&, winrt::hstring const&) -> winrt::IInspectable {
+    auto BoolToVisibilityConverter::ConvertBack(winrt::IInspectable const& value, winrt::TypeName const&, winrt::IInspectable const& parameter, winrt::hstring const&) -> winrt::IInspectable {
 
-        throw winrt::hresult_not_implemented{};
+        auto visible = value && winrt::unbox_value<winrt::Visibility>(value) == winrt::Visibility::Visible;
+        auto inverted = parameter && winrt::unbox_value<winrt::hstring>(parameter) == L"Inverted";
+
+        return winrt::box_value(visible != inverted);
     }
 }
