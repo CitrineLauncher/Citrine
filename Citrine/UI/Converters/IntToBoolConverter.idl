@@ -1,0 +1,8 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass IntToBoolConverter : Microsoft.UI.Xaml.Data.IValueConverter
+    {
+        IntToBoolConverter();
+    }
+}

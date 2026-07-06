@@ -30,6 +30,7 @@
 
             <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+            <local:IntToBoolConverter x:Key="IntToBoolConverter" />
 
             <x:Double x:Key="ContentDialogMaxWidth">624</x:Double>
             <Thickness x:Key="ContentDialogPadding">20</Thickness>
