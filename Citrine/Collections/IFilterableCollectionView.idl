@@ -3,6 +3,8 @@ import "Collections/IItemFilter.idl";
 
 namespace Citrine
 {
+    delegate void FilterableCollectionViewRefreshedHandler(IFilterableCollectionView sender);
+
     interface IFilterableCollectionView requires IVectorView<Object>, Microsoft.UI.Xaml.Interop.INotifyCollectionChanged
     {
         Boolean IsEmpty{ get; };
@@ -10,8 +12,10 @@ namespace Citrine
         IObservableCollectionView Source{ get; };
         String Filter;
         IItemFilter SecondaryFilter;
+
         void Refresh();
         void Refresh(Object mutatedItem);
+        event FilterableCollectionViewRefreshedHandler Refreshed;
 
         Windows.UI.Xaml.Interop.TypeName ItemType{ get; };
     }

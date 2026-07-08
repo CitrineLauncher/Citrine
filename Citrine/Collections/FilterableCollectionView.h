@@ -183,6 +183,8 @@ namespace Citrine {
 		using ValueType = T;
 		using SizeType = std::uint32_t;
 
+		using FilterableCollectionViewRefreshedHandler = winrt::Citrine::FilterableCollectionViewRefreshedHandler;
+
 		FilterableCollectionView(winrt::Citrine::IObservableCollectionView const& source, SourceContainer const& sourceElements, void* itemProjection)
 
 			: source(source)
@@ -395,6 +397,7 @@ namespace Citrine {
 
 			matches.erase(dest, matches.end());
 			OnCollectionChanged(NotifyCollectionChangedAction::Reset, nullptr, nullptr, -1, -1);
+			OnRefreshed();
 		}
 
 		auto Refresh(winrt::Windows::Foundation::IInspectable const& mutatedItem) -> void {
@@ -408,21 +411,35 @@ namespace Citrine {
 			auto it = std::ranges::lower_bound(matches, index);
 			if (EvaluateFilters(sourceElements[index])) {
 
-				if (it != matches.end() && *it == index)
-					return;
+				if (it == matches.end() || *it != index) {
 
-				auto newLocalPos = it - matches.begin();
-				matches.insert(matches.begin() + newLocalPos, index);
-				std::ranges::for_each(matches.begin() + newLocalPos + 1, matches.end(), [](SizeType& index) static { ++index; });
-				OnCollectionChanged(Add, MakeSingleItemBindableVector(sourceElements[index]), nullptr, static_cast<std::int32_t>(newLocalPos), -1);
+					auto newLocalPos = it - matches.begin();
+					matches.insert(matches.begin() + newLocalPos, index);
+					std::ranges::for_each(matches.begin() + newLocalPos + 1, matches.end(), [](SizeType& index) static { ++index; });
+					OnCollectionChanged(Add, MakeSingleItemBindableVector(sourceElements[index]), nullptr, static_cast<std::int32_t>(newLocalPos), -1);
+				}
 			}
-			else if (it != matches.end() && *it == index) {
+			else {
 
-				auto oldLocalPos = it - matches.begin();
-				matches.erase(matches.begin() + oldLocalPos);
-				std::ranges::for_each(matches.begin() + oldLocalPos, matches.end(), [](SizeType& index) static { --index; });
-				OnCollectionChanged(Remove, nullptr, MakeSingleItemBindableVector(sourceElements[index]), -1, static_cast<std::int32_t>(oldLocalPos));
+				if (it != matches.end() && *it == index) {
+
+					auto oldLocalPos = it - matches.begin();
+					matches.erase(matches.begin() + oldLocalPos);
+					std::ranges::for_each(matches.begin() + oldLocalPos, matches.end(), [](SizeType& index) static { --index; });
+					OnCollectionChanged(Remove, nullptr, MakeSingleItemBindableVector(sourceElements[index]), -1, static_cast<std::int32_t>(oldLocalPos));
+				}
 			}
+			OnRefreshed();
+		}
+
+		auto Refreshed(FilterableCollectionViewRefreshedHandler const& handler) -> winrt::event_token {
+
+			return refreshedEvent.add(handler);
+		}
+
+		auto Refreshed(winrt::event_token token) -> void {
+
+			refreshedEvent.remove(token);
 		}
 
 		auto ItemType() const -> winrt::Windows::UI::Xaml::Interop::TypeName {
@@ -561,6 +578,11 @@ namespace Citrine {
 			}
 		}
 
+		auto OnRefreshed() -> void {
+
+			refreshedEvent(*this);
+		}
+
 		template<typename I>
 		struct BasicIterator : winrt::implements<BasicIterator<I>, I> {
 
@@ -620,6 +642,7 @@ namespace Citrine {
 		FilterableCollectionViewBase::Filter<ValueType> filter;
 		winrt::com_ptr<IItemFilterInterop> secondaryFilter;
 		std::vector<SizeType> matches;
+		winrt::event<FilterableCollectionViewRefreshedHandler> refreshedEvent;
 	};
 
 	template<typename T, std::invocable<T const&> Projection>
