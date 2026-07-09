@@ -56,4 +56,51 @@ namespace Citrine {
 		static auto filter = MakeItemFilter<T>([](T const&) static { return true; });
 		return filter;
 	}
+
+	template<typename C>
+	auto GetItemFilterMatchCount(C const& collection, winrt::Citrine::IItemFilter const& filter) -> std::size_t {
+
+		auto matchCount = 0uz;
+
+		if constexpr (requires{ std::begin(collection); std::end(collection); }) {
+
+			auto it = std::begin(collection);
+			auto end = std::end(collection);
+
+			using T = std::remove_cvref_t<decltype(*it)>;
+			if (filter.ItemType() != winrt::xaml_typename<T>())
+				throw winrt::hresult_invalid_argument{};
+
+			if constexpr (!std::same_as<T, winrt::Windows::Foundation::IInspectable>) {
+
+				auto filterInterop = filter.as<IItemFilterInterop>();
+				while (it != end) {
+
+					decltype(auto) item = *it;
+					matchCount += static_cast<std::size_t>(filterInterop->Match(&item));
+					++it;
+				}
+			}
+			else {
+
+				while (it != end) {
+
+					decltype(auto) item = *it;
+					matchCount += static_cast<std::size_t>(filter.Match(item));
+					++it;
+				}
+			}
+		}
+		else {
+
+			auto it = collection.First();
+			while (it.HasCurrent()) {
+
+				matchCount += static_cast<std::size_t>(filter.Match(it.Current()));
+				it.MoveNext();
+			}
+		}
+
+		return matchCount;
+	}
 }
