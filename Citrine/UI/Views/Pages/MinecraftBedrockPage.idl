@@ -1,8 +1,12 @@
+import "UI/ViewModels/MinecraftBedrockViewModel.idl";
+
 namespace Citrine
 {
     [default_interface]
     runtimeclass MinecraftBedrockPage : Microsoft.UI.Xaml.Controls.Page
     {
         MinecraftBedrockPage();
+
+        MinecraftBedrockViewModel ViewModel{ get; };
     }
 }

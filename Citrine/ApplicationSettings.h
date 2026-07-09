@@ -10,17 +10,23 @@
 
 namespace Citrine {
 
-	enum struct AppTheme {
+	enum struct AppTheme : std::uint8_t {
 
 		System,
 		Light,
 		Dark
 	};
 
-	enum struct AppBackdrop {
+	enum struct AppBackdrop : std::uint8_t {
 
 		Mica,
 		MicaAlt
+	};
+
+	enum struct PackageViewMode : std::uint8_t {
+
+		All,
+		Installed
 	};
 
 	class LocalApplicationSettings {
@@ -28,6 +34,7 @@ namespace Citrine {
 
 		using ThemeChangedEventHandler = EventHandler<AppTheme>;
 		using BackdropChangedEventHandler = EventHandler<AppBackdrop>;
+		using PackageViewModeChangedEventHandler = EventHandler<Citrine::PackageViewMode>;
 
 		auto Theme() const noexcept -> AppTheme;
 		auto Theme(AppTheme value) -> void;
@@ -43,6 +50,12 @@ namespace Citrine {
 
 		auto Language() const noexcept -> LanguageTag const&;
 		auto Language(LanguageTag const& value) noexcept -> void;
+
+		auto PackageViewMode() const noexcept -> Citrine::PackageViewMode;
+		auto PackageViewMode(Citrine::PackageViewMode value) -> void;
+
+		auto PackageViewModeChanged(PackageViewModeChangedEventHandler handler) -> EventToken;
+		auto PackageViewModeChanged(EventToken&& token) -> void;
 
 		auto LandingPage() const noexcept -> std::string const&;
 		auto LandingPage(std::string value) noexcept -> void;
@@ -66,6 +79,7 @@ namespace Citrine {
 			AppTheme Theme{};
 			AppBackdrop Backdrop{};
 			LanguageTag Language;
+			Citrine::PackageViewMode PackageViewMode{};
 			std::string LandingPage;
 		};
 
@@ -74,6 +88,7 @@ namespace Citrine {
 		JsonStorage<SettingsData> storage;
 		Event<ThemeChangedEventHandler> themeChangedEvent;
 		Event<BackdropChangedEventHandler> backdropChangedEvent;
+		Event<PackageViewModeChangedEventHandler> packageViewModeChangedEvent;
 	};
 }
 
@@ -103,6 +118,17 @@ namespace glz {
 	};
 
 	template<>
+	struct meta<::Citrine::PackageViewMode> {
+
+		using enum ::Citrine::PackageViewMode;
+
+		static constexpr auto value = enumerate(
+			"All", All,
+			"Installed", Installed
+		);
+	};
+
+	template<>
 	struct meta<::Citrine::LocalApplicationSettings::SettingsData> {
 
 		using T = ::Citrine::LocalApplicationSettings::SettingsData;
@@ -111,6 +137,7 @@ namespace glz {
 			"Theme", &T::Theme,
 			"Backdrop", &T::Backdrop,
 			"Language", &T::Language,
+			"PackageViewMode", &T::PackageViewMode,
 			"LandingPage", &T::LandingPage
 		);
 	};

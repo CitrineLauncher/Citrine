@@ -25,8 +25,10 @@ namespace winrt::Citrine::implementation
         winrt::com_ptr<implementation::MinecraftBedrockGamePackagesViewModel> viewModel{ nullptr };
         winrt::Microsoft::UI::Xaml::FrameworkElement contentArea{ nullptr };
         double baseContentHeight{};
+        std::uint32_t availableGamePackageCount{};
 
         winrt::Microsoft::UI::Xaml::Interop::INotifyCollectionChanged::CollectionChanged_revoker gamePackagesChangedRevoker;
+        winrt::Citrine::IFilterableCollectionView::Refreshed_revoker filteredGamePackagesRefreshedRevoker;
     };
 }
 

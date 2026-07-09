@@ -69,6 +69,30 @@ namespace Citrine {
 		storage->Language = value;
 	}
 
+	auto LocalApplicationSettings::PackageViewMode() const noexcept -> Citrine::PackageViewMode {
+
+		return storage->PackageViewMode;
+	}
+
+	auto LocalApplicationSettings::PackageViewMode(Citrine::PackageViewMode value) -> void {
+
+		if (storage->PackageViewMode != value) {
+
+			storage->PackageViewMode = value;
+			packageViewModeChangedEvent(value);
+		}
+	}
+
+	auto LocalApplicationSettings::PackageViewModeChanged(PackageViewModeChangedEventHandler handler) -> EventToken {
+
+		return packageViewModeChangedEvent.Add(std::move(handler));
+	}
+
+	auto LocalApplicationSettings::PackageViewModeChanged(EventToken&& token) -> void {
+
+		packageViewModeChangedEvent.Remove(std::move(token));
+	}
+
 	auto LocalApplicationSettings::LandingPage() const noexcept -> std::string const& {
 
 		return storage->LandingPage;

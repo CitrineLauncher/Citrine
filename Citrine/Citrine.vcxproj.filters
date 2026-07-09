@@ -266,6 +266,8 @@
     <Midl Include="UI\ViewModels\AboutViewModel.idl" />
     <Midl Include="Models\MinecraftBedrockGamePackageRegisterResult.idl" />
     <Midl Include="Collections\IItemFilter.idl" />
+    <Midl Include="UI\ViewModels\MinecraftBedrockViewModel.idl" />
+    <Midl Include="UI\Converters\IntToBoolConverter.idl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Citrine.rc" />

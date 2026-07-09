@@ -345,4 +345,7 @@
   <data name="ErrorMessage_RegisteringGamePackageFailed" xml:space="preserve">
     <value>Registrieren des Spielpaketes fehlgeschlagen.</value>
   </data>
+  <data name="MinecraftBedrock_OnlyShowInstalledVersions.Text" xml:space="preserve">
+    <value>Nur installierte Versionen zeigen</value>
+  </data>
 </root>

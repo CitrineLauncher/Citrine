@@ -181,8 +181,16 @@
       <DependentUpon>UI\Converters\Convert.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="UI\Converters\IntToBoolConverter.h">
+      <DependentUpon>UI\Converters\IntToBoolConverter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="UI\ViewModels\AboutViewModel.h">
       <DependentUpon>UI\ViewModels\AboutViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\ViewModels\MinecraftBedrockViewModel.h">
+      <DependentUpon>UI\ViewModels\MinecraftBedrockViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml.h">
@@ -524,8 +532,16 @@
       <DependentUpon>UI\Converters\Convert.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="UI\Converters\IntToBoolConverter.cpp">
+      <DependentUpon>UI\Converters\IntToBoolConverter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="UI\ViewModels\AboutViewModel.cpp">
       <DependentUpon>UI\ViewModels\AboutViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\ViewModels\MinecraftBedrockViewModel.cpp">
+      <DependentUpon>UI\ViewModels\MinecraftBedrockViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml.cpp">
@@ -784,6 +800,9 @@
     <Midl Include="UI\Converters\Convert.idl">
       <SubType>Designer</SubType>
     </Midl>
+    <Midl Include="UI\Converters\IntToBoolConverter.idl">
+      <SubType>Designer</SubType>
+    </Midl>
     <Midl Include="UI\Converters\StringToVisibilityConverter.idl">
       <SubType>Designer</SubType>
     </Midl>
@@ -795,6 +814,9 @@
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="UI\ViewModels\MinecraftBedrockGamePackagesViewModel.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\ViewModels\MinecraftBedrockViewModel.idl">
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="UI\Views\Dialogs\MinecraftBedrockGamePackagePicker.idl">

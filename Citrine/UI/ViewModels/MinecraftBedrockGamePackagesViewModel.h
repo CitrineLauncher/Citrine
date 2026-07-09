@@ -40,12 +40,18 @@ namespace winrt::Citrine::implementation
 
     private:
 
+        auto RegisterGamePackageStatusListener(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void;
+        auto TryRegisterGamePackageStatusListener(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> bool;
+
         Citrine::IObservableCollectionView gamePackages{ nullptr };
         Citrine::IFilterableCollectionView filteredGamePackages{ nullptr };
         winrt::hstring packageSourceId;
 
         bool canStartImporting{};
         ::Citrine::EventRevoker gameManagerInitializationCompletedRevoker;
+        ::Citrine::EventRevoker viewModeChangedRevoker;
+
+        static Citrine::IItemFilter installedGamePackagesFilter;
     };
 }
 

@@ -9,11 +9,56 @@
     mc:Ignorable="d"
     NavigationCacheMode="Required">
 
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="ViewModeToggleForeground" Color="#A2A4A6" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast">
+                    <SolidColorBrush x:Key="ViewModeToggleForeground" Color="{ThemeResource TextFillColorPrimary}" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="ViewModeToggleForeground" Color="{ThemeResource TextFillColorSecondary}" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+    
     <Grid RowSpacing="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="60" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="ViewModeToggleStates">
+                <VisualStateGroup.Transitions>
+                    <VisualTransition From="ViewModeToggleCollapsed" To="ViewModeToggleVisible">
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="ViewModeToggle" Storyboard.TargetProperty="Opacity" From="0.3" To="1" BeginTime="0:0:0.15" Duration="0:0:0.175" />
+                        </Storyboard>
+                    </VisualTransition>
+                    <VisualTransition From="ViewModeToggleVisible" To="ViewModeToggleCollapsed">
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetName="ViewModeToggle" Storyboard.TargetProperty="Opacity" From="1" To="0.3" Duration="0:0:0.125" />
+                        </Storyboard>
+                    </VisualTransition>
+                </VisualStateGroup.Transitions>
+                <VisualState x:Name="ViewModeToggleVisible">
+                    <VisualState.Setters>
+                        <Setter Target="ViewModeToggle.Opacity" Value="1" />
+                        <Setter Target="ViewModeToggle.IsHitTestVisible" Value="True" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="ViewModeToggleCollapsed">
+                    <VisualState.Setters>
+                        <Setter Target="ViewModeToggle.Opacity" Value="0" />
+                        <Setter Target="ViewModeToggle.IsHitTestVisible" Value="False" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
 
         <Grid Grid.Row="0"
               Background="{ThemeResource ControlFillColorDefaultBrush}"
@@ -52,5 +97,13 @@
             </NavigationView>
         </Grid>
         <local:FrameEx x:Name="Frame" Grid.Row="1" />
+        <CheckBox x:Name="ViewModeToggle"
+                  IsChecked="{x:Bind ViewModel.PackageViewMode, Mode=TwoWay, Converter={StaticResource IntToBoolConverter}}"
+                  Grid.Row="1"
+                  Margin="0,0,8,-6"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Bottom">
+            <TextBlock x:Uid="MinecraftBedrock_OnlyShowInstalledVersions" FontWeight="Medium" Foreground="{ThemeResource ViewModeToggleForeground}" />
+        </CheckBox>
     </Grid>
 </Page>

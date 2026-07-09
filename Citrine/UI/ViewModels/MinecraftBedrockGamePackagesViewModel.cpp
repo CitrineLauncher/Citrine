@@ -7,6 +7,7 @@
 #include "Models/MinecraftBedrockGamePackageItem.h"
 #include "Collections/FilterableCollectionView.h"
 
+#include "ApplicationData.h"
 #include "Locale/Localizer.h"
 #include "Services/MinecraftBedrockGameManager.h"
 #include "Services/ToastNotificationService.h"
@@ -20,12 +21,15 @@ using namespace Minecraft::Bedrock;
 namespace winrt {
 
 	using namespace Windows::Foundation;
+	using namespace Windows::Foundation::Collections;
+	using namespace Microsoft::UI::Xaml::Data;
 }
 
 namespace {
 
 	using GamePackageItem = winrt::Citrine::MinecraftBedrockGamePackageItem;
 	using GamePackageItemImpl = winrt::Citrine::implementation::MinecraftBedrockGamePackageItem;
+	using GamePackageStatus = winrt::Citrine::MinecraftBedrockGamePackageStatus;
 
 	class GamePackageFilterProperties {
 	public:
@@ -153,12 +157,51 @@ namespace winrt::Citrine::implementation
 
 		gameManagerInitializationCompletedRevoker = MinecraftBedrockGameManager::InitializationCompleted([this] {
 
+			using enum GamePackageStatus;
+
 			if (SupportsImporting()) {
 
 				canStartImporting = true;
 				OnPropertyChanged(L"CanStartImporting");
 			}
+			else {
+
+				for (auto const& gamePackage : gamePackages.as<winrt::IVectorView<GamePackageItem>>()) {
+
+					auto gamePackageImpl = winrt::get_self<GamePackageItemImpl>(gamePackage);
+					auto status = gamePackageImpl->Status();
+
+					if (status != NotInstalled && status != Installed)
+						RegisterGamePackageStatusListener(gamePackage);
+				}
+			}
 		});
+
+		if (SupportsImporting())
+			return;
+
+		if (!installedGamePackagesFilter) {
+
+			installedGamePackagesFilter = MakeItemFilter<GamePackageItem>([](GamePackageItem const& item) {
+
+				auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+				return itemImpl->Status() != GamePackageStatus::NotInstalled;
+			});
+		}
+
+		auto& settings = ApplicationData::LocalSettings();
+		viewModeChangedRevoker = settings.PackageViewModeChanged([this](PackageViewMode value) {
+
+			filteredGamePackages.SecondaryFilter(value == PackageViewMode::Installed
+				? installedGamePackagesFilter
+				: EmptyItemFilter<GamePackageItem>()
+			);
+		});
+
+		if (settings.PackageViewMode() == PackageViewMode::Installed) {
+
+			filteredGamePackages.SecondaryFilter(installedGamePackagesFilter);
+		}
 	}
 
 	auto MinecraftBedrockGamePackagesViewModel::GamePackages() const noexcept -> Citrine::IObservableCollectionView {
@@ -198,6 +241,7 @@ namespace winrt::Citrine::implementation
 		settings.GameInstallLocation(std::wstring{ installLocation });
 		settings.Save();
 
+		TryRegisterGamePackageStatusListener(gamePackage);
 		MinecraftBedrockGameManager::InstallGamePackageAsync(gamePackage);
 	}
 
@@ -252,7 +296,7 @@ namespace winrt::Citrine::implementation
 	auto MinecraftBedrockGamePackagesViewModel::RenameGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage, winrt::hstring const& nameTag) -> void {
 
 		MinecraftBedrockGameManager::RenameGamePackage(gamePackage, nameTag);
-		filteredGamePackages.Refresh();
+		filteredGamePackages.Refresh(gamePackage);
 	}
 
 	auto MinecraftBedrockGamePackagesViewModel::UnregisterGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void {
@@ -262,6 +306,7 @@ namespace winrt::Citrine::implementation
 
 	auto MinecraftBedrockGamePackagesViewModel::UninstallGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void {
 
+		TryRegisterGamePackageStatusListener(gamePackage);
 		MinecraftBedrockGameManager::UninstallGamePackageAsync(gamePackage);
 	}
 
@@ -296,4 +341,63 @@ namespace winrt::Citrine::implementation
 
 		return packageSourceId;
 	}
+
+	auto MinecraftBedrockGamePackagesViewModel::RegisterGamePackageStatusListener(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void {
+
+		using enum GamePackageStatus;
+
+		auto gamePackageImpl = winrt::get_self<GamePackageItemImpl>(gamePackage);
+		auto status = gamePackageImpl->Status();
+		
+		struct Listener {
+
+			auto Invoke(winrt::IInspectable const& sender, winrt::PropertyChangedEventArgs const& args) -> void {
+
+				if (args.PropertyName() != L"Status")
+					return;
+
+				auto gamePackageImpl = sender.as<GamePackageItemImpl>();
+				auto status = gamePackageImpl->Status();
+				auto prevStatus = std::exchange(PreviousStatus, status);
+
+				if (status == NotInstalled || status == Installed) {
+
+					gamePackageImpl->PropertyChanged(Token);
+				}
+				else if (prevStatus != NotInstalled && prevStatus != Installed) {
+
+					return;
+				}
+
+				if (auto collection = FilteredCollection.get())
+					collection.Refresh(*gamePackageImpl);
+			}
+
+			GamePackageStatus PreviousStatus{};
+			winrt::weak_ref<Citrine::IFilterableCollectionView> FilteredCollection;
+			winrt::event_token Token;
+		};
+
+		auto listener = std::make_shared<Listener>(status, filteredGamePackages);
+		listener->Token = gamePackageImpl->PropertyChanged({ auto{ listener }, &Listener::Invoke });
+	}
+
+	auto MinecraftBedrockGamePackagesViewModel::TryRegisterGamePackageStatusListener(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> bool {
+
+		using enum GamePackageStatus;
+
+		if (SupportsImporting())
+			return false;
+
+		auto gamePackageImpl = winrt::get_self<GamePackageItemImpl>(gamePackage);
+		auto status = gamePackageImpl->Status();
+
+		if (status != NotInstalled && status != Installed)
+			return false;
+
+		RegisterGamePackageStatusListener(gamePackage);
+		return true;
+	}
+
+	Citrine::IItemFilter MinecraftBedrockGamePackagesViewModel::installedGamePackagesFilter{ nullptr };
 }

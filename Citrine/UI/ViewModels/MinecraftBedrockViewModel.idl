@@ -1,0 +1,10 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftBedrockViewModel 
+    {
+        MinecraftBedrockViewModel();
+
+        Int32 PackageViewMode;
+    }
+}

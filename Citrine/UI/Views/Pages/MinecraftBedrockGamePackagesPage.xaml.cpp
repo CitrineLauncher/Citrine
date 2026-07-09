@@ -5,15 +5,19 @@
 #endif
 
 #include "Models/ParameterPair.h"
+#include "Collections/ItemFilter.h"
 #include "UI/Views/Dialogs/MinecraftBedrockInstallDialog.xaml.h"
 #include "UI/Views/Dialogs/MinecraftBedrockManageDialog.xaml.h"
 #include "UI/Views/Dialogs/MinecraftBedrockGamePackagePicker.h"
 #include "UI/Views/Dialogs/MinecraftBedrockImportDialog.xaml.h"
 #include "UI/Views/Dialogs/MinecraftBedrockRenameDialog.xaml.h"
 
+using namespace Citrine;
+
 namespace winrt {
 
 	using namespace Windows::Foundation;
+	using namespace Windows::Foundation::Collections;
 	using namespace Microsoft::UI::Xaml;
 	using namespace Microsoft::UI::Xaml::Controls;
 	using namespace Microsoft::UI::Xaml::Input;
@@ -177,19 +181,24 @@ namespace winrt::Citrine::implementation
 			auto newSize = args.NewSize();
 			OnSizeChanged(newSize.Width, newSize.Height);
 		});
-		gamePackagesChangedRevoker = viewModel->GamePackages().CollectionChanged(winrt::auto_revoke, [this](auto const&...) {
-			
+
+		auto onCollectionUpdate = [this](auto const&...) {
+
+			auto gamePackages = viewModel->GamePackages().as<winrt::IVectorView<Citrine::MinecraftBedrockGamePackageItem>>();
+			availableGamePackageCount = GetItemFilterMatchCount(gamePackages, viewModel->FilteredGamePackages().SecondaryFilter());
+
 			auto actualSize = ActualSize();
 			OnSizeChanged(actualSize.x, actualSize.y);
-		});
+		};
 
-		auto actualSize = ActualSize();
-		OnSizeChanged(actualSize.x, actualSize.y);
+		gamePackagesChangedRevoker = viewModel->GamePackages().CollectionChanged(winrt::auto_revoke, onCollectionUpdate);
+		filteredGamePackagesRefreshedRevoker = viewModel->FilteredGamePackages().Refreshed(winrt::auto_revoke, onCollectionUpdate);
+		onCollectionUpdate();
 	}
 
 	auto MinecraftBedrockGamePackagesPage::OnSizeChanged(double newWidth, double newHeight) -> void {
 
-		auto contentHeight = baseContentHeight + (static_cast<double>(viewModel->GamePackages().Size()) * (110 + 3));
+		auto contentHeight = baseContentHeight + (static_cast<double>(availableGamePackageCount) * (110 + 3));
 		contentArea.Margin(winrt::Thickness{ 0, std::max((newHeight - contentHeight) / 2, 0.0), 0, 0 });
 	}
 }
