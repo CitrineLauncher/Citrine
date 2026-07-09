@@ -415,7 +415,6 @@ namespace Citrine {
 
 					auto newLocalPos = it - matches.begin();
 					matches.insert(matches.begin() + newLocalPos, index);
-					std::ranges::for_each(matches.begin() + newLocalPos + 1, matches.end(), [](SizeType& index) static { ++index; });
 					OnCollectionChanged(Add, MakeSingleItemBindableVector(sourceElements[index]), nullptr, static_cast<std::int32_t>(newLocalPos), -1);
 				}
 			}
@@ -425,7 +424,6 @@ namespace Citrine {
 
 					auto oldLocalPos = it - matches.begin();
 					matches.erase(matches.begin() + oldLocalPos);
-					std::ranges::for_each(matches.begin() + oldLocalPos, matches.end(), [](SizeType& index) static { --index; });
 					OnCollectionChanged(Remove, nullptr, MakeSingleItemBindableVector(sourceElements[index]), -1, static_cast<std::int32_t>(oldLocalPos));
 				}
 			}
