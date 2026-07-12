@@ -38,7 +38,6 @@ namespace Citrine {
 
 	auto SignalAwaiter::WaitDeleter::operator()(void* handle) noexcept -> void {
 
-		if (handle)
-			::CloseThreadpoolWait(static_cast<::PTP_WAIT>(handle));
+		::CloseThreadpoolWait(static_cast<::PTP_WAIT>(handle));
 	}
 }
