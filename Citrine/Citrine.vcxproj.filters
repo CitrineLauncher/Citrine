@@ -49,6 +49,7 @@
     <ClCompile Include="Xbox\Keys\KeyRegistry.cpp" />
     <ClCompile Include="Windows\Shell.cpp" />
     <ClCompile Include="Windows\User.cpp" />
+    <ClCompile Include="Core\Coroutine\SignalAwaiter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="Core\Coroutine\Concepts.h" />
     <ClInclude Include="Core\Coroutine\Promise.h" />
     <ClInclude Include="Collections\ItemFilter.h" />
+    <ClInclude Include="Core\Coroutine\SignalAwaiter.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">

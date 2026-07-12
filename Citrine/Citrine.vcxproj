@@ -169,6 +169,7 @@
       <DependentUpon>Models\MinecraftBedrockGamePackageImportContext.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="Core\Coroutine\SignalAwaiter.h" />
     <ClInclude Include="UI\Controls\ProgressBarEx.h">
       <DependentUpon>UI\Controls\ProgressBarEx.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -520,6 +521,7 @@
       <DependentUpon>Models\MinecraftBedrockGamePackageImportContext.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="Core\Coroutine\SignalAwaiter.cpp" />
     <ClCompile Include="UI\Controls\ProgressBarEx.cpp">
       <DependentUpon>UI\Controls\ProgressBarEx.idl</DependentUpon>
       <SubType>Code</SubType>
