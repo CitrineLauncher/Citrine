@@ -157,6 +157,7 @@
     <ClInclude Include="Core\Util\JsonWrappers.h" />
     <ClInclude Include="Core\Util\Memory.h" />
     <ClInclude Include="Core\Util\SemanticVersion.h" />
+    <ClInclude Include="Windows\Store\DisplayCatalog.h" />
     <ClInclude Include="Models\MinecraftBedrockGameInfo.h">
       <DependentUpon>Models\MinecraftBedrockGameInfo.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -357,7 +358,7 @@
     <ClInclude Include="Windows\Msix\StreamedMsixFile.h" />
     <ClInclude Include="Windows\Msix\MsixManifest.h" />
     <ClInclude Include="Windows\AppModel.h" />
-    <ClInclude Include="Windows\FE3Handler.h" />
+    <ClInclude Include="Windows\Store\FE3Handler.h" />
     <ClInclude Include="Windows\AppLauncher.h" />
     <ClInclude Include="ApplicationData.h" />
     <ClInclude Include="ApplicationSettings.h" />
@@ -509,6 +510,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationMutex.cpp" />
+    <ClCompile Include="Windows\Store\DisplayCatalog.cpp" />
     <ClCompile Include="Models\MinecraftBedrockGameInfo.cpp">
       <DependentUpon>Models\MinecraftBedrockGameInfo.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -683,7 +685,7 @@
     <ClCompile Include="Windows\Msix\StreamedMsixFile.cpp" />
     <ClCompile Include="Windows\Msix\MsixManifest.cpp" />
     <ClCompile Include="Windows\AppModel.cpp" />
-    <ClCompile Include="Windows\FE3Handler.cpp" />
+    <ClCompile Include="Windows\Store\FE3Handler.cpp" />
     <ClCompile Include="Windows\AppLauncher.cpp" />
     <ClCompile Include="ApplicationData.cpp" />
     <ClCompile Include="ApplicationSettings.cpp" />

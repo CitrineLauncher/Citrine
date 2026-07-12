@@ -7,7 +7,7 @@
 #include <string>
 #include <expected>
 
-namespace Citrine::Windows {
+namespace Citrine::Windows::Store {
 
 	enum struct FE3Error {
 

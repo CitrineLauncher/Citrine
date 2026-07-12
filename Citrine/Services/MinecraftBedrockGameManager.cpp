@@ -21,7 +21,7 @@
 #include "Services/HttpService.h"
 #include "Xbox/Xvc/StreamedXvcFile.h"
 #include "Xbox/Keys/KeyRegistry.h"
-#include "Windows/Fe3Handler.h"
+#include "Windows/Store/Fe3Handler.h"
 #include "Windows/Msix/StreamedMsixFile.h"
 #include "Windows/Msix/MsixManifest.h"
 #include "Windows/Shell.h"
@@ -1862,7 +1862,7 @@ namespace {
 				}
 				else {
 
-					auto url = co_await Windows::FE3Handler::GetFileUrlAsync(packageInfo->UpdateId, 1);
+					auto url = co_await Windows::Store::FE3Handler::GetFileUrlAsync(packageInfo->UpdateId, 1);
 					if (!url) {
 
 						Logger::Error("Installing game package {} failed: fetching url failed", *gamePackage);

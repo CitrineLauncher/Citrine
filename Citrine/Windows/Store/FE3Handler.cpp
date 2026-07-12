@@ -50,7 +50,7 @@ R"(<s:Envelope xmlns:a="http://www.w3.org/2005/08/addressing" xmlns:s="http://ww
 	};
 }
 
-namespace Citrine::Windows {
+namespace Citrine::Windows::Store {
 
 	auto FE3Handler::GetFileUrlAsync(std::string updateId, std::uint64_t revisionNumber) -> AsyncFE3Result<Url> {
 
