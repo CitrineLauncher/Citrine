@@ -38,17 +38,6 @@ namespace Citrine {
 		template<typename Promise>
 		auto await_suspend(std::coroutine_handle<Promise> continuation) -> bool {
 
-			struct Lock {
-
-				~Lock() noexcept {
-
-					awaiter.suspending.store(false, std::memory_order::release);
-					awaiter.suspending.notify_one();
-				}
-
-				SignalAwaiter& awaiter;
-			};
-
 			waitHandle.reset(CreateThreadPoolWait());
 			SetCanceller(continuation);
 
@@ -56,8 +45,6 @@ namespace Citrine {
 				return false;
 
 			suspending.store(true, std::memory_order::relaxed);
-			auto lock = Lock{ *this };
-
 			continuationHandle = continuation;
 			SuspendInternal();
 
@@ -67,7 +54,7 @@ namespace Citrine {
 				if (CancelInternal())
 					return false;
 			}
-			return true;
+			return suspending.exchange(false, std::memory_order::acquire);
 		}
 
 		auto await_resume() -> bool {
@@ -88,8 +75,11 @@ namespace Citrine {
 		static auto Callback(void*, void* parameter, void*, std::uint32_t result) -> void {
 
 			auto self = static_cast<SignalAwaiter*>(parameter);
-			self->suspending.wait(true, std::memory_order::acquire);
 			self->signalled = (result == 0);
+
+			if (self->suspending.exchange(false, std::memory_order::release))
+				return;
+
 			self->continuationHandle();
 		}
 
