@@ -64,6 +64,11 @@ namespace Citrine {
 			return handle.promise().IsCancelled();
 		}
 
+		auto IsReady() noexcept -> bool {
+
+			return handle.promise().AwaitReady();
+		}
+
 		template<typename Self>
 		auto ResumeAgile(this Self&& self) -> decltype(auto) {
 
