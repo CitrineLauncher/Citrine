@@ -37,7 +37,9 @@ namespace Citrine::Windows {
 		}
 
 		auto Identity() const noexcept -> PackageIdentity const&;
+
 		auto Application() const noexcept -> MsixApplication const&;
+		auto Applications() const noexcept -> std::vector<MsixApplication> const&;
 
 		auto CustomInstallExtension() const noexcept -> MsixCustomInstallExtension const&;
 		auto RemoveCustomInstallExtension() -> void;
