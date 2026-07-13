@@ -40,7 +40,12 @@ namespace Citrine::Windows {
 
 		auto Application() const noexcept -> MsixApplication const& {
 
-			return application;
+			return applications.front();
+		}
+
+		auto Applications() const noexcept -> std::vector<MsixApplication> const& {
+
+			return applications;
 		}
 
 		auto CustomInstallExtension() const noexcept -> MsixCustomInstallExtension const& {
@@ -149,7 +154,7 @@ namespace Citrine::Windows {
 			if (auto result = ParseIdentityElement(); !result)
 				return result.error();
 
-			if (auto result = ParseApplicationElement(); !result)
+			if (auto result = ParseApplicationsElement(); !result)
 				return result.error();
 
 			if (auto result = ParseCustomInstallExtensionElement(); !result)
@@ -203,62 +208,62 @@ namespace Citrine::Windows {
 			return {};
 		}
 
-		auto ParseApplicationElement() -> MsixOperationResult<> {
+		auto ParseApplicationsElement() -> MsixOperationResult<> {
 
 			auto applicationsElement = xmlDocument.child("Package").child("Applications");
 			if (!applicationsElement)
 				return MsixError::ParsingFailed;
 
-			auto applicationElement = applicationsElement.first_child();
-			if (!applicationElement)
-				return MsixError::ParsingFailed;
+			for (auto const& applicationElement : applicationsElement) {
 
-			if (std::string_view{ applicationElement.name() } != "Application")
-				return MsixError::ParsingFailed;
-
-			auto idAttribute = applicationElement.attribute("Id");
-			auto executableAttribute = applicationElement.attribute("Executable");
-			auto entryPointAttribute = applicationElement.attribute("EntryPoint");
-
-			if (!idAttribute)
-				return MsixError::ParsingFailed;
-
-			application.Id = idAttribute.as_string();
-			application.Executable = executableAttribute.as_string();
-			application.EntryPoint = entryPointAttribute.as_string();
-
-			for (auto const& extensionElement : applicationElement.child("Extensions")) {
-
-				if (std::string_view{ extensionElement.name() } != "uap:Extension")
-					continue;
-
-				if (std::string_view{ extensionElement.attribute("Category").as_string() } != "windows.fileTypeAssociation")
-					continue;
-
-				auto entryPoint = extensionElement.attribute("EntryPoint").as_string();
-
-				auto fileTypeAssociationElement = extensionElement.first_child();
-				if (!fileTypeAssociationElement)
+				if (std::string_view{ applicationElement.name() } != "Application")
 					return MsixError::ParsingFailed;
 
-				if (std::string_view{ fileTypeAssociationElement.name() } != "uap:FileTypeAssociation")
+				auto idAttribute = applicationElement.attribute("Id");
+				auto executableAttribute = applicationElement.attribute("Executable");
+				auto entryPointAttribute = applicationElement.attribute("EntryPoint");
+
+				if (!idAttribute)
 					return MsixError::ParsingFailed;
 
-				for (auto const& fileTypeElement : fileTypeAssociationElement.child("uap:SupportedFileTypes")) {
+				auto& application = applications.emplace_back();
+				application.Id = idAttribute.as_string();
+				application.Executable = executableAttribute.as_string();
+				application.EntryPoint = entryPointAttribute.as_string();
 
-					auto fileTypeText = fileTypeElement.text();
-					if (!fileTypeText)
+				for (auto const& extensionElement : applicationElement.child("Extensions")) {
+
+					if (std::string_view{ extensionElement.name() } != "uap:Extension")
+						continue;
+
+					if (std::string_view{ extensionElement.attribute("Category").as_string() } != "windows.fileTypeAssociation")
+						continue;
+
+					auto entryPoint = extensionElement.attribute("EntryPoint").as_string();
+
+					auto fileTypeAssociationElement = extensionElement.first_child();
+					if (!fileTypeAssociationElement)
 						return MsixError::ParsingFailed;
 
-					application.AssociatedFileTypes.emplace_back(fileTypeText.as_string(), entryPoint);
-				}
+					if (std::string_view{ fileTypeAssociationElement.name() } != "uap:FileTypeAssociation")
+						return MsixError::ParsingFailed;
 
-				if (fileTypeAssociationElement.next_sibling())
-					return MsixError::ParsingFailed;
+					for (auto const& fileTypeElement : fileTypeAssociationElement.child("uap:SupportedFileTypes")) {
+
+						auto fileTypeText = fileTypeElement.text();
+						if (!fileTypeText)
+							return MsixError::ParsingFailed;
+
+						application.AssociatedFileTypes.emplace_back(fileTypeText.as_string(), entryPoint);
+					}
+
+					if (fileTypeAssociationElement.next_sibling())
+						return MsixError::ParsingFailed;
+				}
 			}
 
-			if (applicationElement.next_sibling())
-				return MsixError::UnsupportedFormat;
+			if (applications.empty())
+				return MsixError::ParsingFailed;
 
 			return {};
 		}
@@ -352,7 +357,7 @@ namespace Citrine::Windows {
 		pugi::xml_document xmlDocument;
 
 		PackageIdentity identity;
-		MsixApplication application;
+		std::vector<MsixApplication> applications;
 		MsixCustomInstallExtension customInstallExtension;
 	};
 
@@ -390,6 +395,11 @@ namespace Citrine::Windows {
 	auto MsixManifest::Application() const noexcept -> MsixApplication const& {
 
 		return impl->Application();
+	}
+
+	auto MsixManifest::Applications() const noexcept -> std::vector<MsixApplication> const& {
+
+		return impl->Applications();
 	}
 
 	auto MsixManifest::CustomInstallExtension() const noexcept -> MsixCustomInstallExtension const& {
