@@ -170,38 +170,22 @@ namespace Citrine::Windows {
 				return MsixError::ParsingFailed;
 
 			auto nameAttribute = identityElement.attribute("Name");
-			auto publisherAttribute = identityElement.attribute("Publisher");
 			auto versionAttribute = identityElement.attribute("Version");
 			auto architectureAttribute = identityElement.attribute("ProcessorArchitecture");
+			auto resourceIdAttribute = identityElement.attribute("ResourceId");
+			auto publisherAttribute = identityElement.attribute("Publisher");
 
-			if (!nameAttribute || !publisherAttribute || !versionAttribute || !architectureAttribute)
+			if (!nameAttribute || !versionAttribute || !architectureAttribute || !publisherAttribute)
 				return MsixError::ParsingFailed;
 
-			auto name = std::string_view{ nameAttribute.as_string() };
-			auto version = std::string_view{ versionAttribute.as_string() };
-			auto architecture = std::string_view{ architectureAttribute.as_string() };
-			auto publisherId = GetPublisherIdFromPublisher(publisherAttribute.as_string());
+			identity = PackageIdentity{
+				nameAttribute.as_string(),
+				versionAttribute.as_string(),
+				architectureAttribute.as_string(),
+				resourceIdAttribute.as_string(),
+				publisherAttribute.as_string()
+			};
 
-			auto fullName = std::string{};
-			auto fullNameSize = name.size() + 1 + version.size() + 1 + architecture.size() + 1 + 0 + 1 + publisherId.size();
-			fullName.resize_and_overwrite(fullNameSize, [&](char* data, std::size_t size) {
-
-				auto out = data;
-
-				out = std::ranges::copy(name, out).out;
-				*out++ = '_';
-				out = std::ranges::copy(version, out).out;
-				*out++ = '_';
-				out = std::ranges::copy(architecture, out).out;
-				*out++ = '_';
-				//
-				*out++ = '_';
-				out = std::ranges::copy(publisherId, out).out;
-
-				return size;
-			});
-
-			identity = PackageIdentity{ std::move(fullName) };
 			if (!identity.IsValid())
 				return MsixError::ParsingFailed;
 
@@ -358,6 +342,7 @@ namespace Citrine::Windows {
 
 		PackageIdentity identity;
 		std::vector<MsixApplication> applications;
+		std::vector<MsixPackageDependency> packageDependencies;
 		MsixCustomInstallExtension customInstallExtension;
 	};
 
