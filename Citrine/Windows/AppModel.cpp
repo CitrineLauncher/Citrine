@@ -183,6 +183,12 @@ namespace Citrine::Windows {
     }
 
     template<typename StringType>
+    auto PackageIdentityBase<StringType>::Publisher() const noexcept -> StringType const& {
+
+        return publisher;
+    }
+
+    template<typename StringType>
     auto PackageIdentityBase<StringType>::IsEmpty() const noexcept -> bool {
 
         return fullName.empty();
@@ -200,6 +206,7 @@ namespace Citrine::Windows {
         fullName = {};
         components = {};
         valid = {};
+        publisher = {};
     }
 
     template class PackageIdentityBase<std::string>;
@@ -207,12 +214,42 @@ namespace Citrine::Windows {
 
     PackageIdentity::PackageIdentity(PackageIdentityView const& packageIdentity)
     
-        : PackageIdentityBase(packageIdentity.fullName, packageIdentity.components, packageIdentity.valid)
+        : PackageIdentityBase(packageIdentity.fullName, packageIdentity.components, packageIdentity.valid, packageIdentity.publisher)
     {}
+
+    PackageIdentity::PackageIdentity(
+        std::string_view name,
+        std::string_view version,
+        std::string_view architecture,
+        std::string_view resourceId,
+        std::string publisherStr
+    ) {
+        auto publisherId = GetPublisherIdFromPublisher(publisherStr);
+
+        auto fullNameSize = name.size() + 1 + version.size() + 1 + architecture.size() + 1 + resourceId.size() + 1 + publisherId.size();
+        fullName.resize_and_overwrite(fullNameSize, [&](char* data, std::size_t size) {
+
+            auto out = data;
+
+            out = std::ranges::copy(name, out).out;
+            *out++ = '_';
+            out = std::ranges::copy(version, out).out;
+            *out++ = '_';
+            out = std::ranges::copy(architecture, out).out;
+            *out++ = '_';
+            out = std::ranges::copy(resourceId, out).out;
+            *out++ = '_';
+            out = std::ranges::copy(publisherId, out).out;
+
+            return size;
+        });
+        valid = Parse(fullName, components);
+        publisher = std::move(publisherStr);
+    }
 
     PackageIdentity::PackageIdentity(PackageIdentity&& other) noexcept
     
-        : PackageIdentityBase(std::move(other.fullName), other.components, other.valid)
+        : PackageIdentityBase(std::move(other.fullName), other.components, other.valid, std::move(other.publisher))
     {
         other.Reset();
     }
@@ -224,6 +261,7 @@ namespace Citrine::Windows {
             fullName = std::move(other.fullName);
             components = other.components;
             valid = other.valid;
+            publisher = std::move(other.publisher);
 
             other.Reset();
         }
@@ -252,11 +290,12 @@ namespace Citrine::Windows {
         std::swap(fullName, other.fullName);
         std::swap(components, other.components);
         std::swap(valid, other.valid);
+        std::swap(publisher, other.publisher);
     }
 
     PackageIdentityView::PackageIdentityView(PackageIdentity const& packageIdentity) noexcept
 
-        : PackageIdentityBase(packageIdentity.fullName, packageIdentity.components, packageIdentity.valid)
+        : PackageIdentityBase(packageIdentity.fullName, packageIdentity.components, packageIdentity.valid, packageIdentity.publisher)
     {}
 
     auto PackageIdentityView::FullName() const noexcept -> std::string_view const& {
@@ -269,6 +308,7 @@ namespace Citrine::Windows {
         std::swap(fullName, other.fullName);
         std::swap(components, other.components);
         std::swap(valid, other.valid);
+        std::swap(publisher, other.publisher);
     }
 
     auto ValidatePackageString(std::string_view str) noexcept -> bool {
