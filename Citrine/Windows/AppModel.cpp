@@ -405,8 +405,10 @@ namespace Citrine::Windows {
 
     auto GetPackageFamilyNameFromId(PackageIdentityView id) -> std::string {
 
-        auto name = id.Name();
-        auto publisherId = id.PublisherId();
+        return GetPackageFamilyName(id.Name(), id.PublisherId());
+    }
+
+    auto GetPackageFamilyName(std::string_view name, std::string_view publisherId) -> std::string {
 
         auto familyName = std::string{};
         auto familyNameSize = name.size() + 1 + publisherId.size();
