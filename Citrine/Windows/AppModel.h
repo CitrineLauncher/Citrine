@@ -226,6 +226,7 @@ namespace Citrine::Windows {
     auto GetPublisherIdFromPublisher(std::string_view publisher) noexcept -> std::string;
     auto GetPackageFamilyNameFromFullName(std::string_view fullName) -> std::string;
     auto GetPackageFamilyNameFromId(PackageIdentityView id) -> std::string;
+    auto GetPackageFamilyName(std::string_view name, std::string_view publisherId) -> std::string;
 }
 
 namespace std {
