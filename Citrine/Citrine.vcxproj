@@ -157,6 +157,9 @@
     <ClInclude Include="Core\Util\JsonWrappers.h" />
     <ClInclude Include="Core\Util\Memory.h" />
     <ClInclude Include="Core\Util\SemanticVersion.h" />
+    <ClInclude Include="Windows\DeviceFamily.h" />
+    <ClInclude Include="Windows\Msix\MsixDependency.h" />
+    <ClInclude Include="Windows\Msix\MsixTargetDeviceFamily.h" />
     <ClInclude Include="Windows\Store\DisplayCatalog.h" />
     <ClInclude Include="Models\MinecraftBedrockGameInfo.h">
       <DependentUpon>Models\MinecraftBedrockGameInfo.idl</DependentUpon>

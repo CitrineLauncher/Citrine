@@ -189,6 +189,9 @@
     <ClInclude Include="Collections\ItemFilter.h" />
     <ClInclude Include="Core\Coroutine\SignalAwaiter.h" />
     <ClInclude Include="Windows\Store\DisplayCatalog.h" />
+    <ClInclude Include="Windows\Msix\MsixDependency.h" />
+    <ClInclude Include="Windows\Msix\MsixTargetDeviceFamily.h" />
+    <ClInclude Include="Windows\DeviceFamily.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
