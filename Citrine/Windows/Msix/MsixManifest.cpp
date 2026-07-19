@@ -48,6 +48,26 @@ namespace Citrine::Windows {
 			return applications;
 		}
 
+		auto TargetDeviceFamilies() const noexcept -> std::vector<MsixTargetDeviceFamily> const& {
+
+			return targetDeviceFamilies;
+		}
+
+		auto PackageDependencies() const noexcept -> std::vector<MsixPackageDependency> const& {
+
+			return packageDependencies;
+		}
+
+		auto OSPackageDependencies() const noexcept -> std::vector<MsixOSPackageDependency> const& {
+
+			return osPackageDependencies;
+		}
+
+		auto HostRuntimeDependencies() const noexcept -> std::vector<MsixHostRuntimeDependency> const& {
+
+			return hostRuntimeDependencies;
+		}
+
 		auto CustomInstallExtension() const noexcept -> MsixCustomInstallExtension const& {
 
 			return customInstallExtension;
@@ -157,6 +177,9 @@ namespace Citrine::Windows {
 			if (auto result = ParseApplicationsElement(); !result)
 				return result.error();
 
+			if (auto result = ParseDependenciesElement(); !result)
+				return result.error();
+
 			if (auto result = ParseCustomInstallExtensionElement(); !result)
 				return result.error();
 
@@ -252,6 +275,108 @@ namespace Citrine::Windows {
 			return {};
 		}
 
+		auto ParseDependenciesElement() -> MsixOperationResult<> {
+
+			for (auto const& dependencyElement : xmlDocument.child("Package").child("Dependencies")) {
+
+				auto elementName = std::string_view{ dependencyElement.name() };
+				if (elementName == "TargetDeviceFamily") {
+
+					auto nameAttribute = dependencyElement.attribute("Name");
+					auto minVersionAttribute = dependencyElement.attribute("MinVersion");
+					auto maxVersionTestedAttribute = dependencyElement.attribute("MaxVersionTested");
+
+					if (!nameAttribute || !minVersionAttribute || !maxVersionTestedAttribute)
+						return MsixError::ParsingFailed;
+
+					auto& targetDeviceFamily = targetDeviceFamilies.emplace_back();
+					targetDeviceFamily.Name = nameAttribute.as_string();
+
+					if (!DeviceFamilyVersion::Parse(minVersionAttribute.as_string(), targetDeviceFamily.MinVersion))
+						return MsixError::ParsingFailed;
+
+					if (!DeviceFamilyVersion::Parse(maxVersionTestedAttribute.as_string(), targetDeviceFamily.MaxVersionTested))
+						return MsixError::ParsingFailed;
+				}
+				else if (elementName == "PackageDependency" || elementName == "uap17:PackageDependency") {
+
+					auto nameAttribute = dependencyElement.attribute("Name");
+					auto publisherAttribute = dependencyElement.attribute("Publisher");
+					auto minVersionAttribute = dependencyElement.attribute("MinVersion");
+					auto maxMajorVersionTestedAttribute = dependencyElement.attribute("MaxMajorVersionTested");
+					auto optionalAttribute = dependencyElement.attribute("uap6:Optional");
+
+					if (!nameAttribute || !publisherAttribute || !minVersionAttribute)
+						return MsixError::ParsingFailed;
+
+					auto& packageDependency = packageDependencies.emplace_back();
+					packageDependency.Name = nameAttribute.as_string();
+					packageDependency.Publisher = publisherAttribute.as_string();
+
+					if (!PackageVersion::Parse(minVersionAttribute.as_string(), packageDependency.MinVersion))
+						return MsixError::ParsingFailed;
+
+					if (maxMajorVersionTestedAttribute)
+						packageDependency.MaxMajorVersionTested = static_cast<std::uint16_t>(maxMajorVersionTestedAttribute.as_uint());
+
+					if (optionalAttribute)
+						packageDependency.Optional = optionalAttribute.as_bool();
+
+					if (elementName != "uap17:PackageDependency")
+						continue;
+
+					auto typeAttribute = dependencyElement.attribute("Type");
+					if (!typeAttribute)
+						continue;
+
+					auto type = std::string_view{ typeAttribute.as_string() };
+					if (type == "install") {
+
+						packageDependency.Type = MsixPackageDependencyType::Install;
+					}
+					else if (type == "installAndRuntime") {
+
+						packageDependency.Type = MsixPackageDependencyType::InstallAndRuntime;
+					}
+					else {
+
+						return MsixError::ParsingFailed;
+					}
+				}
+				else if (elementName == "uap7:OSPackageDependency") {
+
+					auto nameAttribute = dependencyElement.attribute("Name");
+					auto versionAttribute = dependencyElement.attribute("Version");
+
+					if (!nameAttribute || !versionAttribute)
+						return MsixError::ParsingFailed;
+
+					auto& osPackageDependency = osPackageDependencies.emplace_back();
+					osPackageDependency.Name = nameAttribute.as_string();
+
+					if (!PackageVersion::Parse(versionAttribute.as_string(), osPackageDependency.Version))
+						return MsixError::ParsingFailed;
+				}
+				else if (elementName == "uap10:HostRuntimeDependency") {
+
+					auto nameAttribute = dependencyElement.attribute("Name");
+					auto publisherAttribute = dependencyElement.attribute("Publisher");
+					auto minVersionAttribute = dependencyElement.attribute("MinVersion");
+
+					if (!nameAttribute || !publisherAttribute || !minVersionAttribute)
+						return MsixError::ParsingFailed;
+
+					auto& hostRuntimeDependeny = hostRuntimeDependencies.emplace_back();
+					hostRuntimeDependeny.Name = nameAttribute.as_string();
+					hostRuntimeDependeny.Publisher = publisherAttribute.as_string();
+
+					if (!PackageVersion::Parse(minVersionAttribute.as_string(), hostRuntimeDependeny.MinVersion))
+						return MsixError::ParsingFailed;
+				}
+			}
+			return {};
+		}
+
 		auto ParseCustomInstallExtensionElement() -> MsixOperationResult<> {
 
 			constexpr auto parseActionsElement = []<typename T>(pugi::xml_node const& actionsElement, std::vector<T>& actions) static -> bool {
@@ -342,7 +467,10 @@ namespace Citrine::Windows {
 
 		PackageIdentity identity;
 		std::vector<MsixApplication> applications;
+		std::vector<MsixTargetDeviceFamily> targetDeviceFamilies;
 		std::vector<MsixPackageDependency> packageDependencies;
+		std::vector<MsixOSPackageDependency> osPackageDependencies;
+		std::vector<MsixHostRuntimeDependency> hostRuntimeDependencies;
 		MsixCustomInstallExtension customInstallExtension;
 	};
 
@@ -385,6 +513,26 @@ namespace Citrine::Windows {
 	auto MsixManifest::Applications() const noexcept -> std::vector<MsixApplication> const& {
 
 		return impl->Applications();
+	}
+
+	auto MsixManifest::TargetDeviceFamilies() const noexcept -> std::vector<MsixTargetDeviceFamily> const& {
+
+		return impl->TargetDeviceFamilies();
+	}
+
+	auto MsixManifest::PackageDependencies() const noexcept -> std::vector<MsixPackageDependency> const& {
+
+		return impl->PackageDependencies();
+	}
+
+	auto MsixManifest::OSPackageDependencies() const noexcept -> std::vector<MsixOSPackageDependency> const& {
+
+		return impl->OSPackageDependencies();
+	}
+
+	auto MsixManifest::HostRuntimeDependencies() const noexcept -> std::vector<MsixHostRuntimeDependency> const& {
+
+		return impl->HostRuntimeDependencies();
 	}
 
 	auto MsixManifest::CustomInstallExtension() const noexcept -> MsixCustomInstallExtension const& {

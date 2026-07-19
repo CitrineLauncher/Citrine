@@ -3,6 +3,8 @@
 #include "Common.h"
 #include "MsixApplication.h"
 #include "MsixCustomInstallExtension.h"
+#include "MsixTargetDeviceFamily.h"
+#include "MsixDependency.h"
 
 #include "Core/IO/File.h"
 #include "Windows/AppModel.h"
@@ -40,6 +42,11 @@ namespace Citrine::Windows {
 
 		auto Application() const noexcept -> MsixApplication const&;
 		auto Applications() const noexcept -> std::vector<MsixApplication> const&;
+
+		auto TargetDeviceFamilies() const noexcept -> std::vector<MsixTargetDeviceFamily> const&;
+		auto PackageDependencies() const noexcept -> std::vector<MsixPackageDependency> const&;
+		auto OSPackageDependencies() const noexcept -> std::vector<MsixOSPackageDependency> const&;
+		auto HostRuntimeDependencies() const noexcept -> std::vector<MsixHostRuntimeDependency> const&;
 
 		auto CustomInstallExtension() const noexcept -> MsixCustomInstallExtension const&;
 		auto RemoveCustomInstallExtension() -> void;
