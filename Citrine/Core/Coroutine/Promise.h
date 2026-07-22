@@ -47,20 +47,26 @@ namespace Citrine {
 
 		auto revoke_canceller() -> void {
 
-			auto canceller = cancellerState.load(std::memory_order::relaxed);
+			auto existing = cancellerState.load(std::memory_order::relaxed);
+			auto desired = static_cast<void*>(nullptr);
+
 			do {
 
-				if (canceller == CancellerState::Cancelling) {
+				if (existing == CancellerState::Cancelling) {
 
-					cancellerState.wait(CancellerState::Cancelling, std::memory_order::acquire);
-					break;
+					std::this_thread::yield();
+
+					existing = cancellerState.load(std::memory_order::relaxed);
+					desired = CancellerState::Cancelled;
 				}
-				else if (canceller == CancellerState::Cancelled) {
+
+				if (existing == CancellerState::Cancelled) {
 
 					std::atomic_thread_fence(std::memory_order::acquire);
 					break;
 				}
-			} while (!cancellerState.compare_exchange_strong(canceller, nullptr, std::memory_order::acquire, std::memory_order::relaxed));
+
+			} while (!cancellerState.compare_exchange_weak(existing, desired, std::memory_order::acquire, std::memory_order::relaxed));
 		}
 
 		auto Cancel() -> void {
@@ -70,7 +76,6 @@ namespace Citrine {
 				~Lock() noexcept {
 
 					promise.cancellerState.store(CancellerState::Cancelled, std::memory_order::release);
-					promise.cancellerState.notify_one();
 				}
 
 				CancellablePromiseBase& promise;
@@ -82,7 +87,7 @@ namespace Citrine {
 				if (canceller == CancellerState::Cancelling || canceller == CancellerState::Cancelled)
 					return;
 
-			} while (!cancellerState.compare_exchange_strong(canceller, CancellerState::Cancelling, std::memory_order::acquire, std::memory_order::relaxed));
+			} while (!cancellerState.compare_exchange_weak(canceller, CancellerState::Cancelling, std::memory_order::acquire, std::memory_order::relaxed));
 
 			auto lock = Lock{ *this };
 			if (canceller) {
