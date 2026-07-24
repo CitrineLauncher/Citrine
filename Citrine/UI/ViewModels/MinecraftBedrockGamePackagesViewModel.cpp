@@ -241,7 +241,7 @@ namespace winrt::Citrine::implementation
 		settings.GameInstallLocation(std::wstring{ installLocation });
 		settings.Save();
 
-		TryRegisterGamePackageStatusListener(gamePackage);
+		TryRegisterGamePackageStatusListener(gamePackage, GamePackageStatus::NotInstalled);
 		MinecraftBedrockGameManager::InstallGamePackageAsync(gamePackage);
 	}
 
@@ -306,7 +306,7 @@ namespace winrt::Citrine::implementation
 
 	auto MinecraftBedrockGamePackagesViewModel::UninstallGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void {
 
-		TryRegisterGamePackageStatusListener(gamePackage);
+		TryRegisterGamePackageStatusListener(gamePackage, GamePackageStatus::Installed);
 		MinecraftBedrockGameManager::UninstallGamePackageAsync(gamePackage);
 	}
 
@@ -382,9 +382,7 @@ namespace winrt::Citrine::implementation
 		listener->Token = gamePackageImpl->PropertyChanged({ auto{ listener }, &Listener::Invoke });
 	}
 
-	auto MinecraftBedrockGamePackagesViewModel::TryRegisterGamePackageStatusListener(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> bool {
-
-		using enum GamePackageStatus;
+	auto MinecraftBedrockGamePackagesViewModel::TryRegisterGamePackageStatusListener(Citrine::MinecraftBedrockGamePackageItem const& gamePackage, Citrine::MinecraftBedrockGamePackageStatus expectedStatus) -> bool {
 
 		if (SupportsImporting())
 			return false;
@@ -392,7 +390,7 @@ namespace winrt::Citrine::implementation
 		auto gamePackageImpl = winrt::get_self<GamePackageItemImpl>(gamePackage);
 		auto status = gamePackageImpl->Status();
 
-		if (status != NotInstalled && status != Installed)
+		if (status != expectedStatus)
 			return false;
 
 		RegisterGamePackageStatusListener(gamePackage);

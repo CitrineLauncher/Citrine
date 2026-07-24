@@ -41,7 +41,7 @@ namespace winrt::Citrine::implementation
     private:
 
         auto RegisterGamePackageStatusListener(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void;
-        auto TryRegisterGamePackageStatusListener(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> bool;
+        auto TryRegisterGamePackageStatusListener(Citrine::MinecraftBedrockGamePackageItem const& gamePackage, Citrine::MinecraftBedrockGamePackageStatus expectedStatus) -> bool;
 
         Citrine::IObservableCollectionView gamePackages{ nullptr };
         Citrine::IFilterableCollectionView filteredGamePackages{ nullptr };
