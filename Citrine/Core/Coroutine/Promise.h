@@ -48,16 +48,12 @@ namespace Citrine {
 		auto revoke_canceller() -> void {
 
 			auto existing = cancellerState.load(std::memory_order::relaxed);
-			auto desired = static_cast<void*>(nullptr);
-
 			do {
 
-				if (existing == CancellerState::Cancelling) {
+				while (existing == CancellerState::Cancelling) {
 
 					std::this_thread::yield();
-
 					existing = cancellerState.load(std::memory_order::relaxed);
-					desired = CancellerState::Cancelled;
 				}
 
 				if (existing == CancellerState::Cancelled) {
@@ -66,7 +62,7 @@ namespace Citrine {
 					break;
 				}
 
-			} while (!cancellerState.compare_exchange_weak(existing, desired, std::memory_order::acquire, std::memory_order::relaxed));
+			} while (!cancellerState.compare_exchange_weak(existing, nullptr, std::memory_order::acquire, std::memory_order::relaxed));
 		}
 
 		auto Cancel() -> void {
