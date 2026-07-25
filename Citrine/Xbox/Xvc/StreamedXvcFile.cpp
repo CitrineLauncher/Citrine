@@ -19,8 +19,8 @@
 #include <type_traits>
 #include <algorithm>
 #include <bit>
-#include <map>
-#include <unordered_set>
+#include <flat_map>
+#include <flat_set>
 #include <atomic>
 #include <shared_mutex>
 
@@ -412,7 +412,7 @@ namespace Citrine::Xbox {
 				return std::filesystem::path{ std::move(absolutePath) };
 			};
 
-			auto createParentDirectories = [&, directories = std::unordered_set<std::wstring_view>{}](this auto& self, std::wstring_view path) -> bool {
+			auto createParentDirectories = [&, directories = std::flat_set<std::wstring_view>{}](this auto& self, std::wstring_view path) -> bool {
 
 				if (auto pos = path.find_last_of(L'\\'); pos != path.npos) {
 
@@ -920,7 +920,7 @@ namespace Citrine::Xbox {
 		XvdUserDataHeader* userDataHeader{ nullptr };
 		XvdUserDataPackageFilesHeader* userDataPackageFilesHeader{ nullptr };
 		std::span<XvdUserDataPackageFile> userDataPackageFiles;
-		std::map<std::wstring_view, std::span<std::uint8_t>> userDataPackageContents;
+		std::flat_map<std::wstring_view, std::span<std::uint8_t>> userDataPackageContents;
 
 		Windows::MsixManifest packageManifest{ nullptr };
 

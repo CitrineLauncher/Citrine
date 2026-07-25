@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <optional>
 #include <concepts>
-#include <unordered_set>
+#include <flat_set>
 #include <shared_mutex>
 
 #include <winrt/Citrine.h>
@@ -423,7 +423,7 @@ namespace Citrine::Windows {
 				return std::filesystem::path{ std::move(absolutePath) };
 			};
 
-			auto createParentDirectories = [&, directories = std::unordered_set<std::string_view>{}](this auto& self, std::string_view path) -> bool {
+			auto createParentDirectories = [&, directories = std::flat_set<std::string_view>{}](this auto& self, std::string_view path) -> bool {
 
 				if (auto pos = path.find_last_of("\\/"); pos != path.npos) {
 
