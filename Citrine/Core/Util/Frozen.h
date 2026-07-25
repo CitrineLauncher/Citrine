@@ -344,11 +344,6 @@ namespace Citrine {
 
 			typename Compare::is_transparent;
 		};
-
-		static consteval auto GetArraySize(auto const& arr) noexcept -> std::size_t {
-
-			return std::size(arr);
-		}
 	};
 
 	class FrozenMapBase : protected FrozenContainerBase {
@@ -447,7 +442,9 @@ namespace Citrine {
 		constexpr FrozenMap() requires (N == 0) = default;
 
 		template<typename Array>
-		constexpr FrozenMap(Array&& arr) requires (GetArraySize(arr) == N) {
+		constexpr FrozenMap(Array&& arr) {
+
+			static_assert(std::size(arr) == N);
 
 			for (auto& [key, value] : arr) {
 
@@ -761,7 +758,9 @@ namespace Citrine {
 		constexpr FrozenSet() requires (N == 0) = default;
 
 		template<typename Array>
-		constexpr FrozenSet(Array&& arr) requires (GetArraySize(arr) == N) {
+		constexpr FrozenSet(Array&& arr) {
+
+			static_assert(std::size(arr) == N);
 
 			for (auto& key : arr) {
 

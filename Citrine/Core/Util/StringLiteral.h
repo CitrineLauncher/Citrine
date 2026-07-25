@@ -9,7 +9,7 @@
 
 namespace Citrine {
 
-	template<typename CharT, size_t N> requires (N > 0)
+	template <typename CharT, size_t N>
 	struct BasicStringLiteral {
 
 		using value_type = CharT;
@@ -24,9 +24,9 @@ namespace Citrine {
 
 		constexpr BasicStringLiteral() noexcept = default;
 
-		constexpr BasicStringLiteral(CharT const (&str)[N]) noexcept {
+		constexpr BasicStringLiteral(CharT const (&str)[N + 1]) noexcept {
 
-			std::copy_n(str, N, Data);
+			std::copy_n(str, N + 1, Data);
 		}
 
 		constexpr BasicStringLiteral(BasicStringLiteral const&) noexcept = default;
@@ -69,44 +69,41 @@ namespace Citrine {
 
 		constexpr auto operator<=>(BasicStringLiteral const&) const -> std::strong_ordering = default;
 
-		static constexpr auto Size = N - 1;
-		CharT Data[N];
+		static constexpr auto Size = N;
+		CharT Data[N + 1];
 	};
 
-	template<std::size_t N>
+	template <typename CharT, size_t N>
+	BasicStringLiteral(CharT const (&)[N]) -> BasicStringLiteral<CharT, N - 1>;
+
+	template <size_t N>
 	struct StringLiteral : BasicStringLiteral<char, N> {
-
-		constexpr StringLiteral(BasicStringLiteral<char, N> const& other) noexcept
-
-			: BasicStringLiteral<char, N>::BasicStringLiteral(other)
-		{}
 
 		using BasicStringLiteral<char, N>::BasicStringLiteral;
 		using BasicStringLiteral<char, N>::operator=;
 	};
 
-	template<std::size_t N>
-	StringLiteral(char const(&)[N]) -> StringLiteral<N>;
+	StringLiteral() -> StringLiteral<0>;
 
-	template<std::size_t N>
+	template <size_t N>
+	StringLiteral(char const (&)[N]) -> StringLiteral<N - 1>;
+
+	template <size_t N>
 	struct WStringLiteral : BasicStringLiteral<wchar_t, N> {
-
-		constexpr WStringLiteral(BasicStringLiteral<wchar_t, N> const& other) noexcept
-
-			: BasicStringLiteral<wchar_t, N>::BasicStringLiteral(other)
-		{}
 
 		using BasicStringLiteral<wchar_t, N>::BasicStringLiteral;
 		using BasicStringLiteral<wchar_t, N>::operator=;
 	};
 
-	template<std::size_t N>
-	WStringLiteral(wchar_t const(&)[N]) -> WStringLiteral<N>;
+	WStringLiteral() -> WStringLiteral<0>;
+
+	template <size_t N>
+	WStringLiteral(wchar_t const (&)[N]) -> WStringLiteral<N - 1>;
 
 	template<typename To, typename From, std::size_t N>
-	consteval auto StringLiteralCast(From const(&from)[N]) -> BasicStringLiteral<To, N> {
+	consteval auto StringLiteralCast(From const(&from)[N]) -> BasicStringLiteral<To, N - 1> {
 
-		auto result = BasicStringLiteral<To, N>{};
+		auto result = BasicStringLiteral<To, N - 1>{};
 		for (auto i = 0uz; i < N; ++i) {
 
 			auto ch = from[i];
