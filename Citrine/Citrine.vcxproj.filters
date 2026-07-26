@@ -51,6 +51,7 @@
     <ClCompile Include="Windows\User.cpp" />
     <ClCompile Include="Core\Coroutine\SignalAwaiter.cpp" />
     <ClCompile Include="Windows\Store\DisplayCatalog.cpp" />
+    <ClCompile Include="Windows\DeviceFamily.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

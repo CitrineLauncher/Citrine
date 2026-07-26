@@ -513,6 +513,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationMutex.cpp" />
+    <ClCompile Include="Windows\DeviceFamily.cpp" />
     <ClCompile Include="Windows\Store\DisplayCatalog.cpp" />
     <ClCompile Include="Models\MinecraftBedrockGameInfo.cpp">
       <DependentUpon>Models\MinecraftBedrockGameInfo.idl</DependentUpon>
