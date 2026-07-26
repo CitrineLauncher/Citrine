@@ -353,7 +353,8 @@ namespace winrt::Citrine::implementation
 
 			auto Invoke(winrt::IInspectable const& sender, winrt::PropertyChangedEventArgs const& args) -> void {
 
-				if (args.PropertyName() != L"Status")
+				auto propertyName = args.PropertyName();
+				if (!propertyName.empty() && propertyName != L"Status")
 					return;
 
 				auto gamePackageImpl = sender.as<GamePackageItemImpl>();
