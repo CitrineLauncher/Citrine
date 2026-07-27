@@ -34,7 +34,7 @@
     <ClCompile Include="Core\IO\WinRTFileStream.cpp" />
     <ClCompile Include="Windows\BuildInfo.cpp" />
     <ClCompile Include="Windows\AppLauncher.cpp" />
-    <ClCompile Include="Windows\Store\FE3Handler.cpp" />
+    <ClCompile Include="Windows\FE3Handler.cpp" />
     <ClCompile Include="Windows\AppModel.cpp" />
     <ClCompile Include="Windows\Msix\MsixManifest.cpp" />
     <ClCompile Include="Windows\Msix\StreamedMsixFile.cpp" />
@@ -50,7 +50,6 @@
     <ClCompile Include="Windows\Shell.cpp" />
     <ClCompile Include="Windows\User.cpp" />
     <ClCompile Include="Core\Coroutine\SignalAwaiter.cpp" />
-    <ClCompile Include="Windows\Store\DisplayCatalog.cpp" />
     <ClCompile Include="Windows\DeviceFamily.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -117,7 +116,7 @@
     <ClInclude Include="Core\IO\WinRTFileStream.h" />
     <ClInclude Include="Windows\BuildInfo.h" />
     <ClInclude Include="Windows\AppLauncher.h" />
-    <ClInclude Include="Windows\Store\FE3Handler.h" />
+    <ClInclude Include="Windows\FE3Handler.h" />
     <ClInclude Include="Windows\AppModel.h" />
     <ClInclude Include="Core\Codec\Base32Encoder.h" />
     <ClInclude Include="Core\Coroutine\Task.h" />
@@ -189,7 +188,6 @@
     <ClInclude Include="Core\Coroutine\Promise.h" />
     <ClInclude Include="Collections\ItemFilter.h" />
     <ClInclude Include="Core\Coroutine\SignalAwaiter.h" />
-    <ClInclude Include="Windows\Store\DisplayCatalog.h" />
     <ClInclude Include="Windows\Msix\MsixDependency.h" />
     <ClInclude Include="Windows\Msix\MsixTargetDeviceFamily.h" />
     <ClInclude Include="Windows\DeviceFamily.h" />
