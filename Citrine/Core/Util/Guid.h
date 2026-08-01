@@ -490,6 +490,12 @@ namespace std {
 namespace glz {
 
 	template<>
+	struct meta<::Citrine::Guid> {
+
+		using mimic = std::string;
+	};
+
+	template<>
 	struct from<JSON, ::Citrine::Guid>
 	{
 		template<auto Opts>
