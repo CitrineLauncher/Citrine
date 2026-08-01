@@ -310,8 +310,14 @@ namespace Citrine::Windows {
 						return MsixError::ParsingFailed;
 
 					auto& packageDependency = packageDependencies.emplace_back();
+
 					packageDependency.Name = nameAttribute.as_string();
+					if (!ValidatePackageString(packageDependency.Name))
+						return MsixError::ParsingFailed;
+
 					packageDependency.Publisher = publisherAttribute.as_string();
+					if (packageDependency.Publisher.empty())
+						return MsixError::ParsingFailed;
 
 					if (!PackageVersion::Parse(minVersionAttribute.as_string(), packageDependency.MinVersion))
 						return MsixError::ParsingFailed;
@@ -367,8 +373,14 @@ namespace Citrine::Windows {
 						return MsixError::ParsingFailed;
 
 					auto& hostRuntimeDependeny = hostRuntimeDependencies.emplace_back();
+
 					hostRuntimeDependeny.Name = nameAttribute.as_string();
+					if (!ValidatePackageString(hostRuntimeDependeny.Name))
+						return MsixError::ParsingFailed;
+
 					hostRuntimeDependeny.Publisher = publisherAttribute.as_string();
+					if (hostRuntimeDependeny.Publisher.empty())
+						return MsixError::ParsingFailed;
 
 					if (!PackageVersion::Parse(minVersionAttribute.as_string(), hostRuntimeDependeny.MinVersion))
 						return MsixError::ParsingFailed;
