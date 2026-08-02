@@ -7,7 +7,9 @@
 
 #include "Core/Util/JsonWrappers.h"
 #include "Core/Net/Url.h"
+#include "Core/Util/Guid.h"
 #include "Windows/AppModel.h"
+#include "Xbox/PackageModel.h"
 
 #include <string>
 #include <filesystem>
@@ -18,11 +20,13 @@ namespace Citrine::Minecraft::Bedrock {
 
 	struct GamePackageInfo {
 
+		using UpdateIdVariantT = std::variant<std::monostate, Guid, Xbox::PackageVersionIdentifier>;
+
 		GameVersion Version;
 		GameBuildType BuildType{};
 		GamePlatform Platform{};
 		Windows::PackageArchitecture Architecture{};
-		std::string UpdateId;
+		UpdateIdVariantT UpdateId;
 		std::filesystem::path Path;
 	};
 
