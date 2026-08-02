@@ -152,6 +152,12 @@ namespace Citrine {
 	struct VersionNumberFormatter {
 
 		template<IsVersionNumberType T>
+		static consteval auto MaxFormattedSize() noexcept -> std::size_t {
+
+			return decltype(GetVersionNumberSegments(std::declval<T const&>()))::MaxFormattedSize();
+		}
+
+		template<IsVersionNumberType T>
 		static consteval auto MaxFormattedSize(T const& version) noexcept -> std::size_t {
 
 			return decltype(GetVersionNumberSegments(version))::MaxFormattedSize();
