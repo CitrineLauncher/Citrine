@@ -157,6 +157,7 @@
     <ClInclude Include="Core\Util\JsonWrappers.h" />
     <ClInclude Include="Core\Util\Memory.h" />
     <ClInclude Include="Core\Util\SemanticVersion.h" />
+    <ClInclude Include="Xbox\PackageModel.h" />
     <ClInclude Include="Windows\DeviceFamily.h" />
     <ClInclude Include="Windows\Msix\MsixDependency.h" />
     <ClInclude Include="Windows\Msix\MsixTargetDeviceFamily.h" />
@@ -512,6 +513,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationMutex.cpp" />
+    <ClCompile Include="Xbox\PackageModel.cpp" />
     <ClCompile Include="Windows\DeviceFamily.cpp" />
     <ClCompile Include="Models\MinecraftBedrockGameInfo.cpp">
       <DependentUpon>Models\MinecraftBedrockGameInfo.idl</DependentUpon>

@@ -51,6 +51,7 @@
     <ClCompile Include="Windows\User.cpp" />
     <ClCompile Include="Core\Coroutine\SignalAwaiter.cpp" />
     <ClCompile Include="Windows\DeviceFamily.cpp" />
+    <ClCompile Include="Xbox\PackageModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -191,6 +192,7 @@
     <ClInclude Include="Windows\Msix\MsixDependency.h" />
     <ClInclude Include="Windows\Msix\MsixTargetDeviceFamily.h" />
     <ClInclude Include="Windows\DeviceFamily.h" />
+    <ClInclude Include="Xbox\PackageModel.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
