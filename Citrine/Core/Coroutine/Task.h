@@ -26,7 +26,7 @@ namespace Citrine {
 
 			: handle(std::exchange(lazyTask.handle, nullptr))
 		{
-			handle.promise().EnsureStart();
+			handle.promise().TryStart();
 		}
 
 		Task(Task const&) = delete;
