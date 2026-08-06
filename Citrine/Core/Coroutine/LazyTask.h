@@ -87,7 +87,7 @@ namespace Citrine {
 
 			auto await_resume() -> decltype(auto) {
 
-				return this->GetPromise().GetResult();
+				return std::move(this->GetPromise()).GetResult();
 			}
 		};
 

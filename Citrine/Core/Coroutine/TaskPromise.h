@@ -368,17 +368,25 @@ namespace Citrine {
 			catch (...) {}
 		}
 
-		auto GetResult() -> T&& {
+		template<typename Self>
+		auto GetResult(this Self&& self) -> decltype(auto) {
 
-			if (IsCancelled())
+			if (self.IsCancelled())
 				throw TaskCancelledException{};
 
 			std::atomic_thread_fence(std::memory_order::acquire);
 
-			if (auto exception = std::get_if<std::exception_ptr>(&storage))
+			if (auto exception = std::get_if<std::exception_ptr>(&self.storage))
 				std::rethrow_exception(*exception);
 
-			return std::move(std::get<T>(storage));
+			if constexpr (std::is_rvalue_reference_v<Self&&>) {
+
+				return std::move(std::get<T>(self.storage));
+			}
+			else {
+
+				return std::as_const(std::get<T>(self.storage));
+			}
 		}
 
 	private:
