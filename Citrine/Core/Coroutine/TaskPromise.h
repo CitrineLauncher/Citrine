@@ -334,7 +334,7 @@ namespace Citrine {
 	};
 
 	template<typename T>
-	class TaskPromise final : public TaskPromiseBase {
+	class TaskPromise : public TaskPromiseBase {
 	public:
 
 		TaskPromise() noexcept = default;
@@ -396,7 +396,7 @@ namespace Citrine {
 	};
 
 	template<>
-	class TaskPromise<void> final : public TaskPromiseBase {
+	class TaskPromise<void> : public TaskPromiseBase {
 	public:
 
 		TaskPromise() noexcept = default;
