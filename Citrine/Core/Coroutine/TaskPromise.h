@@ -17,6 +17,12 @@ namespace Citrine {
 		explicit TaskCancelledException() noexcept : runtime_error("Task cancelled") {}
 	};
 
+	class TaskTimeoutException : public std::runtime_error {
+	public:
+
+		explicit TaskTimeoutException() noexcept : runtime_error("Task timeout") {}
+	};
+
 	struct GetCancellationTokenT {};
 
 	consteval auto GetCancellationToken() noexcept -> GetCancellationTokenT {
