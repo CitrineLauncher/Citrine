@@ -109,8 +109,12 @@ namespace Citrine {
 			auto await_suspend(std::coroutine_handle<Derived> handle) noexcept -> void {
 
 				auto& promise = handle.promise();
-				auto continuation = promise.state.exchange(State::Completed, std::memory_order::acq_rel);
+				if constexpr (requires{ promise.OnFinalSuspend(); }) {
 
+					promise.OnFinalSuspend();
+				}
+
+				auto continuation = promise.state.exchange(State::Completed, std::memory_order::acq_rel);
 				if (continuation == State::Abandoned) {
 
 					handle.destroy();
