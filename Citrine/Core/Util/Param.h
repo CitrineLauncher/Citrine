@@ -70,6 +70,13 @@ namespace Citrine {
             return std::move(*str);
         }
 
+        constexpr operator std::basic_string<CharT>() const& {
+
+            if (IsView())
+                return { myData, mySize };
+            return *str;
+        }
+
         constexpr auto View() const noexcept -> std::basic_string_view<CharT> {
 
             if (IsView())
