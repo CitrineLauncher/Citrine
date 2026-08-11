@@ -5,8 +5,7 @@
 
 #include <memory>
 #include <mutex>
-
-#include <wil/resource.h>
+#include <optional>
 
 namespace Citrine {
 
@@ -21,39 +20,64 @@ namespace Citrine {
 		template<typename OperationT>
 		class OperationHandle;
 
+		class OperationTaskBase {
+		protected:
+
+			static auto CreateCompletedEvent() noexcept -> void*;
+			static auto SetCompletedEvent(void* event) noexcept -> void;
+			static auto ReleaseCompletedEvent(void* event) noexcept -> void;
+		};
+
 		template<typename T>
-		class OperationTask {
+		class OperationTask : public OperationTaskBase {
 		public:
 
 			struct promise_type : public TaskPromise<T> {
 
-				promise_type() {
+				auto Start() noexcept -> void {
 
-					completedEvent.create(wil::EventOptions::ManualReset);
-				}
+					TaskPromiseBase::Start();
+					if (completedEvent.load(std::memory_order::acquire) == CompletedEventState::Completed)
+						return;
 
-				auto EnsureStart() noexcept -> void {
+					auto expected = static_cast<void*>(nullptr);
+					auto event = CreateCompletedEvent();
 
-					if (!started.exchange(true, std::memory_order::relaxed)) {
-
-						this->Start();
-					}
+					if (!completedEvent.compare_exchange_strong(expected, event, std::memory_order::release, std::memory_order::acquire))
+						ReleaseCompletedEvent(event);
 				}
 
 				auto OnFinalSuspend() noexcept -> void {
 
-					completedEvent.SetEvent();
+					auto event = static_cast<void*>(nullptr);
+
+					if (!completedEvent.compare_exchange_strong(event, CompletedEventState::Completed, std::memory_order::release, std::memory_order::acquire))
+						SetCompletedEvent(event);
 				}
 
-				auto GetCompletedEvent() noexcept -> wil::unique_event const& {
+				auto GetCompletedEvent() noexcept -> void* {
 
-					return completedEvent;
+					auto event = completedEvent.load(std::memory_order::relaxed);
+					return (event > CompletedEventState::Completed) ? event : nullptr;
+				}
+
+				~promise_type() noexcept {
+
+					auto event = completedEvent.load(std::memory_order::relaxed);
+					if (event > CompletedEventState::Completed)
+						ReleaseCompletedEvent(event);
 				}
 
 			private:
+				
+				using StateSentinel = PromiseBase::StateSentinel;
 
-				std::atomic<bool> started{ false };
-				wil::unique_event completedEvent;
+				struct CompletedEventState {
+
+					static constexpr auto Completed = StateSentinel{ 1 };
+				};
+
+				std::atomic<void*> completedEvent{ nullptr };
 			};
 
 			OperationTask() noexcept = default;
@@ -63,7 +87,9 @@ namespace Citrine {
 			OperationTask(std::coroutine_handle<promise_type> handle) noexcept
 
 				: handle(handle)
-			{}
+			{
+				handle.promise().Start();
+			}
 
 			OperationTask(OperationTask const&) = delete;
 			auto operator=(OperationTask const&) = delete;
@@ -155,27 +181,35 @@ namespace Citrine {
 			using ResultType = T;
 			using TaskType = OperationTask<ResultType>;
 
-			class Awaitable : public SignalAwaiter {
+			class Awaitable {
 			public:
+
+				using TimeoutDuration = SignalAwaiter::TimeoutDuration;
 
 				Awaitable(std::coroutine_handle<typename TaskType::promise_type> handle, TimeoutDuration timeout)
 
-					: SignalAwaiter(handle.promise().GetCompletedEvent().get(), timeout)
-					, handle(handle)
-				{}
+					: handle(handle)
+				{
+					if (auto event = this->handle.promise().GetCompletedEvent())
+						signalAwaiter.emplace(event, timeout);
+				}
+
+				auto await_ready() const noexcept -> bool {
+
+					return !signalAwaiter || signalAwaiter->await_ready();
+				}
 
 				template<typename Promise>
 				auto await_suspend(std::coroutine_handle<Promise> continuation) -> bool {
 
-					handle.promise().EnsureStart();
-					return SignalAwaiter::await_suspend(continuation);
+					return signalAwaiter->await_suspend(continuation);
 				}
 
 				auto await_resume() -> decltype(auto) {
 
-					try {
+					if (signalAwaiter) try {
 
-						if (!SignalAwaiter::await_resume())
+						if (!signalAwaiter->await_resume())
 							throw TaskTimeoutException{};
 					}
 					catch (winrt::hresult_canceled const&) {
@@ -188,6 +222,7 @@ namespace Citrine {
 			private:
 
 				std::coroutine_handle<typename TaskType::promise_type> handle{ nullptr };
+				std::optional<SignalAwaiter> signalAwaiter;
 			};
 
 		private:
