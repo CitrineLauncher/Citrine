@@ -62,7 +62,7 @@ namespace Citrine {
 			if (state.exchange(State::Idle, std::memory_order::relaxed) == State::Cancelled)
 				throw winrt::hresult_canceled{};
 
-			return signalled;
+			return result == 0;
 		}
 
 	private:
@@ -75,7 +75,7 @@ namespace Citrine {
 		static auto Callback(void*, void* parameter, void*, std::uint32_t result) -> void {
 
 			auto self = static_cast<SignalAwaiter*>(parameter);
-			self->signalled = (result == 0);
+			self->result = result;
 
 			if (self->suspending.exchange(false, std::memory_order::release))
 				return;
@@ -83,7 +83,7 @@ namespace Citrine {
 			self->continuationHandle();
 		}
 
-		enum struct State {
+		enum struct State : std::uint8_t {
 
 			Idle,
 			Waiting,
@@ -97,7 +97,7 @@ namespace Citrine {
 
 		std::atomic<State> state{ State::Idle };
 		std::atomic<bool> suspending{ false };
-		bool signalled{ false };
+		std::uint32_t result{};
 		std::unique_ptr<void, WaitDeleter> waitHandle{ nullptr };
 		std::coroutine_handle<> continuationHandle{ nullptr };
 		void* handle{ nullptr };
