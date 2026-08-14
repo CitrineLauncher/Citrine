@@ -6,11 +6,13 @@
 #include "Core/Util/Guid.h"
 #include "Core/Util/DateTime.h"
 #include "Core/Util/ParseInteger.h"
+#include "Core/Util/Ascii.h"
 #include "Core/Codec/Base64.h"
 #include "Services/HttpService.h"
 #include "Core/Logging/Logger.h"
 
 #include <format>
+#include <algorithm>
 
 #include <pugixml.hpp>
 
@@ -166,6 +168,19 @@ namespace {
 					co_return FE3Error::ResponseError;
 
 				packageMetadata.IsBundle = isAppxBundleAttribute.as_bool();
+
+				for (auto const& update : std::ranges::subrange(updates.begin(), updates.end() - 1)) {
+
+					auto& fullNameA = packageMetadata.PackageId.FullName();
+					auto& fullNameB = update.PackageMetadata.PackageId.FullName();
+
+					constexpr auto toLower = [](char ch) static { return Ascii::ToLower(ch); };
+					if (std::ranges::equal(fullNameA, fullNameB, {}, toLower, toLower)) {
+
+						updates.pop_back();
+						break;
+					}
+				}
 			}
 
 			co_return updates;
