@@ -4,6 +4,7 @@
 
 #include <array>
 #include <bit>
+#include <string_view>
 #include <stdexcept>
 
 namespace Citrine {
@@ -52,6 +53,18 @@ namespace Citrine {
 
 				return std::bit_cast<CharT>(ToLowerTable[std::bit_cast<std::uint8_t>(ch)]);
 			}
+		}
+
+		static constexpr auto CaseInsensitiveEquals(std::string_view left, std::string_view right) noexcept -> bool {
+
+			constexpr auto toLower = [](char ch) static { return ToLower(ch); };
+			return std::ranges::equal(left, right, {}, toLower, toLower);
+		}
+
+		static constexpr auto CaseInsensitiveEquals(std::wstring_view left, std::wstring_view right) noexcept -> bool {
+
+			constexpr auto toLower = [](wchar_t ch) static { return ToLower(ch); };
+			return std::ranges::equal(left, right, {}, toLower, toLower);
 		}
 	};
 
