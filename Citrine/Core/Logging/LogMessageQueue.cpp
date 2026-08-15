@@ -17,9 +17,19 @@ namespace Citrine {
 				state.wait(expected, std::memory_order::relaxed);
 		}
 
+		struct Lock {
+
+			~Lock() noexcept {
+
+				messageQueue.state.store(State::HasData, std::memory_order::release);
+				messageQueue.state.notify_one();
+			}
+
+			LogMessageQueue& messageQueue;
+		};
+
+		auto lock = Lock{ *this };
 		messages.Add(std::move(message));
-		state.store(State::HasData, std::memory_order::release);
-		state.notify_one();
 	}
 
 	auto LogMessageQueue::DequeueMessages(LogMessageList& outMessages) -> void {
@@ -32,8 +42,18 @@ namespace Citrine {
 			state.wait(expected, std::memory_order::relaxed);
 		}
 
+		struct Lock {
+
+			~Lock() noexcept {
+
+				messageQueue.state.store(State::Empty, std::memory_order::release);
+				messageQueue.state.notify_one();
+			}
+
+			LogMessageQueue& messageQueue;
+		};
+
+		auto lock = Lock{ *this };
 		messages.swap(outMessages);
-		state.store(State::Empty, std::memory_order::release);
-		state.notify_one();
 	}
 }
