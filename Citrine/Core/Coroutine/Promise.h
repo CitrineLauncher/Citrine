@@ -67,6 +67,14 @@ namespace Citrine {
 
 		auto Cancel() -> void {
 
+			auto canceller = cancellerState.load(std::memory_order::relaxed);
+			do {
+
+				if (canceller == CancellerState::Cancelling || canceller == CancellerState::Cancelled)
+					return;
+
+			} while (!cancellerState.compare_exchange_weak(canceller, CancellerState::Cancelling, std::memory_order::acquire, std::memory_order::relaxed));
+
 			struct Lock {
 
 				~Lock() noexcept {
@@ -76,14 +84,6 @@ namespace Citrine {
 
 				CancellablePromiseBase& promise;
 			};
-
-			auto canceller = cancellerState.load(std::memory_order::relaxed);
-			do {
-
-				if (canceller == CancellerState::Cancelling || canceller == CancellerState::Cancelled)
-					return;
-
-			} while (!cancellerState.compare_exchange_weak(canceller, CancellerState::Cancelling, std::memory_order::acquire, std::memory_order::relaxed));
 
 			auto lock = Lock{ *this };
 			if (canceller) {
