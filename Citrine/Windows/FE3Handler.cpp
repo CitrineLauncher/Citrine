@@ -129,6 +129,7 @@ namespace {
 				co_return FE3Error::ResponseError;
 
 			auto updates = std::vector<FE3UpdateInfo>{};
+			updates.reserve(8);
 
 			auto result = response.select_node("/s:Envelope/s:Body/SyncUpdatesResponse/SyncUpdatesResult").node();
 			for (auto node : result.select_nodes("NewUpdates/UpdateInfo/Xml")) {
@@ -145,7 +146,8 @@ namespace {
 				if (!updateIdentityElement || !appxMetadataElement)
 					continue;
 
-				auto& [updateIdentity, packageMetadata] = updates.emplace_back();
+				auto& update = updates.emplace_back();
+				auto& [updateIdentity, packageMetadata] = update;
 
 				auto updateIdAttribute = updateIdentityElement.attribute("UpdateID");
 				auto revisionNumberAttribute = updateIdentityElement.attribute("RevisionNumber");
@@ -169,17 +171,17 @@ namespace {
 
 				packageMetadata.IsBundle = isAppxBundleAttribute.as_bool();
 
-				for (auto const& update : std::ranges::subrange(updates.begin(), updates.end() - 1)) {
+				auto it = std::ranges::find_if(updates.begin(), updates.end() - 1, [&update](FE3UpdateInfo const& otherUpdate) {
 
-					auto& fullNameA = packageMetadata.PackageId.FullName();
-					auto& fullNameB = update.PackageMetadata.PackageId.FullName();
+					auto& fullName = update.PackageMetadata.PackageId.FullName();
+					auto& otherFullName = otherUpdate.PackageMetadata.PackageId.FullName();
 
-					constexpr auto toLower = [](char ch) static { return Ascii::ToLower(ch); };
-					if (std::ranges::equal(fullNameA, fullNameB, {}, toLower, toLower)) {
+					return Ascii::CaseInsensitiveEquals(fullName, otherFullName);
+				});
 
-						updates.pop_back();
-						break;
-					}
+				if (std::to_address(it) != &update) {
+
+					updates.pop_back();
 				}
 			}
 
