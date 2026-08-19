@@ -187,10 +187,10 @@ namespace glz {
 
 			using namespace ::Citrine;
 
-			auto str = std::string_view{};
+			auto str = decltype(url.RawUrl()){};
 			parse<JSON>::op<Opts>(str, ctx, args...);
 
-			url = T{ str };
+			url = T{ std::move(str) };
 			if (!url.IsEmpty() && !url.IsWellFormed())
 				ctx.error = error_code::parse_error;
 		}
