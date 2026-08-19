@@ -334,4 +334,33 @@ namespace glz {
             }
         }
     };
+
+    template<::Citrine::Windows::IsPackageIdentityType T>
+    struct from<JSON, T>
+    {
+        template<auto Opts>
+        static auto op(T& packageId, is_context auto&& ctx, auto&&... args) -> void {
+
+            using namespace ::Citrine;
+
+            auto str = decltype(packageId.FullName()){};
+            parse<JSON>::op<Opts>(str, ctx, args...);
+
+            packageId = T{ std::move(str) };
+            if (!packageId.IsEmpty() && !packageId.IsValid())
+                ctx.error = error_code::parse_error;
+        }
+    };
+
+    template<::Citrine::Windows::IsPackageIdentityType T>
+    struct to<JSON, T>
+    {
+        template<auto Opts>
+        static auto op(T const& packageId, auto&&... args) noexcept -> void {
+
+            using namespace ::Citrine;
+
+            serialize<JSON>::op<Opts>(packageId.FullName(), args...);
+        }
+    };
 }
