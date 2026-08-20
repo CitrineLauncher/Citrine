@@ -125,8 +125,11 @@ namespace Citrine {
 		}
 		else {
 
-			auto hash = 0uz;
-			for (auto it = first; it != last; ++it)
+			if (first == last)
+				return FNV1a::OffsetBasis;
+
+			auto hash = HashValue(*first);
+			for (auto it = first + 1; it != last; ++it)
 				hash = HashCombine(hash, *it);
 
 			return hash;
