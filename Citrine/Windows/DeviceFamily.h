@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Core/Util/VersionNumber.h"
+#include "Core/Util/Concepts.h"
+
+#include <format>
 
 namespace Citrine::Windows {
 
@@ -117,5 +120,22 @@ namespace Citrine::Windows {
         DeviceFamily DeviceFamily;
         DeviceFamilyVersion DeviceFamilyVersion;
         std::string DeviceForm;
+    };
+}
+
+namespace std {
+
+    template<::Citrine::IsAnyOf<char, wchar_t> CharT>
+    struct formatter<::Citrine::Windows::DeviceFamily, CharT> {
+
+        constexpr auto parse(std::basic_format_parse_context<CharT>& ctx) const -> auto {
+
+            return ctx.begin();
+        }
+
+        auto format(::Citrine::Windows::DeviceFamily deviceFamily, auto& ctx) const -> auto {
+
+            return std::ranges::copy(deviceFamily.Name(), ctx.out()).out;
+        }
     };
 }
