@@ -15,6 +15,7 @@
 #include <algorithm>
 
 #include <pugixml.hpp>
+#include <glaze/json.hpp>
 
 using namespace Citrine;
 using namespace Windows;
@@ -159,17 +160,44 @@ namespace {
 					co_return FE3Error::ResponseError;
 
 				auto isAppxFrameworkAttribute = propertiesElement.attribute("IsAppxFramework");
+				auto isAppxBundleAttribute = appxMetadataElement.attribute("IsAppxBundle");
+				auto applicabilityBlobElement = appxMetadataElement.child("ApplicabilityBlob");
 
 				packageMetadata.IsFramework = isAppxFrameworkAttribute.as_bool();
+				packageMetadata.IsBundle = isAppxBundleAttribute.as_bool();
 
-				auto packageMonikerAttribute = appxMetadataElement.attribute("PackageMoniker");
-				auto isAppxBundleAttribute = appxMetadataElement.attribute("IsAppxBundle");
+				auto applicabilityBlob = glz::lazy_json(std::string_view{ applicabilityBlobElement.text().get() });
+				if (!applicabilityBlob)
+					co_return FE3Error::ResponseError;
 
-				packageMetadata.PackageId = packageMonikerAttribute.as_string();
+				if (packageMetadata.IsBundle) {
+
+					if (auto ec = (*applicabilityBlob)["content.bundledPackages"].read_into(packageMetadata.BundledPackages); ec)
+						co_return FE3Error::ResponseError;
+
+					for (auto const& packageId : packageMetadata.BundledPackages) {
+
+						if (!packageId.IsValid())
+							co_return FE3Error::ResponseError;
+					}
+				}
+
+				if (auto ec = (*applicabilityBlob)["content.packageId"].read_into(packageMetadata.PackageId); ec)
+					co_return FE3Error::ResponseError;
+
 				if (!packageMetadata.PackageId.IsValid())
 					co_return FE3Error::ResponseError;
 
-				packageMetadata.IsBundle = isAppxBundleAttribute.as_bool();
+				for (auto const& targetPlatform : (*applicabilityBlob)["content.targetPlatforms"]) {
+
+					auto minVersion = targetPlatform["platform.minVersion"].get<std::uint64_t>();
+					auto target = targetPlatform["platform.target"].get<std::uint32_t>();
+
+					if (!target || !minVersion)
+						co_return FE3Error::ResponseError;
+
+					packageMetadata.TargetPlatforms.emplace_back(DeviceFamily{ *target }, DeviceFamilyVersion::FromInteger(*minVersion));
+				}
 
 				auto it = std::ranges::find_if(updates.begin(), updates.end() - 1, [&update](FE3UpdateInfo const& otherUpdate) {
 

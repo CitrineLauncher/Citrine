@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Windows/AppModel.h"
+#include "Windows/DeviceFamily.h"
 
 #include "Core/Coroutine/Task.h"
 #include "Core/Net/Url.h"
@@ -54,11 +55,19 @@ namespace Citrine::Windows {
 		int RevisionNumber{};
 	};
 
+	struct FE3PackageTargetPlatform {
+
+		DeviceFamily DeviceFamily;
+		DeviceFamilyVersion MinVersion;
+	};
+
 	struct FE3PackageMetadata {
 
 		PackageIdentity PackageId;
+		std::vector<PackageIdentity> BundledPackages;
 		bool IsFramework{};
 		bool IsBundle{};
+		std::vector<FE3PackageTargetPlatform> TargetPlatforms;
 	};
 
 	struct FE3UpdateInfo {
