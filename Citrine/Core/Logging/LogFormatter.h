@@ -21,7 +21,10 @@ namespace Citrine {
 	};
 
 	template<typename Arg, typename CharT>
-	using LogArgumentT = std::conditional_t<LogFormattable<Arg, CharT>, LogFormattableArgument<std::remove_cvref_t<Arg>>, Arg>;
+	using LogArgumentT = std::conditional_t<LogFormattable<Arg, CharT>,
+		LogFormattableArgument<std::remove_cvref_t<Arg>>,
+		Arg
+	>;
 
 	template<typename Arg, typename CharT>
 	constexpr auto ForwardAsLogArgument(auto&& arg) noexcept -> decltype(auto) {
