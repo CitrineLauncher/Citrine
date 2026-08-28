@@ -91,6 +91,10 @@ namespace Citrine {
 
     private:
 
+        struct GetKey;
+        struct KeyCompare;
+        struct KeyEqual;
+
         auto LowerBoundEqual(std::string_view name) const noexcept -> std::pair<ConstIterator, bool>;
 
         struct HeaderParameter {

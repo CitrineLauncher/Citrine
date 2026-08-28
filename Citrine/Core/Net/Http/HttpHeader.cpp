@@ -197,27 +197,37 @@ namespace Citrine {
         values.swap(other.values);
     }
 
+    struct HttpHeaderCollection::GetKey {
+
+        static auto operator()(ValueType const& value) noexcept -> auto const& {
+
+            return value.Name;
+        }
+    };
+
+    struct HttpHeaderCollection::KeyCompare {
+
+        static auto operator()(std::string_view left, std::string_view right) noexcept -> bool {
+
+            constexpr auto toLower = [](char ch) static { return Ascii::ToLower(ch); };
+
+            return std::ranges::lexicographical_compare(left, right, {}, toLower, toLower);
+        }
+    };
+
+    struct HttpHeaderCollection::KeyEqual {
+
+        static auto operator()(std::string_view left, std::string_view right) noexcept -> bool {
+
+            constexpr auto toLower = [](char ch) static { return Ascii::ToLower(ch); };
+
+            return std::ranges::equal(left, right, {}, toLower, toLower);
+        }
+    };
+
     auto HttpHeaderCollection::LowerBoundEqual(std::string_view name) const noexcept -> std::pair<ConstIterator, bool> {
 
-        constexpr auto toLower = [](char ch) static { return Ascii::ToLower(ch); };
-        auto it = values.begin();
-        auto count = values.size();
-
-        while (count > 0) {
-
-            auto const half = count / 2;
-            auto const mid = it + half;
-
-            if (std::ranges::lexicographical_compare(mid->Name, name, {}, toLower, toLower)) {
-
-                it = mid + 1;
-                count -= half + 1;
-            }
-            else {
-
-                count = half;
-            }
-        }
-        return { it, it != values.end() && std::ranges::equal(it->Name, name, {}, toLower, toLower) };
+        auto it = std::ranges::lower_bound(values, name, KeyCompare{}, GetKey{});
+        return { it, it != values.end() && KeyEqual{}(GetKey{}(*it), name) };
     }
 }
