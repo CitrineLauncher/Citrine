@@ -157,6 +157,7 @@
     <ClInclude Include="Core\Util\JsonWrappers.h" />
     <ClInclude Include="Core\Util\Memory.h" />
     <ClInclude Include="Core\Util\SemanticVersion.h" />
+    <ClInclude Include="Services\PackageInstallationService.h" />
     <ClInclude Include="Services\ServiceActionRunner.h" />
     <ClInclude Include="Services\ServiceActionHandler.h" />
     <ClInclude Include="Services\ServiceImplBase.h" />
@@ -516,6 +517,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationMutex.cpp" />
+    <ClCompile Include="Services\PackageInstallationService.cpp" />
     <ClCompile Include="Services\ServiceActionRunner.cpp" />
     <ClCompile Include="Services\ServiceActionHandler.cpp" />
     <ClCompile Include="Services\ServiceImplBase.cpp" />

@@ -55,6 +55,7 @@
     <ClCompile Include="Services\ServiceImplBase.cpp" />
     <ClCompile Include="Services\ServiceActionHandler.cpp" />
     <ClCompile Include="Services\ServiceActionRunner.cpp" />
+    <ClCompile Include="Services\PackageInstallationService.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -199,6 +200,7 @@
     <ClInclude Include="Services\ServiceImplBase.h" />
     <ClInclude Include="Services\ServiceActionHandler.h" />
     <ClInclude Include="Services\ServiceActionRunner.h" />
+    <ClInclude Include="Services\PackageInstallationService.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
