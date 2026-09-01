@@ -3,6 +3,11 @@
 #include "ApplicationMutex.h"
 #include "App.xaml.h"
 
+#include "Core/Unicode/Utf.h"
+#include "Services/ServiceActionRunner.h"
+
+#include <span>
+
 using namespace Citrine;
 using winrt::Citrine::implementation::App;
 
@@ -12,6 +17,15 @@ namespace winrt {
 }
 
 auto __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) -> int {
+
+    auto args = std::span<wchar_t*>{ __wargv, static_cast<std::size_t>(__argc) };
+    if (args.size() == 3 && std::wstring_view{ args[1] } == L"RunServiceAction") {
+
+        winrt::init_apartment(winrt::apartment_type::multi_threaded);
+        ServiceActionRunner::ExecuteAction(ToUtf8(args[2]));
+
+        std::quick_exit(0);
+    }
 
     winrt::init_apartment(winrt::apartment_type::single_threaded);
 

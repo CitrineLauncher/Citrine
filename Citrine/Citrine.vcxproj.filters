@@ -52,6 +52,9 @@
     <ClCompile Include="Core\Coroutine\SignalAwaiter.cpp" />
     <ClCompile Include="Windows\DeviceFamily.cpp" />
     <ClCompile Include="Xbox\PackageModel.cpp" />
+    <ClCompile Include="Services\ServiceImplBase.cpp" />
+    <ClCompile Include="Services\ServiceActionHandler.cpp" />
+    <ClCompile Include="Services\ServiceActionRunner.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -193,6 +196,9 @@
     <ClInclude Include="Windows\Msix\MsixTargetDeviceFamily.h" />
     <ClInclude Include="Windows\DeviceFamily.h" />
     <ClInclude Include="Xbox\PackageModel.h" />
+    <ClInclude Include="Services\ServiceImplBase.h" />
+    <ClInclude Include="Services\ServiceActionHandler.h" />
+    <ClInclude Include="Services\ServiceActionRunner.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">

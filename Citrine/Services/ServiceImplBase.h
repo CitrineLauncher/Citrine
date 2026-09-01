@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ServiceActionHandler.h"
+
 #include "Core/Coroutine/TaskPromise.h"
 #include "Core/Coroutine/SignalAwaiter.h"
 
@@ -424,5 +426,17 @@ namespace Citrine {
 
 			OperationT* operation{ nullptr };
 		};
+
+		template<typename T>
+		auto RegisterAction(this auto& self) -> bool {
+
+			return ServiceActionHandler::RegisterAction<T>(self.Name, T::Name);
+		}
+
+		template<typename T, typename... Params>
+		auto RunActionInAdminContext(this auto& self, Params&... params) -> LazyTask<bool> {
+
+			return ServiceActionHandler::RunActionInAdminContext<T>(self.Name, T::Name, params...);
+		}
 	};
 }
