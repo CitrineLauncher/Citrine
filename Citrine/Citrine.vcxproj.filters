@@ -162,7 +162,6 @@
     <ClInclude Include="Xbox\Xvc\XvdUserDataHeader.h" />
     <ClInclude Include="Xbox\Xvc\XvdUserDataPackageFile.h" />
     <ClInclude Include="Xbox\Xvc\XvdUserDataPackageFilesHeader.h" />
-    <ClInclude Include="Core\Util\Memory.h" />
     <ClInclude Include="Xbox\Xvc\XvcHeader.h" />
     <ClInclude Include="Xbox\Xvc\XvcRegionHeader.h" />
     <ClInclude Include="Xbox\Xvc\XvcXtsEntry.h" />

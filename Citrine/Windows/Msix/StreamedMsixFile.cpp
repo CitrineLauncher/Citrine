@@ -7,7 +7,6 @@
 #include "Core/Compression/Zip/ZipExtraFieldHeader.h"
 #include "Core/Compression/Zip/ZipDataDescriptor.h"
 
-#include "Core/Util/Memory.h"
 #include "Core/Util/TrivialArray.h"
 #include "Core/Util/Scope.h"
 #include "Core/Util/Guid.h"
@@ -164,7 +163,7 @@ namespace {
 			if (static_cast<std::uint64_t>(position) + byteSize > bufferSize)
 				return nullptr;
 
-			auto obj = StartLifetimeAs<T>(bufferData + position);
+			auto obj = std::start_lifetime_as<T>(bufferData + position);
 			position += byteSize;
 			return obj;
 		}
@@ -181,7 +180,7 @@ namespace {
 			if (static_cast<std::uint64_t>(position) + byteSize > bufferSize)
 				return {};
 
-			auto objArr = StartLifetimeAsArray<T>(bufferData + position, n);
+			auto objArr = std::start_lifetime_as_array<T>(bufferData + position, n);
 			position += byteSize;
 			return { objArr, n };
 		}
@@ -307,10 +306,10 @@ namespace {
 			if (!file.Read(buffer, bytesRead) || bytesRead != SerializedSize)
 				return;
 
-			if (*StartLifetimeAs<Guid>(&buffer[0]) != FileCookie)
+			if (*std::start_lifetime_as<Guid>(&buffer[0]) != FileCookie)
 				return;
 
-			auto contextValue = *StartLifetimeAs<ExtractionContext>(&buffer[0x10]);
+			auto contextValue = *std::start_lifetime_as<ExtractionContext>(&buffer[0x10]);
 			auto checksum = std::span{ buffer.begin() + 0x18, buffer.end() };
 
 			auto hash = TrivialArray<std::uint8_t, 0x20>{};

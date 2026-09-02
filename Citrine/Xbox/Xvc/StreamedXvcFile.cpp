@@ -12,7 +12,6 @@
 #include "XvcRegionSpecifier.h"
 
 #include "Core/IO/WinRTFileStream.h"
-#include "Core/Util/Memory.h"
 #include "Core/Util/TrivialArray.h"
 
 #include <span>
@@ -84,7 +83,7 @@ namespace {
 					return nullptr;
 			}
 
-			auto obj = StartLifetimeAs<T>(bufferData + position);
+			auto obj = std::start_lifetime_as<T>(bufferData + position);
 			position += byteSize;
 			return obj;
 		}
@@ -106,7 +105,7 @@ namespace {
 					return {};
 			}
 
-			auto objArr = StartLifetimeAsArray<T>(bufferData + position, n);
+			auto objArr = std::start_lifetime_as_array<T>(bufferData + position, n);
 			position += byteSize;
 			return { objArr, n };
 		}
@@ -268,10 +267,10 @@ namespace {
 			if (!file.Read(buffer, bytesRead) || bytesRead != SerializedSize)
 				return;
 
-			if (*StartLifetimeAs<Guid>(&buffer[0]) != FileCookie)
+			if (*std::start_lifetime_as<Guid>(&buffer[0]) != FileCookie)
 				return;
 
-			auto contextValue = *StartLifetimeAs<ExtractionContext>(&buffer[0x10]);
+			auto contextValue = *std::start_lifetime_as<ExtractionContext>(&buffer[0x10]);
 			auto checksum = std::span{ buffer.begin() + 0x20, buffer.end() };
 
 			auto hash = TrivialArray<std::uint8_t, 0x20>{};
