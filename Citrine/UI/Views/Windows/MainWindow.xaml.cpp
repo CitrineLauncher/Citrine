@@ -89,8 +89,7 @@ namespace winrt::Citrine::implementation
 
 			for (auto associatedFileType : associatedFileTypes) {
 
-				constexpr auto toLower = [](wchar_t ch) static { return Ascii::ToLower(ch); };
-				if (std::ranges::equal(associatedFileType, fileType, {}, toLower, toLower)) {
+				if (Ascii::CaseInsensitiveEquals(associatedFileType, fileType)) {
 
 					auto appResources = App::Current().Resources();
 					auto iconKey = winrt::box_value(L"MinecraftBedrockPackIcon");

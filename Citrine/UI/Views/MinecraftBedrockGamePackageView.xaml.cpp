@@ -313,8 +313,7 @@ namespace winrt::Citrine::implementation
 
             for (auto associatedFileType : associatedFileTypes) {
 
-                constexpr auto toLower = [](wchar_t ch) static { return Ascii::ToLower(ch); };
-                if (std::ranges::equal(associatedFileType, fileType, {}, toLower, toLower)) {
+                if (Ascii::CaseInsensitiveEquals(associatedFileType, fileType)) {
 
                     args.AcceptedOperation(winrt::DataPackageOperation::Copy);
                     break;
@@ -354,8 +353,7 @@ namespace winrt::Citrine::implementation
 
             for (auto associatedFileType : associatedFileTypes) {
 
-                constexpr auto toLower = [](wchar_t ch) static { return Ascii::ToLower(ch); };
-                if (std::ranges::equal(associatedFileType, fileType, {}, toLower, toLower)) {
+                if (Ascii::CaseInsensitiveEquals(associatedFileType, fileType)) {
 
                     auto launchArgs = winrt::make_self<GameLaunchArgsImpl>(gamePackage);
                     launchArgs->FileToImport(storageFile.Path());

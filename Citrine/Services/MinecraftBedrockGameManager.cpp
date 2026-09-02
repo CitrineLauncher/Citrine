@@ -238,8 +238,7 @@ namespace {
 
 		auto operator==(this KnownPackageFamily const& left, KnownPackageFamily const& right) -> bool {
 
-			constexpr auto toLower = [](auto ch) static { return Ascii::ToLower(ch); };
-			return std::ranges::equal(left.Name, right.Name, {}, toLower, toLower);
+			return Ascii::CaseInsensitiveEquals(left.Name, right.Name);
 		}
 
 		std::string_view Name;
