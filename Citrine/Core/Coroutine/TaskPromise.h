@@ -11,13 +11,16 @@
 
 namespace Citrine {
 
-	template<typename T>
-	class TaskPromise;
-
 	class TaskCancelledException : public std::runtime_error {
 	public:
 
 		explicit TaskCancelledException() noexcept : runtime_error("Task cancelled") {}
+	};
+
+	class TaskTimeoutException : public std::runtime_error {
+	public:
+
+		explicit TaskTimeoutException() noexcept : runtime_error("Task timeout") {}
 	};
 
 	struct GetCancellationTokenT {};
@@ -90,10 +93,10 @@ namespace Citrine {
 		TaskPromiseBase(TaskPromiseBase const&) = delete;
 		auto operator=(TaskPromiseBase const&) = delete;
 
-		template<typename T>
-		auto get_return_object(this TaskPromise<T>& self) noexcept -> std::coroutine_handle<TaskPromise<T>> {
+		template<typename Derived>
+		auto get_return_object(this Derived& self) noexcept -> std::coroutine_handle<Derived> {
 
-			return std::coroutine_handle<TaskPromise<T>>::from_promise(self);
+			return std::coroutine_handle<Derived>::from_promise(self);
 		}
 
 		auto initial_suspend() noexcept -> std::suspend_always { return {}; }
@@ -102,12 +105,16 @@ namespace Citrine {
 
 		struct FinalAwaitable : std::suspend_always {
 
-			template<typename T>
-			auto await_suspend(std::coroutine_handle<TaskPromise<T>> handle) noexcept -> void {
+			template<typename Derived>
+			auto await_suspend(std::coroutine_handle<Derived> handle) noexcept -> void {
 
 				auto& promise = handle.promise();
-				auto continuation = promise.state.exchange(State::Completed, std::memory_order::acq_rel);
+				if constexpr (requires{ promise.OnFinalSuspend(); }) {
 
+					promise.OnFinalSuspend();
+				}
+
+				auto continuation = promise.state.exchange(State::Completed, std::memory_order::acq_rel);
 				if (continuation == State::Abandoned) {
 
 					handle.destroy();
@@ -144,36 +151,35 @@ namespace Citrine {
 			return std::forward<A>(awaitable);
 		}
 
-		template<typename T>
-		auto Start(this TaskPromise<T>& self) noexcept -> void {
+		template<typename Derived>
+		auto Start(this Derived& self) noexcept -> void {
 
 			self.state.store(State::Running, std::memory_order::relaxed);
-			std::coroutine_handle<TaskPromise<T>>::from_promise(self).resume();
+			std::coroutine_handle<Derived>::from_promise(self).resume();
 		}
 
-		template<typename T>
-		auto Start(this TaskPromise<T>& self, ContinuationHandler continuationHandler, void* continuationParam) noexcept -> void {
+		template<typename Derived>
+		auto Start(this Derived& self, ContinuationHandler continuationHandler, void* continuationParam) noexcept -> void {
 
 			self.useCustomContinuationHandler = true;
 			self.continuationParameter = continuationParam;
 			self.state.store(reinterpret_cast<void*>(continuationHandler), std::memory_order::relaxed);
-			std::coroutine_handle<TaskPromise<T>>::from_promise(self).resume();
+			std::coroutine_handle<Derived>::from_promise(self).resume();
 		}
 
-		template<typename T>
-		auto EnsureStart(this TaskPromise<T>& self) noexcept -> void {
+		template<typename Derived>
+		auto TryStart(this Derived& self) noexcept -> void {
 
 			if (self.state.load(std::memory_order::relaxed) == State::Idle && !self.IsCancelled())
 				self.Start();
 		}
 
-		template<typename T>
-		auto Cancel(this TaskPromise<T>& self) -> void {
+		auto Cancel() -> void {
 
-			if (self.state.load(std::memory_order::relaxed) == State::Completed)
+			if (state.load(std::memory_order::relaxed) == State::Completed)
 				return;
 
-			self.CancelInternal();
+			CancelInternal();
 		}
 
 		auto IsCancelled() const noexcept -> bool {
@@ -269,12 +275,12 @@ namespace Citrine {
 			return state.exchange(reinterpret_cast<void*>(continuationHandler), std::memory_order::release) == State::Running;
 		}
 
-		template<typename T>
-		auto Abandon(this TaskPromise<T>& self) noexcept -> void {
+		template<typename Derived>
+		auto Abandon(this Derived& self) noexcept -> void {
 
 			if (self.state.exchange(State::Abandoned, std::memory_order::acq_rel) != State::Running) {
 
-				std::coroutine_handle<TaskPromise<T>>::from_promise(self).destroy();
+				std::coroutine_handle<Derived>::from_promise(self).destroy();
 			}
 		}
 
@@ -334,7 +340,7 @@ namespace Citrine {
 	};
 
 	template<typename T>
-	class TaskPromise final : public TaskPromiseBase {
+	class TaskPromise : public TaskPromiseBase {
 	public:
 
 		TaskPromise() noexcept = default;
@@ -368,17 +374,25 @@ namespace Citrine {
 			catch (...) {}
 		}
 
-		auto GetResult() -> T&& {
+		template<typename Self>
+		auto GetResult(this Self&& self) -> decltype(auto) {
 
-			if (IsCancelled())
+			if (self.IsCancelled())
 				throw TaskCancelledException{};
 
 			std::atomic_thread_fence(std::memory_order::acquire);
 
-			if (auto exception = std::get_if<std::exception_ptr>(&storage))
+			if (auto exception = std::get_if<std::exception_ptr>(&self.storage))
 				std::rethrow_exception(*exception);
 
-			return std::move(std::get<T>(storage));
+			if constexpr (std::is_rvalue_reference_v<Self&&>) {
+
+				return std::move(std::get<T>(self.storage));
+			}
+			else {
+
+				return std::as_const(std::get<T>(self.storage));
+			}
 		}
 
 	private:
@@ -388,7 +402,7 @@ namespace Citrine {
 	};
 
 	template<>
-	class TaskPromise<void> final : public TaskPromiseBase {
+	class TaskPromise<void> : public TaskPromiseBase {
 	public:
 
 		TaskPromise() noexcept = default;

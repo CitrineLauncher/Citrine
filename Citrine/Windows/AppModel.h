@@ -126,6 +126,7 @@ namespace Citrine::Windows {
         auto Architecture() const noexcept -> PackageArchitecture;
         auto ResourceId() const noexcept(NoThrow) -> StringType;
         auto PublisherId() const noexcept(NoThrow) -> StringType;
+        auto Publisher() const noexcept -> StringType const&;
 
         auto IsEmpty() const noexcept -> bool;
         auto IsValid() const noexcept -> bool;
@@ -143,11 +144,12 @@ namespace Citrine::Windows {
         }
 
         template<std::convertible_to<std::string_view> Arg>
-        PackageIdentityBase(Arg&& fullNameStr, Components const& components, bool valid) noexcept(std::is_nothrow_constructible_v<StringType, Arg>)
+        PackageIdentityBase(Arg&& fullNameStr, Components const& components, bool valid, Arg&& publisherStr) noexcept(std::is_nothrow_constructible_v<StringType, Arg>)
 
             : fullName(StringType{ std::forward<Arg>(fullNameStr) })
             , components(components)
             , valid(valid)
+            , publisher(StringType{ std::forward<Arg>(publisherStr) })
         {}
 
         PackageIdentityBase(PackageIdentityBase const&) noexcept(NoThrow) = default;
@@ -158,6 +160,7 @@ namespace Citrine::Windows {
         StringType fullName;
         Components components;
         bool valid{};
+        StringType publisher;
     };
 
     class PackageIdentity;
@@ -173,6 +176,14 @@ namespace Citrine::Windows {
         template<std::convertible_to<std::string_view> Arg>
         PackageIdentity(Arg&& fullNameStr) : PackageIdentityBase(std::forward<Arg>(fullNameStr)) {}
         explicit PackageIdentity(PackageIdentityView const& packageIdentity);
+
+        PackageIdentity(
+            std::string_view name,
+            std::string_view version,
+            std::string_view architecture,
+            std::string_view resourceId,
+            std::string publisherStr
+        );
 
         PackageIdentity(PackageIdentity const&) = default;
         auto operator=(PackageIdentity const&) -> PackageIdentity& = default;
@@ -215,6 +226,7 @@ namespace Citrine::Windows {
     auto GetPublisherIdFromPublisher(std::string_view publisher) noexcept -> std::string;
     auto GetPackageFamilyNameFromFullName(std::string_view fullName) -> std::string;
     auto GetPackageFamilyNameFromId(PackageIdentityView id) -> std::string;
+    auto GetPackageFamilyName(std::string_view name, std::string_view publisherId) -> std::string;
 }
 
 namespace std {
@@ -320,6 +332,35 @@ namespace glz {
                 auto underlying = std::to_underlying(static_cast<T::ValueType>(architecture));
                 serialize<JSON>::op<Opts>(underlying, args...);
             }
+        }
+    };
+
+    template<::Citrine::Windows::IsPackageIdentityType T>
+    struct from<JSON, T>
+    {
+        template<auto Opts>
+        static auto op(T& packageId, is_context auto&& ctx, auto&&... args) -> void {
+
+            using namespace ::Citrine;
+
+            auto str = decltype(packageId.FullName()){};
+            parse<JSON>::op<Opts>(str, ctx, args...);
+
+            packageId = T{ std::move(str) };
+            if (!packageId.IsEmpty() && !packageId.IsValid())
+                ctx.error = error_code::parse_error;
+        }
+    };
+
+    template<::Citrine::Windows::IsPackageIdentityType T>
+    struct to<JSON, T>
+    {
+        template<auto Opts>
+        static auto op(T const& packageId, auto&&... args) noexcept -> void {
+
+            using namespace ::Citrine;
+
+            serialize<JSON>::op<Opts>(packageId.FullName(), args...);
         }
     };
 }

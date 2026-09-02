@@ -55,6 +55,7 @@ namespace {
         case PreparingDownload:         state = Running;        break;
         case Downloading:               state = Running;        break;
         case Extracting:                state = Running;        break;
+        case InstallingDependencies:    state = Running;        break;
         case CancellingInstallation:    state = Running;        break;
         case InstallationPaused:        state = Paused;         break;
         case InstallationFailed:        state = Failed;         break;

@@ -19,6 +19,7 @@
 #include "Collections/ObservableCollection.h"
 #include "ApplicationData.h"
 #include "Services/HttpService.h"
+#include "Services/PackageInstallationService.h"
 #include "Xbox/Xvc/StreamedXvcFile.h"
 #include "Xbox/Keys/KeyRegistry.h"
 #include "Windows/Fe3Handler.h"
@@ -1154,7 +1155,7 @@ namespace {
 			if (!inserted) {
 
 				Logger::Warn("Game package {} is already in use", packageId);
-				co_return GamePackageRegisterResult::Failed;
+				co_return GamePackageRegisterResult::Blocked;
 			}
 
 			co_return co_await ExecuteRegisterGamePackageOperation(std::move(item), std::to_address(op));
@@ -1185,7 +1186,7 @@ namespace {
 			if (!inserted) {
 
 				Logger::Warn("Game package {} is already in use", packageId);
-				co_return GameLaunchResult::Failed;
+				co_return GameLaunchResult::Blocked;
 			}
 
 			co_return co_await ExecuteLaunchGamePackageOperation(std::move(launchArgs), std::to_address(op));
@@ -1791,6 +1792,9 @@ namespace {
 				packageInfo = std::to_address(it);
 			}
 
+			auto installDependenciesTask = Task<bool>{ nullptr };
+			auto cancelInstallDependenciesTask = ScopeExit{ [&] { if (installDependenciesTask) installDependenciesTask.Cancel(); } };
+
 			if (gamePackage->Platform == GamePlatform::WindowsGDK) {
 
 				auto xvcFileResult = Xbox::XvcOperationResult<Xbox::StreamedXvcFile>{ std::unexpect };
@@ -1832,6 +1836,8 @@ namespace {
 				}
 				auto xvcFile = *std::move(xvcFileResult);
 
+				installDependenciesTask = InstallGamePackageDependenciesAsync(xvcFile.PackageManifest(), gameMeta.PlatformDependencies.WindowsGDK);
+
 				auto cik = std::optional<Xbox::CikEntry>{};
 				if (xvcFile.IsEncrypted()) {
 
@@ -1862,10 +1868,17 @@ namespace {
 				}
 				else {
 
-					auto url = co_await Windows::FE3Handler::GetFileUrlAsync(packageInfo->UpdateId, 1);
+					auto updateId = std::get_if<Guid>(&packageInfo->UpdateId);
+					if (!updateId) {
+
+						Logger::Error("Installing game package {} failed: update id not found", *gamePackage);
+						co_return false;
+					}
+
+					auto url = co_await Windows::FE3Handler::GetFileUrlAsync(*updateId, 1);
 					if (!url) {
 
-						Logger::Error("Installing game package {} failed: fetching url failed", *gamePackage);
+						Logger::Error("Installing game package {} failed: url fetching failed", *gamePackage);
 						co_return false;
 					}
 
@@ -1885,12 +1898,100 @@ namespace {
 				}
 				auto msixFile = *std::move(msixFileResult);
 
+				installDependenciesTask = InstallGamePackageDependenciesAsync(msixFile.PackageManifest(), gameMeta.PlatformDependencies.WindowsUWP);
+
 				auto result = co_await msixFile.ExtractAllFilesAsync(std::move(gameDirectory), progressCallback, std::move(contextFile));
 				if (!result) {
 
 					Logger::Error("Installing game package {} failed: extraction failed ({})", *gamePackage, result.error());
 					co_return false;
 				}
+			}
+
+			if (!installDependenciesTask.IsReady()) {
+
+				progressToken(InstallingDependencies);
+			}
+
+			if (!co_await std::move(installDependenciesTask)) {
+
+				Logger::Error("Installing game package {} failed: dependency installation failed", *gamePackage);
+				co_return false;
+			}
+
+			co_return true;
+		}
+
+		auto InstallGamePackageDependenciesAsync(Windows::MsixManifest const& manifest, std::span<GamePlatformDependencyInfo const> platformDependencies = {}) -> Task<bool> {
+
+			using namespace Citrine::Windows;
+
+			struct Dependency {
+
+				std::string PackageFamilyName;
+				PackageVersion MinVersion;
+			};
+
+			auto targetArchitecture = manifest.Identity().Architecture();
+			auto dependencies = std::vector<Dependency>{};
+			dependencies.reserve(platformDependencies.size() + manifest.PackageDependencies().size());
+
+			for (auto const& platformDependency : platformDependencies) {
+
+				dependencies.emplace_back(
+					platformDependency.PackageFamilyName,
+					platformDependency.Version
+				);
+			}
+
+			for (auto const& packageDependency : manifest.PackageDependencies()) {
+
+				dependencies.emplace_back(
+					GetPackageFamilyName(packageDependency.Name, GetPublisherIdFromPublisher(packageDependency.Publisher)),
+					packageDependency.MinVersion
+				);
+			}
+
+			co_await winrt::resume_background();
+
+			for (auto const& dependency : dependencies) try {
+
+				auto& currentUser = Windows::GetCurrentUser();
+				auto found = false;
+
+				for (auto const& package : packageManager.FindPackagesForUser(winrt::to_hstring(currentUser.Sid), winrt::to_hstring(dependency.PackageFamilyName))) {
+
+					auto packageId = package.Id();
+					auto architecture = PackageArchitecture{ static_cast<std::uint16_t>(packageId.Architecture()) };
+					auto version = std::bit_cast<PackageVersion>(packageId.Version());
+
+					if (architecture == targetArchitecture && version >= dependency.MinVersion) {
+
+						found = true;
+						break;
+					}
+				}
+
+				if (found)
+					continue;
+
+				Logger::Info("Installing game package dependency {}", dependency.PackageFamilyName);
+
+				if (!co_await PackageInstallationService::InstallPackageAsync(dependency.PackageFamilyName)) {
+
+					Logger::Error("Installing game package dependency {} failed", dependency.PackageFamilyName);
+					co_return false;
+				}
+
+				Logger::Info("Installation of game package dependency {} completed", dependency.PackageFamilyName);
+			}
+			catch (winrt::hresult_error const& error) {
+
+				auto code = std::int32_t{ error.code() };
+				auto message = winrt::to_string(error.message());
+
+				Logger::Error("Installing game package dependency {} failed (code: {}, message: {})", dependency.PackageFamilyName, code, message);
+				co_return false;
 			}
 
 			co_return true;

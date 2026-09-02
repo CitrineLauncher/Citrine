@@ -39,6 +39,7 @@ namespace {
             status == PreparingDownload ||
             status == Downloading ||
             status == Extracting ||
+            status == InstallingDependencies ||
             status == InstallationPaused ||
             status == InstallationFailed ||
             status == PreparingRepair ||

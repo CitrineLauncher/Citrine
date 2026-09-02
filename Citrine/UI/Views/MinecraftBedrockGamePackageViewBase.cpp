@@ -84,6 +84,7 @@ namespace {
 			PreparingDownload		= Localizer::GetString(L"Status_PreparingDownload");
 			Downloading				= Localizer::GetString(L"Status_Downloading");
 			Extracting				= Localizer::GetString(L"Status_Extracting");
+			InstallingDependencies	= Localizer::GetString(L"Status_InstallingDependencies");
 			CancellingInstallation	= Localizer::GetString(L"Status_CancellingInstallation");
 			InstallationPaused		= Localizer::GetString(L"Status_InstallationPaused");
 			InstallationFailed		= Localizer::GetString(L"Status_InstallationFailed");
@@ -113,6 +114,7 @@ namespace {
 		winrt::hstring PreparingDownload;
 		winrt::hstring Downloading;
 		winrt::hstring Extracting;
+		winrt::hstring InstallingDependencies;
 		winrt::hstring CancellingInstallation;
 		winrt::hstring InstallationPaused;
 		winrt::hstring InstallationFailed;
@@ -309,6 +311,7 @@ namespace winrt::Citrine::implementation {
 		case PreparingDownload:			statusStr = strings.PreparingDownload;		break;
 		case Downloading:				statusStr = strings.Downloading;			break;
 		case Extracting:				statusStr = strings.Extracting;				break;
+		case InstallingDependencies:	statusStr = strings.InstallingDependencies;	break;
 		case CancellingInstallation:	statusStr = strings.CancellingInstallation;	break;
 		case InstallationPaused:		statusStr = strings.InstallationPaused;		break;
 		case InstallationFailed:		statusStr = strings.InstallationFailed;		break;

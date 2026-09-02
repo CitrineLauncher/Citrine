@@ -36,7 +36,7 @@ namespace Citrine::Windows {
 		co_return {};
 	}
 
-	auto Shell::ExecuteAsync(std::filesystem::path path, std::string_view arguments) -> AsyncShellResult<std::uint32_t> {
+	auto Shell::ExecuteAsync(std::filesystem::path path, std::string_view arguments, bool runAsAdmin) -> AsyncShellResult<wil::unique_process_handle> {
 
 		auto wideArgs = ToUtf16(arguments);
 
@@ -46,7 +46,7 @@ namespace Citrine::Windows {
 
 			.cbSize = sizeof(::SHELLEXECUTEINFOW),
 			.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NOASYNC,
-			.lpVerb = L"open",
+			.lpVerb = runAsAdmin ? L"runas" : L"open",
 			.lpFile = path.c_str(),
 			.lpParameters = wideArgs.c_str(),
 			.nShow = SW_SHOWNORMAL
@@ -59,8 +59,7 @@ namespace Citrine::Windows {
 			co_return std::unexpected{ lastError };
 		}
 
-		auto closeProcHandle = ScopeExit{ [&] { ::CloseHandle(executeInfo.hProcess); } };
-		co_return ::GetProcessId(executeInfo.hProcess);
+		co_return wil::unique_process_handle{ executeInfo.hProcess };
 	}
 
 	auto Shell::CreateShortcut(std::filesystem::path const& path, std::filesystem::path const& targetPath, std::string_view arguments, std::string_view aumid) -> ShellResult<> {

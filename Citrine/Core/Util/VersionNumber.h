@@ -152,6 +152,12 @@ namespace Citrine {
 	struct VersionNumberFormatter {
 
 		template<IsVersionNumberType T>
+		static consteval auto MaxFormattedSize() noexcept -> std::size_t {
+
+			return decltype(GetVersionNumberSegments(std::declval<T const&>()))::MaxFormattedSize();
+		}
+
+		template<IsVersionNumberType T>
 		static consteval auto MaxFormattedSize(T const& version) noexcept -> std::size_t {
 
 			return decltype(GetVersionNumberSegments(version))::MaxFormattedSize();
@@ -164,7 +170,7 @@ namespace Citrine {
 		}
 
 		template<typename CharT, IsVersionNumberType T>
-		static constexpr auto FormatTo(std::basic_string<CharT>& output, T const& version) noexcept -> void {
+		static constexpr auto FormatTo(std::basic_string<CharT>& output, T const& version) -> void {
 
 			auto buffer = TrivialArray<CharT, MaxFormattedSize(version)>{};
 			output.assign(buffer.data(), FormatTo(buffer.data(), GetVersionNumberSegments(version)));

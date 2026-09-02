@@ -247,7 +247,7 @@
     <value>Uninstallation pending</value>
   </data>
   <data name="Status_UninstallationFailed" xml:space="preserve">
-    <value>UninstallationFailed</value>
+    <value>Uninstallation failed</value>
   </data>
   <data name="MinecraftBedrock_GamePackages_Search.PlaceholderText" xml:space="preserve">
     <value>Search</value>
@@ -347,5 +347,8 @@
   </data>
   <data name="MinecraftBedrock_OnlyShowInstalledVersions.Text" xml:space="preserve">
     <value>Only show installed versions</value>
+  </data>
+  <data name="Status_InstallingDependencies" xml:space="preserve">
+    <value>Installing dependencies</value>
   </data>
 </root>

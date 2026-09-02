@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <limits>
 #include <bit>
+#include <optional>
 
 namespace Citrine {
 
@@ -142,5 +143,41 @@ namespace Citrine {
 
 		value = static_cast<T>(num);
 		return { it, ParseIntegerError::None };
+	}
+
+	template<std::integral T>
+	constexpr auto ParseInteger(std::string_view str, T& value) noexcept -> bool {
+
+		auto it = str.data();
+		auto const end = it + str.size();
+
+		auto [ptr, error] = ParseInteger(it, end, value);
+		return ptr == end && error == ParseIntegerError::None;
+	}
+
+	template<std::integral T>
+	constexpr auto ParseInteger(std::string_view str) noexcept -> std::optional<T> {
+
+		auto value = std::optional<T>{ std::in_place };
+		if (!ParseInteger(str, *value)) value.reset();
+		return value;
+	}
+
+	template<std::integral T>
+	constexpr auto ParseInteger(std::wstring_view str, T& value) noexcept -> bool {
+
+		auto it = str.data();
+		auto const end = it + str.size();
+
+		auto [ptr, error] = ParseInteger(it, end, value);
+		return ptr == end && error == ParseIntegerError::None;
+	}
+
+	template<std::integral T>
+	constexpr auto ParseInteger(std::wstring_view str) noexcept -> std::optional<T> {
+
+		auto value = std::optional<T>{ std::in_place };
+		if (!ParseInteger(str, *value)) value.reset();
+		return value;
 	}
 }

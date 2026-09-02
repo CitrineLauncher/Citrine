@@ -2,6 +2,7 @@
 
 #include <type_traits>
 #include <functional>
+#include <utility>
 
 #include <glaze/json/read.hpp>
 #include <glaze/json/write.hpp>
@@ -9,7 +10,8 @@
 namespace Citrine::Glaze {
 
 	template<typename T>
-	concept DefaultSkippable = glz::nullable_t<T> || std::is_arithmetic_v<T> || std::is_enum_v<T> || requires(T t) { t.empty(); } || requires(T t) { t.IsEmpty(); };
+	concept DefaultSkippable =
+		glz::nullable_t<T> || std::is_arithmetic_v<T> || std::is_enum_v<T> || requires(T t) { t.empty(); } || requires(T t) { t.IsEmpty(); } || requires(T t) { std::holds_alternative<std::monostate>(t); };
 
 	template<typename ValueType>
 		requires DefaultSkippable<std::remove_reference_t<ValueType>>
@@ -31,9 +33,13 @@ namespace Citrine::Glaze {
 
 				return !Val.empty();
 			}
-			else {
+			else if constexpr (requires(T t) { t.IsEmpty(); }) {
 
 				return !Val.IsEmpty();
+			}
+			else {
+
+				return std::holds_alternative<std::monostate>(Val);
 			}
 		}
 
@@ -54,7 +60,8 @@ namespace Citrine::Glaze {
 	};
 
 	template<typename T, auto C>
-	concept ConditionallySkippable = glz::nullable_t<T> || std::is_invocable_r_v<bool, decltype(C), T const&> || std::same_as<bool, decltype(C)>;
+	concept ConditionallySkippable =
+		glz::nullable_t<T> || std::is_invocable_r_v<bool, decltype(C), T const&> || std::same_as<bool, decltype(C)>;
 
 	template<typename ValueType, auto C>
 		requires ConditionallySkippable<std::remove_reference_t<ValueType>, C>

@@ -157,6 +157,14 @@
     <ClInclude Include="Core\Util\JsonWrappers.h" />
     <ClInclude Include="Core\Util\Memory.h" />
     <ClInclude Include="Core\Util\SemanticVersion.h" />
+    <ClInclude Include="Services\PackageInstallationService.h" />
+    <ClInclude Include="Services\ServiceActionRunner.h" />
+    <ClInclude Include="Services\ServiceActionHandler.h" />
+    <ClInclude Include="Services\ServiceImplBase.h" />
+    <ClInclude Include="Xbox\PackageModel.h" />
+    <ClInclude Include="Windows\DeviceFamily.h" />
+    <ClInclude Include="Windows\Msix\MsixDependency.h" />
+    <ClInclude Include="Windows\Msix\MsixTargetDeviceFamily.h" />
     <ClInclude Include="Models\MinecraftBedrockGameInfo.h">
       <DependentUpon>Models\MinecraftBedrockGameInfo.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -509,6 +517,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationMutex.cpp" />
+    <ClCompile Include="Services\PackageInstallationService.cpp" />
+    <ClCompile Include="Services\ServiceActionRunner.cpp" />
+    <ClCompile Include="Services\ServiceActionHandler.cpp" />
+    <ClCompile Include="Services\ServiceImplBase.cpp" />
+    <ClCompile Include="Xbox\PackageModel.cpp" />
+    <ClCompile Include="Windows\DeviceFamily.cpp" />
     <ClCompile Include="Models\MinecraftBedrockGameInfo.cpp">
       <DependentUpon>Models\MinecraftBedrockGameInfo.idl</DependentUpon>
       <SubType>Code</SubType>

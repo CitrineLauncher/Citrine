@@ -6,6 +6,8 @@
 #include <expected>
 #include <filesystem>
 
+#include <wil/resource.h>
+
 namespace Citrine::Windows {
 
 	template<typename T = void>
@@ -18,7 +20,7 @@ namespace Citrine::Windows {
 	public:
 
 		static auto OpenFolderAsync(std::filesystem::path path) -> AsyncShellResult<>;
-		static auto ExecuteAsync(std::filesystem::path path, std::string_view arguments) -> AsyncShellResult<std::uint32_t>;
+		static auto ExecuteAsync(std::filesystem::path path, std::string_view arguments, bool runAsAdmin = false) -> AsyncShellResult<wil::unique_process_handle>;
 		static auto CreateShortcut(std::filesystem::path const& path, std::filesystem::path const& targetPath, std::string_view arguments, std::string_view aumid) -> ShellResult<>;
 	};
 }
