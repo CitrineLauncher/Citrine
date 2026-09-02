@@ -348,4 +348,7 @@
   <data name="MinecraftBedrock_OnlyShowInstalledVersions.Text" xml:space="preserve">
     <value>Nur installierte Versionen zeigen</value>
   </data>
+  <data name="Status_InstallingDependencies" xml:space="preserve">
+    <value>Abhängigkeiten installieren</value>
+  </data>
 </root>

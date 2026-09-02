@@ -73,12 +73,10 @@ namespace Citrine::Minecraft::Bedrock {
 		return CheckGamePackageCompatibility(package.Version, package.Platform, package.Architecture);
 	}
 
-	struct GamePackageDependencyInfo {
+	struct GamePlatformDependencyInfo {
 
 		std::string PackageFamilyName;
 		Windows::PackageVersion Version;
-		Windows::PackageArchitecture Architecture{};
-		std::string UpdateId;
 	};
 
 	struct GamePackageMeta {
@@ -91,15 +89,15 @@ namespace Citrine::Minecraft::Bedrock {
 
 		using PackagesT = GamePackageInfoCollection;
 
-		struct DependenciesT {
+		struct PlatformDependenciesT {
 
-			std::vector<GamePackageDependencyInfo> WindowsUWP;
-			std::vector<GamePackageDependencyInfo> WindowsGDK;
+			std::vector<GamePlatformDependencyInfo> WindowsUWP;
+			std::vector<GamePlatformDependencyInfo> WindowsGDK;
 		};
 
 		BaseUrlsT BaseUrls;
 		PackagesT Packages;
-		DependenciesT Dependencies;
+		PlatformDependenciesT PlatformDependencies;
 	};
 }
 
@@ -121,15 +119,13 @@ namespace glz {
 	};
 
 	template<>
-	struct meta<::Citrine::Minecraft::Bedrock::GamePackageDependencyInfo> {
+	struct meta<::Citrine::Minecraft::Bedrock::GamePlatformDependencyInfo> {
 
-		using T = ::Citrine::Minecraft::Bedrock::GamePackageDependencyInfo;
+		using T = ::Citrine::Minecraft::Bedrock::GamePlatformDependencyInfo;
 
 		static constexpr auto value = object(
 			"PackageFamilyName", &T::PackageFamilyName,
-			"Version", &T::Version,
-			"Architecture", &T::Architecture,
-			"UpdateId", &T::UpdateId
+			"Version", &T::Version
 		);
 	};
 
@@ -145,9 +141,9 @@ namespace glz {
 	};
 
 	template<>
-	struct meta<::Citrine::Minecraft::Bedrock::GamePackageMeta::DependenciesT> {
+	struct meta<::Citrine::Minecraft::Bedrock::GamePackageMeta::PlatformDependenciesT> {
 
-		using T = ::Citrine::Minecraft::Bedrock::GamePackageMeta::DependenciesT;
+		using T = ::Citrine::Minecraft::Bedrock::GamePackageMeta::PlatformDependenciesT;
 
 		static constexpr auto value = object(
 			"WindowsUWP", SkipDefault<&T::WindowsUWP>,
@@ -163,7 +159,7 @@ namespace glz {
 		static constexpr auto value = object(
 			"BaseUrls", &T::BaseUrls,
 			"Packages", &T::Packages,
-			"Dependencies", &T::Dependencies
+			"PlatformDependencies", &T::PlatformDependencies
 		);
 	};
 }

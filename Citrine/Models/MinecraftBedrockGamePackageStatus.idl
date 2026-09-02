@@ -6,6 +6,7 @@ namespace Citrine
         PreparingDownload,
         Downloading,
         Extracting,
+        InstallingDependencies,
         CancellingInstallation,
         InstallationPaused,
         InstallationFailed,
