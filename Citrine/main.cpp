@@ -14,6 +14,7 @@ using winrt::Citrine::implementation::App;
 namespace winrt {
 
     using namespace Microsoft::UI::Xaml;
+    using namespace Microsoft::UI::Xaml::Settings;
 }
 
 auto __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) -> int {
@@ -42,6 +43,11 @@ auto __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) -> int {
         PostMessageW(HWND_BROADCAST, redirectEventId, 0, 0);
     }
     else {
+
+        winrt::XamlOptionalChanges::EnableChange(winrt::XamlChangeId::IconNoGridOptimization);
+        winrt::XamlOptionalChanges::EnableChange(winrt::XamlChangeId::OptimizeApplyStyles);
+        winrt::XamlOptionalChanges::EnableChange(winrt::XamlChangeId::DefaultStyleOptimizations);
+        winrt::XamlOptionalChanges::EnableChange(winrt::XamlChangeId::DeferContextFlyoutInit);
 
         winrt::Application::Start([&](auto&&) { winrt::make<App>(std::move(mutex)); });
     }
