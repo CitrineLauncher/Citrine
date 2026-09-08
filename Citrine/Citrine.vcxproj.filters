@@ -200,6 +200,7 @@
     <ClInclude Include="Services\ServiceActionHandler.h" />
     <ClInclude Include="Services\ServiceActionRunner.h" />
     <ClInclude Include="Services\PackageInstallationService.h" />
+    <ClInclude Include="ReleaseInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
