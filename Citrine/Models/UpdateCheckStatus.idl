@@ -1,0 +1,12 @@
+namespace Citrine
+{
+	enum UpdateCheckStatus
+	{
+		Idle,
+		Checking,
+		UpToDate,
+		UpdateAvailable,
+		NetworkError,
+		ApiError
+	};
+}

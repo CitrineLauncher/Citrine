@@ -789,6 +789,7 @@
     <Midl Include="Models\ToastNotification.idl">
       <SubType>Designer</SubType>
     </Midl>
+    <Midl Include="Models\UpdateCheckStatus.idl" />
     <Midl Include="UI\Controls\ContentDialogEx.idl">
       <SubType>Designer</SubType>
     </Midl>
