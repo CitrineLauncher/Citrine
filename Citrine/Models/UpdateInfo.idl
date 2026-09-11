@@ -1,0 +1,11 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass UpdateInfo 
+    {
+        String Version{ get; };
+        String ReleaseChannel{ get; };
+        String ReleaseTag{ get; };
+        Windows.Foundation.Uri ReleaseUrl{ get; };
+    }
+}

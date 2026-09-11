@@ -285,6 +285,7 @@
     <Midl Include="UI\ViewModels\MinecraftBedrockViewModel.idl" />
     <Midl Include="UI\Converters\IntToBoolConverter.idl" />
     <Midl Include="Models\UpdateCheckStatus.idl" />
+    <Midl Include="Models\UpdateInfo.idl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Citrine.rc" />

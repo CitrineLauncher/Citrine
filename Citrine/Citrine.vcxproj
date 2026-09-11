@@ -156,6 +156,10 @@
     <ClInclude Include="Core\Coroutine\Traits.h" />
     <ClInclude Include="Core\Util\JsonWrappers.h" />
     <ClInclude Include="Core\Util\SemanticVersion.h" />
+    <ClInclude Include="Models\UpdateInfo.h">
+      <DependentUpon>Models\UpdateInfo.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="ReleaseInfo.h" />
     <ClInclude Include="Services\PackageInstallationService.h" />
     <ClInclude Include="Services\ServiceActionRunner.h" />
@@ -517,6 +521,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationMutex.cpp" />
+    <ClCompile Include="Models\UpdateInfo.cpp">
+      <DependentUpon>Models\UpdateInfo.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="Services\PackageInstallationService.cpp" />
     <ClCompile Include="Services\ServiceActionRunner.cpp" />
     <ClCompile Include="Services\ServiceActionHandler.cpp" />
@@ -790,6 +798,9 @@
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="Models\UpdateCheckStatus.idl" />
+    <Midl Include="Models\UpdateInfo.idl">
+      <SubType>Designer</SubType>
+    </Midl>
     <Midl Include="UI\Controls\ContentDialogEx.idl">
       <SubType>Designer</SubType>
     </Midl>
