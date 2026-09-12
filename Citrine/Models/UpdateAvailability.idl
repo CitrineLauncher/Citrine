@@ -1,0 +1,10 @@
+namespace Citrine
+{
+	enum UpdateAvailability
+	{
+		Unknown,
+		NoUpdates,
+		UpdateAvailable,
+		UpdateRequired
+	};
+}

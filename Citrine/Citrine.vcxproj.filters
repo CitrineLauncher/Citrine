@@ -286,6 +286,7 @@
     <Midl Include="UI\Converters\IntToBoolConverter.idl" />
     <Midl Include="Models\UpdateCheckStatus.idl" />
     <Midl Include="Models\UpdateInfo.idl" />
+    <Midl Include="Models\UpdateAvailability.idl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Citrine.rc" />
