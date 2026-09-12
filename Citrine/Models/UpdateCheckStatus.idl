@@ -4,8 +4,6 @@ namespace Citrine
 	{
 		Idle,
 		Checking,
-		UpToDate,
-		UpdateAvailable,
 		NetworkError,
 		ApiError
 	};
