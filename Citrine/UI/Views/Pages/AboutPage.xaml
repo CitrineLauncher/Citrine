@@ -44,7 +44,7 @@
                 </Grid>
             </Button>
 
-            <InfoBar Margin="0,3,0,0" IsOpen="True" IsClosable="False" Title="Not affiliated with or endorsed by Mojang / Microsoft." />
+            <InfoBar Margin="0,2,0,0" IsOpen="True" IsClosable="False" Title="Not affiliated with or endorsed by Mojang / Microsoft." />
 
             <TextBlock Visibility="Collapsed"
                  x:Uid="About_Runtime" Margin="0,24,0,0" FontSize="16" FontWeight="Medium" />
