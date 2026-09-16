@@ -472,6 +472,7 @@
     <Page Include="UI\Controls\NumberBoxEx_ThemeResources.xaml" />
     <Page Include="UI\Controls\ProgressBarEx_ThemeResources.xaml" />
     <Page Include="UI\Controls\TextBoxEx_ThemeResources.xaml" />
+    <Page Include="UI\Styles\RightAlignedToggleSwitchStyle.xaml" />
     <Page Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml">
       <SubType>Designer</SubType>
     </Page>

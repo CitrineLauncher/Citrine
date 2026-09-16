@@ -238,6 +238,7 @@
     <Page Include="UI\Views\Dialogs\MinecraftBedrockManageDialog.xaml" />
     <Page Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml" />
     <Page Include="UI\Views\Dialogs\MinecraftBedrockRenameDialog.xaml" />
+    <Page Include="UI\Styles\RightAlignedToggleSwitchStyle.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Collections\IObservableCollectionView.idl" />
