@@ -8,7 +8,7 @@
 
 namespace Citrine {
 
-	enum struct ReleaseChannel {
+	enum struct ReleaseChannel : std::uint8_t {
 
 		Unknown,
 		Stable,
