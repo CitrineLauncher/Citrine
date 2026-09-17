@@ -351,4 +351,19 @@
   <data name="Status_InstallingDependencies" xml:space="preserve">
     <value>Installing dependencies</value>
   </data>
+  <data name="ReleaseChannel_Stable.Content" xml:space="preserve">
+    <value>Stable</value>
+  </data>
+  <data name="ReleaseChannel_Preview.Content" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="GeneralSettings_UpdateChannel.Text" xml:space="preserve">
+    <value>Update channel</value>
+  </data>
+  <data name="GeneralSettings_CheckForUpdatesAutomatically.Text" xml:space="preserve">
+    <value>Check for updates automatically</value>
+  </data>
+  <data name="GeneralSettings_Updates.Text" xml:space="preserve">
+    <value>Updates</value>
+  </data>
 </root>

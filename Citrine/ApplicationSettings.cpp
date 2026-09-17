@@ -69,6 +69,54 @@ namespace Citrine {
 		storage->Language = value;
 	}
 
+	auto LocalApplicationSettings::AutomaticUpdateChecks() const noexcept -> bool {
+
+		return storage->AutomaticUpdateChecks;
+	}
+
+	auto LocalApplicationSettings::AutomaticUpdateChecks(bool value) -> void {
+
+		if (storage->AutomaticUpdateChecks != value) {
+
+			storage->AutomaticUpdateChecks = value;
+			automaticUpdateChecksChangedEvent(value);
+		}
+	}
+
+	auto LocalApplicationSettings::AutomaticUpdateChecksChanged(AutomaticUpdateChecksChangedEventHandler handler) -> EventToken {
+
+		return automaticUpdateChecksChangedEvent.Add(std::move(handler));
+	}
+
+	auto LocalApplicationSettings::AutomaticUpdateChecksChanged(EventToken&& token) -> void {
+
+		automaticUpdateChecksChangedEvent.Remove(std::move(token));
+	}
+
+	auto LocalApplicationSettings::UpdateChannel() const noexcept -> ReleaseChannel {
+
+		return storage->UpdateChannel;
+	}
+
+	auto LocalApplicationSettings::UpdateChannel(ReleaseChannel value) -> void {
+
+		if (storage->UpdateChannel != value) {
+
+			storage->UpdateChannel = value;
+			updateChannelChangedEvent(value);
+		}
+	}
+
+	auto LocalApplicationSettings::UpdateChannelChanged(UpdateChannelChangedEventHandler handler) -> EventToken {
+
+		return updateChannelChangedEvent.Add(std::move(handler));
+	}
+
+	auto LocalApplicationSettings::UpdateChannelChanged(EventToken&& token) -> void {
+
+		updateChannelChangedEvent.Remove(std::move(token));
+	}
+
 	auto LocalApplicationSettings::PackageViewMode() const noexcept -> Citrine::PackageViewMode {
 
 		return storage->PackageViewMode;

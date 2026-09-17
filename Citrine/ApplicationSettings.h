@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ReleaseInfo.h"
+
 #include "Locale/LanguageTag.h"
 #include "Core/Storage/JsonStorage.h"
 #include "Core/Util/Event.h"
@@ -34,6 +36,8 @@ namespace Citrine {
 
 		using ThemeChangedEventHandler = EventHandler<AppTheme>;
 		using BackdropChangedEventHandler = EventHandler<AppBackdrop>;
+		using AutomaticUpdateChecksChangedEventHandler = EventHandler<bool>;
+		using UpdateChannelChangedEventHandler = EventHandler<ReleaseChannel>;
 		using PackageViewModeChangedEventHandler = EventHandler<Citrine::PackageViewMode>;
 
 		auto Theme() const noexcept -> AppTheme;
@@ -50,6 +54,18 @@ namespace Citrine {
 
 		auto Language() const noexcept -> LanguageTag const&;
 		auto Language(LanguageTag const& value) noexcept -> void;
+
+		auto AutomaticUpdateChecks() const noexcept -> bool;
+		auto AutomaticUpdateChecks(bool value) -> void;
+
+		auto AutomaticUpdateChecksChanged(AutomaticUpdateChecksChangedEventHandler handler) -> EventToken;
+		auto AutomaticUpdateChecksChanged(EventToken&& token) -> void;
+
+		auto UpdateChannel() const noexcept -> ReleaseChannel;
+		auto UpdateChannel(ReleaseChannel value) -> void;
+
+		auto UpdateChannelChanged(UpdateChannelChangedEventHandler handler) -> EventToken;
+		auto UpdateChannelChanged(EventToken&& token) -> void;
 
 		auto PackageViewMode() const noexcept -> Citrine::PackageViewMode;
 		auto PackageViewMode(Citrine::PackageViewMode value) -> void;
@@ -79,6 +95,8 @@ namespace Citrine {
 			AppTheme Theme{};
 			AppBackdrop Backdrop{};
 			LanguageTag Language;
+			bool AutomaticUpdateChecks{ true };
+			ReleaseChannel UpdateChannel{ ReleaseChannel::Stable };
 			Citrine::PackageViewMode PackageViewMode{};
 			std::string LandingPage;
 		};
@@ -88,6 +106,8 @@ namespace Citrine {
 		JsonStorage<SettingsData> storage;
 		Event<ThemeChangedEventHandler> themeChangedEvent;
 		Event<BackdropChangedEventHandler> backdropChangedEvent;
+		Event<AutomaticUpdateChecksChangedEventHandler> automaticUpdateChecksChangedEvent;
+		Event<UpdateChannelChangedEventHandler> updateChannelChangedEvent;
 		Event<PackageViewModeChangedEventHandler> packageViewModeChangedEvent;
 	};
 }
@@ -137,6 +157,8 @@ namespace glz {
 			"Theme", &T::Theme,
 			"Backdrop", &T::Backdrop,
 			"Language", &T::Language,
+			"AutomaticUpdateChecks", &T::AutomaticUpdateChecks,
+			"UpdateChannel", &T::UpdateChannel,
 			"PackageViewMode", &T::PackageViewMode,
 			"LandingPage", &T::LandingPage
 		);

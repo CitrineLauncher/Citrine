@@ -13,7 +13,7 @@
         <XamlUICommand x:Name="RestartAppCommand" Command="{x:Bind ViewModel.RestartAppCommand}" />
     </Page.Resources>
 
-    <ScrollViewer MaxWidth="800">
+    <ScrollViewer MaxWidth="828" Margin="-14,0" Padding="14,0">
         <StackPanel>
 
             <StackPanel.ChildrenTransitions>
@@ -41,7 +41,7 @@
                 </InfoBar.ActionButton>
             </InfoBar>
 
-            <TextBlock x:Uid="GeneralSettings_Appearance" Margin="0,22,0,0" FontSize="16" FontWeight="Medium" />
+            <TextBlock x:Uid="GeneralSettings_Appearance" Margin="0,30,0,0" FontSize="16" FontWeight="Medium" />
 
             <Grid Height="70" Margin="0,6,0,0" Padding="16" ColumnSpacing="16" Background="{ThemeResource ControlFillColorDefaultBrush}" CornerRadius="4" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                 <Grid.ColumnDefinitions>
@@ -76,7 +76,36 @@
                 </ComboBox>
             </Grid>
 
-            <TextBlock x:Uid="GeneralSettings_FileManagement" Margin="0,24,0,0" FontSize="16" FontWeight="Medium" />
+            <TextBlock x:Uid="GeneralSettings_Updates" Margin="0,32,0,0" FontSize="16" FontWeight="Medium" />
+
+            <Grid Height="70" Margin="0,6,0,0" Padding="16" ColumnSpacing="16" Background="{ThemeResource ControlFillColorDefaultBrush}" CornerRadius="4" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <FontIcon Glyph="&#xECC5;" Margin="2,0" VerticalAlignment="Center" Grid.Column="0" FontSize="24"/>
+                <TextBlock x:Uid="GeneralSettings_CheckForUpdatesAutomatically" VerticalAlignment="Center" FontSize="16" Grid.Column="1"/>
+                <ToggleSwitch IsOn="{x:Bind ViewModel.AutomaticUpdateChecks, Mode=TwoWay}" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{ThemeResource RightAlignedToggleSwitchStyle}" />
+            </Grid>
+
+            <Grid Height="70" Margin="0,3,0,0" Padding="16" ColumnSpacing="16" Background="{ThemeResource ControlFillColorDefaultBrush}" CornerRadius="4" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <FontIcon Glyph="&#xE789;" Margin="2,0" VerticalAlignment="Center" Grid.Column="0" FontSize="24"/>
+                <TextBlock x:Uid="GeneralSettings_UpdateChannel" VerticalAlignment="Center" FontSize="16" Grid.Column="1"/>
+                <ComboBox SelectedIndex="{x:Bind ViewModel.UpdateChannel, Mode=TwoWay}" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Width="160">
+                    <ComboBox.Items>
+                        <ComboBoxItem x:Uid="ReleaseChannel_Stable" />
+                        <ComboBoxItem x:Uid="ReleaseChannel_Preview" />
+                    </ComboBox.Items>
+                </ComboBox>
+            </Grid>
+
+            <TextBlock x:Uid="GeneralSettings_FileManagement" Margin="0,32,0,0" FontSize="16" FontWeight="Medium" />
 
             <Button Height="70" Margin="0,6,0,0" Padding="16" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Stretch" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     Command="{x:Bind ViewModel.OpenAppDataDirectoryCommand}">
