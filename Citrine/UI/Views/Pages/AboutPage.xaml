@@ -9,7 +9,7 @@
     mc:Ignorable="d"
     NavigationCacheMode="Required">
 
-    <ScrollViewer MaxWidth="800" VerticalAlignment="Center">
+    <ScrollViewer MaxWidth="828" Margin="-14,0" Padding="14,0" VerticalAlignment="Center">
         <StackPanel>
 
             <TextBlock x:Uid="About_About" FontSize="16" FontWeight="Medium" />
