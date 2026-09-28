@@ -56,6 +56,7 @@
     <ClCompile Include="Services\ServiceActionHandler.cpp" />
     <ClCompile Include="Services\ServiceActionRunner.cpp" />
     <ClCompile Include="Services\PackageInstallationService.cpp" />
+    <ClCompile Include="Services\NetworkInfoService.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -201,6 +202,7 @@
     <ClInclude Include="Services\ServiceActionRunner.h" />
     <ClInclude Include="Services\PackageInstallationService.h" />
     <ClInclude Include="ReleaseInfo.h" />
+    <ClInclude Include="Services\NetworkInfoService.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">

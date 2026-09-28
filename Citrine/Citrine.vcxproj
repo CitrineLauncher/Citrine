@@ -160,6 +160,7 @@
       <DependentUpon>Models\UpdateInfo.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="Services\NetworkInfoService.h" />
     <ClInclude Include="ReleaseInfo.h" />
     <ClInclude Include="Services\PackageInstallationService.h" />
     <ClInclude Include="Services\ServiceActionRunner.h" />
@@ -526,6 +527,7 @@
       <DependentUpon>Models\UpdateInfo.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="Services\NetworkInfoService.cpp" />
     <ClCompile Include="Services\PackageInstallationService.cpp" />
     <ClCompile Include="Services\ServiceActionRunner.cpp" />
     <ClCompile Include="Services\ServiceActionHandler.cpp" />
