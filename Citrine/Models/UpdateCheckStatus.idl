@@ -5,6 +5,7 @@ namespace Citrine
 		Idle,
 		Checking,
 		NetworkError,
-		ApiError
+		ApiError,
+		ResponseError
 	};
 }
