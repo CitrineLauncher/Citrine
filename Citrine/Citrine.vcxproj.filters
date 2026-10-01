@@ -203,6 +203,7 @@
     <ClInclude Include="Services\PackageInstallationService.h" />
     <ClInclude Include="ReleaseInfo.h" />
     <ClInclude Include="Services\NetworkInfoService.h" />
+    <ClInclude Include="Core\Net\NetworkInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
