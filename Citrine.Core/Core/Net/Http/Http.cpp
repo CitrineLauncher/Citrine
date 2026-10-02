@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "HttpService.h"
+#include "Http.h"
 
 #include "Core/Logging/Logger.h"
 #include "Core/IO/WinRTBuffer.h"
@@ -442,7 +442,7 @@ namespace Citrine {
 		: variant(std::in_place_type<std::reference_wrapper<HttpHeaderCollection const>>, headers)
 	{}
 
-	auto HttpService::SendRequestAsync(HttpMethod method, Url url, HttpContentParameter content, HttpHeaderParameters headers) -> AsyncHttpResult<HttpResponse> try {
+	auto Http::SendRequestAsync(HttpMethod method, Url url, HttpContentParameter content, HttpHeaderParameters headers) -> AsyncHttpResult<HttpResponse> try {
 
 		auto requestMessage = BuildRequestMessage(method, url, std::move(content), headers);
 		co_await winrt::resume_background();
@@ -486,7 +486,7 @@ namespace Citrine {
 		co_return error;
 	}
 
-	auto HttpService::GetStreamAsync(Url url, HttpHeaderParameters headers) -> AsyncHttpResult<HttpStreamResponse> try {
+	auto Http::GetStreamAsync(Url url, HttpHeaderParameters headers) -> AsyncHttpResult<HttpStreamResponse> try {
 
 		auto requestMessage = BuildRequestMessage(HttpMethod::Get, url, {}, headers);
 		co_await winrt::resume_background();
@@ -530,7 +530,7 @@ namespace Citrine {
 		co_return error;
 	}
 
-	auto HttpService::GetRandomAccessStreamAsync(Url url, HttpHeaderParameters headers) -> AsyncHttpResult<HttpRandomAccessStreamResponse> try {
+	auto Http::GetRandomAccessStreamAsync(Url url, HttpHeaderParameters headers) -> AsyncHttpResult<HttpRandomAccessStreamResponse> try {
 
 		auto requestMessage = BuildRequestMessage(HttpMethod::Get, url, {}, headers);
 		SetRangeHeader(requestMessage.Headers(), 0, 0);

@@ -16,9 +16,9 @@
 #include "Core/Unicode/Utf.h"
 #include "Core/Logging/Logger.h"
 #include "Core/IO/File.h"
+#include "Core/Net/Http/Http.h"
 #include "Collections/ObservableCollection.h"
 #include "ApplicationData.h"
-#include "Services/HttpService.h"
 #include "Services/PackageInstallationService.h"
 #include "Xbox/Xvc/StreamedXvcFile.h"
 #include "Xbox/Keys/KeyRegistry.h"
@@ -421,7 +421,7 @@ namespace {
 			auto loadMetaAsync = [this](this auto self, auto& meta, std::filesystem::path fileName) -> Task<> {
 
 				constexpr auto& baseUrl = "https://raw.githubusercontent.com/CitrineLauncher/VersionIndex/main/Bedrock/";
-				auto result = co_await HttpService::SendRequestAsync(HttpMethod::Get, UrlCombine(baseUrl, fileName));
+				auto result = co_await Http::SendRequestAsync(HttpMethod::Get, UrlCombine(baseUrl, fileName));
 
 				auto file = File{ rootDirectory / fileName, FileMode::OpenAlways, FileAccess::ReadWrite };
 				if (result) {
@@ -1798,7 +1798,7 @@ namespace {
 						co_return false;
 					}
 
-					auto packageStreamResponse = co_await HttpService::GetRandomAccessStreamAsync(UrlCombine(baseUrl, packageInfo->Path));
+					auto packageStreamResponse = co_await Http::GetRandomAccessStreamAsync(UrlCombine(baseUrl, packageInfo->Path));
 					if (!packageStreamResponse) {
 
 						Logger::Error("Installing game package {} failed: package stream opening failed ({})", *gamePackage, packageStreamResponse.error());
@@ -1860,7 +1860,7 @@ namespace {
 						co_return false;
 					}
 
-					auto packageStreamResponse = co_await HttpService::GetRandomAccessStreamAsync(std::move(*url));
+					auto packageStreamResponse = co_await Http::GetRandomAccessStreamAsync(std::move(*url));
 					if (!packageStreamResponse) {
 
 						Logger::Error("Installing game package {} failed: package stream opening failed ({})", *gamePackage, packageStreamResponse.error());

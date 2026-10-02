@@ -8,7 +8,7 @@
 #include "Core/Util/ParseInteger.h"
 #include "Core/Util/Ascii.h"
 #include "Core/Codec/Base64.h"
-#include "Services/HttpService.h"
+#include "Core/Net/Http/Http.h"
 #include "Core/Logging/Logger.h"
 
 #include <format>
@@ -74,7 +74,7 @@ namespace {
 			content.Payload = buildPayload();
 			content.Headers.Insert("Content-Type", "application/soap+xml; charset=utf-8");
 
-			auto responseMessage = co_await HttpService::SendRequestAsync(HttpMethod::Get, RequestUrl, std::move(content)).ResumeAgile();
+			auto responseMessage = co_await Http::SendRequestAsync(HttpMethod::Get, RequestUrl, std::move(content)).ResumeAgile();
 			if (!responseMessage)
 				co_return FE3Error::NetworkError;
 
@@ -117,7 +117,7 @@ namespace {
 			content.Payload = buildPayload();
 			content.Headers.Insert("Content-Type", "application/soap+xml; charset=utf-8");
 
-			auto responseMessage = co_await HttpService::SendRequestAsync(HttpMethod::Get, RequestUrl, std::move(content)).ResumeAgile();
+			auto responseMessage = co_await Http::SendRequestAsync(HttpMethod::Get, RequestUrl, std::move(content)).ResumeAgile();
 			if (!responseMessage)
 				co_return FE3Error::NetworkError;
 
@@ -231,7 +231,7 @@ namespace {
 			content.Payload = buildPayload();
 			content.Headers.Insert("Content-Type", "application/soap+xml; charset=utf-8");
 
-			auto responseMessage = co_await HttpService::SendRequestAsync(HttpMethod::Get, RequestUrl, std::move(content)).ResumeAgile();
+			auto responseMessage = co_await Http::SendRequestAsync(HttpMethod::Get, RequestUrl, std::move(content)).ResumeAgile();
 			if (!responseMessage)
 				co_return FE3Error::NetworkError;
 

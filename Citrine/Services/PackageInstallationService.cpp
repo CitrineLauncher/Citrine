@@ -6,9 +6,9 @@
 #include "Core/Logging/Logger.h"
 #include "Core/Util/Ascii.h"
 #include "Core/Net/UrlQuery.h"
+#include "Core/Net/Http/Http.h"
 #include "Windows/FE3Handler.h"
 #include "Windows/User.h"
-#include "Services/HttpService.h"
 
 #include <vector>
 #include <shared_mutex>
@@ -275,7 +275,7 @@ namespace {
 			rawUrl.push_back('?');
 			query.Serialize(AppendTo(rawUrl));
 
-			auto responseMessage = co_await HttpService::SendRequestAsync(HttpMethod::Get, std::move(rawUrl));
+			auto responseMessage = co_await Http::SendRequestAsync(HttpMethod::Get, std::move(rawUrl));
 			if (!responseMessage) {
 
 				Logger::Error("Fetching WUCategoryId for package family {} failed: network error", packageFamilyName);

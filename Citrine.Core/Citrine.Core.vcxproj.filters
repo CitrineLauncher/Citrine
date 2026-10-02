@@ -387,7 +387,7 @@
     <ClInclude Include="ReleaseInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Services\HttpService.h">
+    <ClInclude Include="Core\Net\Http\Http.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Core\IO\IRangeStreamProvider.h">
@@ -509,7 +509,7 @@
     <ClCompile Include="Xbox\PackageModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Services\HttpService.cpp">
+    <ClCompile Include="Core\Net\Http\Http.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
