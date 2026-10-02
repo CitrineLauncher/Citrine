@@ -615,7 +615,6 @@
     </Midl>
     <Midl Include="Models\ByteProgress.idl" />
     <Midl Include="Models\InstallLocationValidationResult.idl" />
-    <Midl Include="Models\IRangeStreamProvider.idl" />
     <Midl Include="Models\MinecraftBedrockGameInfo.idl">
       <SubType>Designer</SubType>
     </Midl>

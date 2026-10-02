@@ -3,13 +3,12 @@
 
 #include "Core/Logging/Logger.h"
 #include "Core/IO/WinRTBuffer.h"
+#include "Core/IO/IRangeStreamProvider.h"
 #include "Core/Util/TrivialArray.h"
 #include "Core/Util/FormatInteger.h"
 
 #include <optional>
 #include <algorithm>
-
-#include <winrt/Citrine.h>
 
 #include <winrt/Windows.Web.h>
 #include <winrt/Windows.Web.Http.h>
@@ -162,7 +161,7 @@ namespace {
 		winrt::IRandomAccessStream,
 		winrt::IInputStream,
 		winrt::IOutputStream,
-		winrt::Citrine::IRangeStreamProvider,
+		IRangeStreamProvider,
 		winrt::IClosable>
 	{
 		RandomAccessContentStream(winrt::HttpRequestMessage const& requestMessage, std::uint64_t size)
@@ -295,7 +294,7 @@ namespace {
 			return winrt::make<RandomAccessContentStream>(requestMessage, size);
 		}
 
-		auto GetRangeStream(std::uint64_t offset, std::uint64_t size) -> winrt::IInputStream;
+		auto GetRangeStream(std::uint64_t offset, std::uint64_t size) -> winrt::IInputStream final override;
 
 		auto Close() noexcept -> void {
 

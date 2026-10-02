@@ -195,6 +195,7 @@
     <ClInclude Include="Core\Coroutine\Traits.h" />
     <ClInclude Include="Core\IO\Buffer.h" />
     <ClInclude Include="Core\IO\File.h" />
+    <ClInclude Include="Core\IO\IRangeStreamProvider.h" />
     <ClInclude Include="Core\IO\WinRTBuffer.h" />
     <ClInclude Include="Core\IO\WinRTFileStream.h" />
     <ClInclude Include="Core\IO\WinRTMemoryStream.h" />

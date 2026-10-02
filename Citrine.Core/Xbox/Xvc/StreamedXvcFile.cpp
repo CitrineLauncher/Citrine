@@ -12,6 +12,7 @@
 #include "XvcRegionSpecifier.h"
 
 #include "Core/IO/WinRTFileStream.h"
+#include "Core/IO/IRangeStreamProvider.h"
 #include "Core/Util/TrivialArray.h"
 
 #include <span>
@@ -22,8 +23,6 @@
 #include <flat_set>
 #include <atomic>
 #include <shared_mutex>
-
-#include <winrt/Citrine.h>
 
 #include <botan/cipher_mode.h>
 #include <botan/hash.h>
@@ -546,15 +545,15 @@ namespace Citrine::Xbox {
 				auto hashBlockStream = winrt::IInputStream{ nullptr };
 				auto hashBlockStreamOffset = level0HashTreeOffset + ((pageOffset + context.PageNumber) / HashEntriesPerHashBlock * sizeof(HashBlock));
 
-				if (auto rangeStreamProvider = stream.try_as<winrt::Citrine::IRangeStreamProvider>()) {
+				if (auto rangeStreamProvider = stream.try_as<IRangeStreamProvider>()) {
 
-					regionStream = rangeStreamProvider.GetRangeStream(regionStreamOffset, currentRegion->Length);
+					regionStream = rangeStreamProvider->GetRangeStream(regionStreamOffset, currentRegion->Length);
 					if (dataIntegrityEnabled) {
 
 						auto remainingHashes = ((pageOffset + context.PageNumber) % HashEntriesPerHashBlock) + (totalPageCount - context.PageNumber);
 						auto hashBlockStreamSize = ((remainingHashes / HashEntriesPerHashBlock) + static_cast<bool>(remainingHashes % HashEntriesPerHashBlock)) * sizeof(HashBlock);
 
-						hashBlockStream = rangeStreamProvider.GetRangeStream(hashBlockStreamOffset, hashBlockStreamSize);
+						hashBlockStream = rangeStreamProvider->GetRangeStream(hashBlockStreamOffset, hashBlockStreamSize);
 					}
 				}
 				else {

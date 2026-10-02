@@ -115,7 +115,6 @@
     <Midl Include="UI\Views\Dialogs\MinecraftBedrockGamePackagePicker.idl" />
     <Midl Include="UI\Views\Dialogs\MinecraftBedrockInstallLocationPicker.idl" />
     <Midl Include="UI\Converters\Convert.idl" />
-    <Midl Include="Models\IRangeStreamProvider.idl" />
     <Midl Include="UI\Controls\ProgressBarEx.idl" />
     <Midl Include="UI\Controls\ProgressBarExTemplateSettings.idl" />
     <Midl Include="Models\MinecraftBedrockGameInfo.idl" />
