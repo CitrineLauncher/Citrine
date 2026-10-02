@@ -6,23 +6,36 @@
 
 #include "UI/Mvvm/RelayCommand.h"
 #include "Services/ToastNotificationService.h"
+#include "Services/UpdateChecker.h"
+#include "ApplicationData.h"
 
 using namespace Citrine;
+
+namespace winrt {
+
+	using namespace Windows::System;
+}
 
 namespace winrt::Citrine::implementation
 {
 	MainWindowViewModel::MainWindowViewModel() {
 
+		auto& appSettings = ApplicationData::LocalSettings();
+
 		notifications = winrt::make_self<ObservableCollection<Citrine::ToastNotification>>();
 
-		notificationHandlerRevoker = ToastNotificationService::Subscribe([this](auto const& notification) {
-
-			OnNotification(notification);
-		});
+		notificationHandlerRevoker = ToastNotificationService::Subscribe({ this, &MainWindowViewModel::OnNotification });
+		automaticUpdateChecksChangedRevoker = appSettings.AutomaticUpdateChecksChanged({ this, &MainWindowViewModel::OnAutomaticUpdateChecksChanged });
+		updateAvailabilityChangedRevoker = UpdateChecker::UpdateAvailabilityChanged({ this, &MainWindowViewModel::OnUpdateAvailabilityChanged });
 
 		closeNotificationCommand = MakeRelayCommand([this](auto const& parameter) { 
 			
 			CloseNotification(parameter.as<Citrine::ToastNotification>());
+		});
+
+		openReleasePageCommand = MakeRelayCommand([this] {
+
+			OpenReleasePage();
 		});
 	}
 
@@ -31,9 +44,26 @@ namespace winrt::Citrine::implementation
 		return notifications->GetObservableView();
 	}
 
+	auto MainWindowViewModel::UpdateIsAvailable() const noexcept -> bool {
+
+		using enum Citrine::UpdateAvailability;
+
+		auto& appSettings = ApplicationData::LocalSettings();
+
+		auto availability = UpdateChecker::UpdateAvailability();
+		auto automaticUpdateChecks = appSettings.AutomaticUpdateChecks();
+
+		return (availability == UpdateAvailable || availability == UpdateRequired) && automaticUpdateChecks;
+	}
+
 	auto MainWindowViewModel::CloseNotificationCommand() const noexcept -> winrt::Microsoft::UI::Xaml::Input::ICommand {
 
 		return closeNotificationCommand;
+	}
+
+	auto MainWindowViewModel::OpenReleasePageCommand() const noexcept -> winrt::Microsoft::UI::Xaml::Input::ICommand {
+
+		return openReleasePageCommand;
 	}
 
 	auto MainWindowViewModel::OnNotification(Citrine::ToastNotification const& notification) -> void {
@@ -51,4 +81,26 @@ namespace winrt::Citrine::implementation
 			notifications->RemoveAt(index);
 		}
 	}
+
+	auto MainWindowViewModel::OnAutomaticUpdateChecksChanged(bool automaticUpdateChecks) -> void {
+
+		OnPropertyChanged(updateIsAvailableProperty);
+	}
+
+	auto MainWindowViewModel::OnUpdateAvailabilityChanged(Citrine::UpdateAvailability availability) -> void {
+
+		OnPropertyChanged(updateIsAvailableProperty);
+	}
+
+	auto MainWindowViewModel::OpenReleasePage() -> winrt::fire_and_forget try {
+
+		auto updateInfo = UpdateChecker::GetUpdateInfo();
+		if (!updateInfo)
+			co_return;
+
+		co_await winrt::Launcher::LaunchUriAsync(updateInfo.ReleaseUrl());
+	}
+	catch (winrt::hresult_error const&) {}
+
+	winrt::hstring const MainWindowViewModel::updateIsAvailableProperty = L"UpdateIsAvailable";
 }

@@ -23,6 +23,12 @@ namespace winrt::Citrine::implementation
 
         auto LanguageHasChanged() const noexcept -> bool;
 
+        auto AutomaticUpdateChecks() const noexcept -> bool;
+        auto AutomaticUpdateChecks(bool value) -> void;
+
+        auto UpdateChannel() const noexcept -> std::int32_t;
+        auto UpdateChannel(std::int32_t value) -> void;
+
         auto RestartAppCommand() -> winrt::Microsoft::UI::Xaml::Input::ICommand;
         auto OpenAppDataDirectoryCommand() -> winrt::Microsoft::UI::Xaml::Input::ICommand;
 

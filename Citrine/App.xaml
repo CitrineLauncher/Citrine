@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="UI/Controls/TextBoxEx_ThemeResources.xaml" />
                 <ResourceDictionary Source="UI/Controls/NumberBoxEx_ThemeResources.xaml" />
                 <ResourceDictionary Source="UI/Controls/ProgressBarEx_ThemeResources.xaml" />
+                <ResourceDictionary Source="UI/Styles/RightAlignedToggleSwitchStyle.xaml" />
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->

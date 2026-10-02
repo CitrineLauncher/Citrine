@@ -125,6 +125,30 @@ namespace winrt::Citrine::implementation
         return requestedLanguage != initialLanguage;
     }
 
+    auto GeneralSettingsViewModel::AutomaticUpdateChecks() const noexcept -> bool {
+
+        auto& settings = ApplicationData::LocalSettings();
+        return settings.AutomaticUpdateChecks();
+    }
+
+    auto GeneralSettingsViewModel::AutomaticUpdateChecks(bool value) -> void {
+
+        auto& settings = ApplicationData::LocalSettings();
+        settings.AutomaticUpdateChecks(value);
+    }
+
+    auto GeneralSettingsViewModel::UpdateChannel() const noexcept -> std::int32_t {
+
+        auto& settings = ApplicationData::LocalSettings();
+        return static_cast<std::int32_t>(settings.UpdateChannel()) - 1;
+    }
+
+    auto GeneralSettingsViewModel::UpdateChannel(std::int32_t value) -> void {
+
+        auto& settings = ApplicationData::LocalSettings();
+        settings.UpdateChannel(static_cast<ReleaseChannel>(value + 1));
+    }
+
     auto GeneralSettingsViewModel::RestartAppCommand() -> winrt::Microsoft::UI::Xaml::Input::ICommand {
 
         return restartAppCommand;

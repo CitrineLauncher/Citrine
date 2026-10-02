@@ -154,12 +154,20 @@
     <ClInclude Include="Core\Coroutine\LazyTask.h" />
     <ClInclude Include="Core\Coroutine\Promise.h" />
     <ClInclude Include="Core\Coroutine\Traits.h" />
+    <ClInclude Include="Core\Net\NetworkInfo.h" />
     <ClInclude Include="Core\Util\JsonWrappers.h" />
     <ClInclude Include="Core\Util\SemanticVersion.h" />
+    <ClInclude Include="Models\UpdateInfo.h">
+      <DependentUpon>Models\UpdateInfo.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="Services\NetworkInfoService.h" />
+    <ClInclude Include="ReleaseInfo.h" />
     <ClInclude Include="Services\PackageInstallationService.h" />
     <ClInclude Include="Services\ServiceActionRunner.h" />
     <ClInclude Include="Services\ServiceActionHandler.h" />
     <ClInclude Include="Services\ServiceImplBase.h" />
+    <ClInclude Include="Services\UpdateChecker.h" />
     <ClInclude Include="Xbox\PackageModel.h" />
     <ClInclude Include="Windows\DeviceFamily.h" />
     <ClInclude Include="Windows\Msix\MsixDependency.h" />
@@ -467,6 +475,7 @@
     <Page Include="UI\Controls\NumberBoxEx_ThemeResources.xaml" />
     <Page Include="UI\Controls\ProgressBarEx_ThemeResources.xaml" />
     <Page Include="UI\Controls\TextBoxEx_ThemeResources.xaml" />
+    <Page Include="UI\Styles\RightAlignedToggleSwitchStyle.xaml" />
     <Page Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -516,10 +525,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationMutex.cpp" />
+    <ClCompile Include="Models\UpdateInfo.cpp">
+      <DependentUpon>Models\UpdateInfo.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="Services\NetworkInfoService.cpp" />
     <ClCompile Include="Services\PackageInstallationService.cpp" />
     <ClCompile Include="Services\ServiceActionRunner.cpp" />
     <ClCompile Include="Services\ServiceActionHandler.cpp" />
     <ClCompile Include="Services\ServiceImplBase.cpp" />
+    <ClCompile Include="Services\UpdateChecker.cpp" />
     <ClCompile Include="Xbox\PackageModel.cpp" />
     <ClCompile Include="Windows\DeviceFamily.cpp" />
     <ClCompile Include="Models\MinecraftBedrockGameInfo.cpp">
@@ -786,6 +801,11 @@
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="Models\ToastNotification.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="Models\UpdateAvailability.idl" />
+    <Midl Include="Models\UpdateCheckStatus.idl" />
+    <Midl Include="Models\UpdateInfo.idl">
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="UI\Controls\ContentDialogEx.idl">

@@ -12,6 +12,9 @@ namespace Citrine
         Int32 Language;
         Boolean LanguageHasChanged{ get; };
 
+        Boolean AutomaticUpdateChecks;
+        Int32 UpdateChannel;
+
         Microsoft.UI.Xaml.Input.ICommand RestartAppCommand{ get; };
         Microsoft.UI.Xaml.Input.ICommand OpenAppDataDirectoryCommand{ get; };
     }

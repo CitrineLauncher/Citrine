@@ -9,6 +9,7 @@
 #include "Locale/Localizer.h"
 #include "UI/Views/Windows/MainWindow.xaml.h"
 #include "Services/MinecraftBedrockGameManager.h"
+#include "Services/UpdateChecker.h"
 
 #include <WinUser.h>
 #include <processthreadsapi.h>
@@ -72,6 +73,7 @@ namespace winrt::Citrine::implementation
 
         Logger::Info("Citrine {}", CITRINE_PRODUCTVERSION);
         MinecraftBedrockGameManager::InitializeAsync();
+        UpdateChecker::InitializeAsync();
     }
 
     /// <summary>

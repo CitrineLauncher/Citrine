@@ -56,6 +56,8 @@
     <ClCompile Include="Services\ServiceActionHandler.cpp" />
     <ClCompile Include="Services\ServiceActionRunner.cpp" />
     <ClCompile Include="Services\PackageInstallationService.cpp" />
+    <ClCompile Include="Services\NetworkInfoService.cpp" />
+    <ClCompile Include="Services\UpdateChecker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -200,6 +202,10 @@
     <ClInclude Include="Services\ServiceActionHandler.h" />
     <ClInclude Include="Services\ServiceActionRunner.h" />
     <ClInclude Include="Services\PackageInstallationService.h" />
+    <ClInclude Include="ReleaseInfo.h" />
+    <ClInclude Include="Services\NetworkInfoService.h" />
+    <ClInclude Include="Core\Net\NetworkInfo.h" />
+    <ClInclude Include="Services\UpdateChecker.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
@@ -237,6 +243,7 @@
     <Page Include="UI\Views\Dialogs\MinecraftBedrockManageDialog.xaml" />
     <Page Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml" />
     <Page Include="UI\Views\Dialogs\MinecraftBedrockRenameDialog.xaml" />
+    <Page Include="UI\Styles\RightAlignedToggleSwitchStyle.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Collections\IObservableCollectionView.idl" />
@@ -283,6 +290,9 @@
     <Midl Include="Collections\IItemFilter.idl" />
     <Midl Include="UI\ViewModels\MinecraftBedrockViewModel.idl" />
     <Midl Include="UI\Converters\IntToBoolConverter.idl" />
+    <Midl Include="Models\UpdateCheckStatus.idl" />
+    <Midl Include="Models\UpdateInfo.idl" />
+    <Midl Include="Models\UpdateAvailability.idl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Citrine.rc" />

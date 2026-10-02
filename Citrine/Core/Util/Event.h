@@ -246,7 +246,7 @@ namespace Citrine {
 		template<typename O, std::copy_constructible F>
 		EventHandler(O* object, F&& func)
 
-			: delegate(new Delegate<O*, F>{ std::move(object), std::forward<F>(func) })
+			: delegate(new Delegate<O*, F>{ object, std::forward<F>(func) })
 		{}
 
 		template<typename O, std::copy_constructible F>
@@ -335,7 +335,7 @@ namespace Citrine {
 		public:
 
 			template<typename F>
-			Delegate(ObjPtr&& object, F&& func)
+			Delegate(ObjPtr object, F&& func)
 				
 				: object(std::move(object))
 				, func(std::forward<F>(func))
