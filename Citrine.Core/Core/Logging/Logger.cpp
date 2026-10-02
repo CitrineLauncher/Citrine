@@ -43,11 +43,9 @@ namespace {
 		}
 		buffer.push_back(' ');
 		{
-			constexpr auto projectDir = std::string_view{ PROJECT_DIR };
-
 			auto fileName = std::string_view{ source.FileName };
-			if (fileName.starts_with(projectDir))
-				fileName.remove_prefix(projectDir.size());
+			if (auto pos = fileName.find_last_of("\\/"); pos != fileName.npos)
+				fileName.remove_prefix(pos + 1);
 
 			buffer.push_back('@');
 			buffer.append(fileName);
@@ -61,6 +59,7 @@ namespace {
 
 	auto queue = LogMessageQueue{};
 	auto worker = std::thread{};
+	auto initialized = std::atomic_flag{};
 
 	auto DispatchLogMessages(std::filesystem::path path) -> void {
 
@@ -123,6 +122,7 @@ namespace Citrine {
 	auto Logger::Initialize(std::filesystem::path path) -> void {
 
 		worker = std::thread{ DispatchLogMessages, std::move(path) };
+		initialized.test_and_set(std::memory_order::release);
 	}
 
 	auto Logger::Flush() -> void {
@@ -133,10 +133,15 @@ namespace Citrine {
 	auto Logger::Shutdown() -> void {
 
 		PostLogMessage({ LogMessageType::Shutdown });
-		worker.join();
+
+		if (worker.joinable())
+			worker.join();
 	}
 
 	auto Logger::PostLogMessage(LogMessage&& message) -> void {
+
+		if (!initialized.test(std::memory_order::relaxed))
+			return;
 
 		queue.EnqueueMessage(std::move(message));
 	}

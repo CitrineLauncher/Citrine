@@ -11,8 +11,8 @@
 #include "Core/Util/Scope.h"
 #include "Core/Util/SemanticVersion.h"
 #include "Core/Util/DateTime.h"
+#include "Core/Net/Http/Http.h"
 #include "ApplicationData.h"
-#include "Services/HttpService.h"
 #include "Services/NetworkInfoService.h"
 
 #include <winrt/Windows.System.Threading.h>
@@ -134,7 +134,7 @@ namespace {
 
 			Logger::Info("Checking for updates");
 
-			auto responseMessage = co_await HttpService::SendRequestAsync(HttpMethod::Get, "https://raw.githubusercontent.com/CitrineLauncher/Citrine/main/Latest.json");
+			auto responseMessage = co_await Http::SendRequestAsync(HttpMethod::Get, "https://raw.githubusercontent.com/CitrineLauncher/Citrine/main/Latest.json");
 			
 			auto& appSettings = ApplicationData::LocalSettings();
 			auto automaticUpdateChecks = appSettings.AutomaticUpdateChecks();

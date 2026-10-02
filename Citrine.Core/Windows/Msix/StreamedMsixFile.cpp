@@ -11,6 +11,7 @@
 #include "Core/Util/Scope.h"
 #include "Core/Util/Guid.h"
 #include "Core/IO/WinRTFileStream.h"
+#include "Core/IO/IRangeStreamProvider.h"
 #include "Core/Net/Url.h"
 #include "Core/Codec/Base64.h"
 #include "Core/Unicode/Utf.h"
@@ -21,8 +22,6 @@
 #include <concepts>
 #include <flat_set>
 #include <shared_mutex>
-
-#include <winrt/Citrine.h>
 
 #include <zlib-ng.h>
 
@@ -493,9 +492,9 @@ namespace Citrine::Windows {
 
 			auto payloadStream = [&] -> BufferedInputStream {
 
-				if (auto rangeStreamProvider = stream.try_as<winrt::Citrine::IRangeStreamProvider>()) {
+				if (auto rangeStreamProvider = stream.try_as<IRangeStreamProvider>()) {
 
-					return rangeStreamProvider.GetRangeStream(payloadStreamOffset, blockMapFileInfo->LocalHeaderOffset);
+					return rangeStreamProvider->GetRangeStream(payloadStreamOffset, blockMapFileInfo->LocalHeaderOffset);
 				}
 				else {
 
@@ -961,9 +960,9 @@ namespace Citrine::Windows {
 			auto fileContentSpan = std::span{ fileContentBuffer.data(), fileSize };
 
 			auto fileStream = winrt::IInputStream{ nullptr };
-			if (auto rangeStreamProvider = stream.try_as<winrt::Citrine::IRangeStreamProvider>()) {
+			if (auto rangeStreamProvider = stream.try_as<IRangeStreamProvider>()) {
 
-				fileStream = rangeStreamProvider.GetRangeStream(lfhOffset + lfhSize, fileInfo->CompressedSize);
+				fileStream = rangeStreamProvider->GetRangeStream(lfhOffset + lfhSize, fileInfo->CompressedSize);
 			}
 			else {
 

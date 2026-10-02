@@ -43,7 +43,7 @@ namespace Citrine {
 		HttpHeaderParameters(HttpHeaderCollection const& headers);
 	};
 
-	class HttpService {
+	class Http {
 	public:
 
 		static auto SendRequestAsync(HttpMethod method, Url url, HttpContentParameter content = {}, HttpHeaderParameters headers = {}) -> AsyncHttpResult<HttpResponse>;

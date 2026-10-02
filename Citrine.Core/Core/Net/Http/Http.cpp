@@ -1,15 +1,14 @@
 #include "pch.h"
-#include "HttpService.h"
+#include "Http.h"
 
 #include "Core/Logging/Logger.h"
 #include "Core/IO/WinRTBuffer.h"
+#include "Core/IO/IRangeStreamProvider.h"
 #include "Core/Util/TrivialArray.h"
 #include "Core/Util/FormatInteger.h"
 
 #include <optional>
 #include <algorithm>
-
-#include <winrt/Citrine.h>
 
 #include <winrt/Windows.Web.h>
 #include <winrt/Windows.Web.Http.h>
@@ -162,7 +161,7 @@ namespace {
 		winrt::IRandomAccessStream,
 		winrt::IInputStream,
 		winrt::IOutputStream,
-		winrt::Citrine::IRangeStreamProvider,
+		IRangeStreamProvider,
 		winrt::IClosable>
 	{
 		RandomAccessContentStream(winrt::HttpRequestMessage const& requestMessage, std::uint64_t size)
@@ -295,7 +294,7 @@ namespace {
 			return winrt::make<RandomAccessContentStream>(requestMessage, size);
 		}
 
-		auto GetRangeStream(std::uint64_t offset, std::uint64_t size) -> winrt::IInputStream;
+		auto GetRangeStream(std::uint64_t offset, std::uint64_t size) -> winrt::IInputStream final override;
 
 		auto Close() noexcept -> void {
 
@@ -443,7 +442,7 @@ namespace Citrine {
 		: variant(std::in_place_type<std::reference_wrapper<HttpHeaderCollection const>>, headers)
 	{}
 
-	auto HttpService::SendRequestAsync(HttpMethod method, Url url, HttpContentParameter content, HttpHeaderParameters headers) -> AsyncHttpResult<HttpResponse> try {
+	auto Http::SendRequestAsync(HttpMethod method, Url url, HttpContentParameter content, HttpHeaderParameters headers) -> AsyncHttpResult<HttpResponse> try {
 
 		auto requestMessage = BuildRequestMessage(method, url, std::move(content), headers);
 		co_await winrt::resume_background();
@@ -487,7 +486,7 @@ namespace Citrine {
 		co_return error;
 	}
 
-	auto HttpService::GetStreamAsync(Url url, HttpHeaderParameters headers) -> AsyncHttpResult<HttpStreamResponse> try {
+	auto Http::GetStreamAsync(Url url, HttpHeaderParameters headers) -> AsyncHttpResult<HttpStreamResponse> try {
 
 		auto requestMessage = BuildRequestMessage(HttpMethod::Get, url, {}, headers);
 		co_await winrt::resume_background();
@@ -531,7 +530,7 @@ namespace Citrine {
 		co_return error;
 	}
 
-	auto HttpService::GetRandomAccessStreamAsync(Url url, HttpHeaderParameters headers) -> AsyncHttpResult<HttpRandomAccessStreamResponse> try {
+	auto Http::GetRandomAccessStreamAsync(Url url, HttpHeaderParameters headers) -> AsyncHttpResult<HttpRandomAccessStreamResponse> try {
 
 		auto requestMessage = BuildRequestMessage(HttpMethod::Get, url, {}, headers);
 		SetRangeHeader(requestMessage.Headers(), 0, 0);
