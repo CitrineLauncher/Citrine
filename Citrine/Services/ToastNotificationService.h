@@ -8,7 +8,7 @@ namespace Citrine {
 	class ToastNotificationService {
 	public:
 
-		using NotificationHandler = EventHandler<winrt::Citrine::ToastNotification const&>;
+		using NotificationHandler = EventHandler<winrt::Citrine::ToastNotification>;
 
 		static auto Subscribe(NotificationHandler handler) -> EventToken;
 		static auto Unsubscribe(EventToken&& token) -> void;

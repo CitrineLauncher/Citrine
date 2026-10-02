@@ -6,7 +6,7 @@ using namespace winrt::Citrine;
 
 namespace {
 
-	Event<ToastNotificationService::NotificationHandler> notificationHandlers;
+	auto notificationHandlers = Event<ToastNotificationService::NotificationHandler>{};
 }
 
 namespace Citrine {
