@@ -167,6 +167,7 @@
     <ClInclude Include="Services\ServiceActionRunner.h" />
     <ClInclude Include="Services\ServiceActionHandler.h" />
     <ClInclude Include="Services\ServiceImplBase.h" />
+    <ClInclude Include="Services\UpdateChecker.h" />
     <ClInclude Include="Xbox\PackageModel.h" />
     <ClInclude Include="Windows\DeviceFamily.h" />
     <ClInclude Include="Windows\Msix\MsixDependency.h" />
@@ -533,6 +534,7 @@
     <ClCompile Include="Services\ServiceActionRunner.cpp" />
     <ClCompile Include="Services\ServiceActionHandler.cpp" />
     <ClCompile Include="Services\ServiceImplBase.cpp" />
+    <ClCompile Include="Services\UpdateChecker.cpp" />
     <ClCompile Include="Xbox\PackageModel.cpp" />
     <ClCompile Include="Windows\DeviceFamily.cpp" />
     <ClCompile Include="Models\MinecraftBedrockGameInfo.cpp">

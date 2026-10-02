@@ -57,6 +57,7 @@
     <ClCompile Include="Services\ServiceActionRunner.cpp" />
     <ClCompile Include="Services\PackageInstallationService.cpp" />
     <ClCompile Include="Services\NetworkInfoService.cpp" />
+    <ClCompile Include="Services\UpdateChecker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -204,6 +205,7 @@
     <ClInclude Include="ReleaseInfo.h" />
     <ClInclude Include="Services\NetworkInfoService.h" />
     <ClInclude Include="Core\Net\NetworkInfo.h" />
+    <ClInclude Include="Services\UpdateChecker.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
