@@ -642,24 +642,6 @@ namespace {
 			}
 			std::ranges::sort(imports, GamePackageItemGreater{});
 
-			// Current workaround for disabling texture streaming
-			auto deleteProgressionsFile = [&currentUser = Windows::GetCurrentUser()](std::wstring_view rootDirName, File& progressionsFile) {
-
-				auto ec = std::error_code{};
-				auto flightingDirectory = currentUser.RoamingAppDataDirectory / rootDirName / L"Flighting";
-				std::filesystem::create_directories(flightingDirectory, ec);
-
-				progressionsFile.Open(
-					flightingDirectory / L"currentProgressions",
-					FileMode::OpenAlways,
-					FileAccess::Delete,
-					FileShare::ReadWrite | FileShare::Delete
-				);
-				progressionsFile.Delete();
-			};
-			deleteProgressionsFile(L"Minecraft Bedrock", releaseBuildProgressionsFile);
-			deleteProgressionsFile(L"Minecraft Bedrock Preview", previewBuildProgressionsFile);
-
 			try {
 
 				packageCatalog = winrt::PackageCatalog::OpenForCurrentUser();
@@ -1447,9 +1429,6 @@ namespace {
 
 			settings.Save();
 			settings.Close();
-
-			releaseBuildProgressionsFile.Close();
-			previewBuildProgressionsFile.Close();
 
 			progressDispatcher.Shutdown();
 		}
@@ -2896,9 +2875,6 @@ namespace {
 		winrt::com_ptr<ObservableCollection<GamePackageItem>> releaseGamePackages = winrt::make_self<ObservableCollection<GamePackageItem>>();
 		winrt::com_ptr<ObservableCollection<GamePackageItem>> previewGamePackages = winrt::make_self<ObservableCollection<GamePackageItem>>();
 		winrt::com_ptr<ObservableCollection<GamePackageItem>> importedGamePackages = winrt::make_self<ObservableCollection<GamePackageItem>>();
-
-		File releaseBuildProgressionsFile;
-		File previewBuildProgressionsFile;
 
 		winrt::PackageManager packageManager;
 		std::binary_semaphore releaseBuildDeploymentMutex{ 1 };
