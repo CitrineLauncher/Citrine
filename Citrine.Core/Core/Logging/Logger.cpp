@@ -43,7 +43,7 @@ namespace {
 		}
 		buffer.push_back(' ');
 		{
-			constexpr auto projectDir = std::string_view{ PROJECT_DIR };
+			constexpr auto projectDir = std::string_view{ /*PROJECT_DIR*/ };
 
 			auto fileName = std::string_view{ source.FileName };
 			if (fileName.starts_with(projectDir))
