@@ -18,6 +18,7 @@
 #include <winrt/Windows.Management.Deployment.h>
 
 #include <glaze/json.hpp>
+#include <glaze/json/jmespath.hpp>
 
 using namespace Citrine;
 using namespace Windows;
