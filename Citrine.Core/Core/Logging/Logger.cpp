@@ -122,7 +122,7 @@ namespace Citrine {
 	auto Logger::Initialize(std::filesystem::path path) -> void {
 
 		worker = std::thread{ DispatchLogMessages, std::move(path) };
-		initialized.test_and_set(std::memory_order::relaxed);
+		initialized.test_and_set(std::memory_order::release);
 	}
 
 	auto Logger::Flush() -> void {
