@@ -366,4 +366,7 @@
   <data name="GeneralSettings_Updates.Text" xml:space="preserve">
     <value>Updates</value>
   </data>
+  <data name="Main_UpdateAvailable.Text" xml:space="preserve">
+    <value>Update available</value>
+  </data>
 </root>

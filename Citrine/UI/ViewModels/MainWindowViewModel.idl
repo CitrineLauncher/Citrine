@@ -4,11 +4,14 @@ import "Models/ToastNotification.idl";
 namespace Citrine
 {
     [default_interface]
-    runtimeclass MainWindowViewModel 
+    runtimeclass MainWindowViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
         MainWindowViewModel();
 
         IObservableCollectionView Notifications{ get; };
+        Boolean UpdateIsAvailable{ get; };
+
         Microsoft.UI.Xaml.Input.ICommand CloseNotificationCommand{ get; };
+        Microsoft.UI.Xaml.Input.ICommand OpenReleasePageCommand{ get; };
     }
 }
