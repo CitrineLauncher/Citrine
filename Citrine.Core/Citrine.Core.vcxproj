@@ -164,7 +164,6 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Citrine.h" />
     <ClInclude Include="Core\Codec\Base16.h" />
     <ClInclude Include="Core\Codec\Base16Decoder.h" />
     <ClInclude Include="Core\Codec\Base16Encoder.h" />

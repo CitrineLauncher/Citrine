@@ -138,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApplicationMutex.h" />
+    <ClInclude Include="Citrine.h" />
     <ClInclude Include="Collections\BindableVector.h" />
     <ClInclude Include="Collections\FilterableCollectionView.h" />
     <ClInclude Include="Collections\ItemFilter.h" />

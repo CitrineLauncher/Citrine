@@ -44,6 +44,7 @@
     <ClInclude Include="Services\PackageInstallationService.h" />
     <ClInclude Include="Services\NetworkInfoService.h" />
     <ClInclude Include="Services\UpdateChecker.h" />
+    <ClInclude Include="Citrine.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
