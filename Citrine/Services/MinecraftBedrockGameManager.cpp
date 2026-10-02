@@ -2739,7 +2739,14 @@ namespace {
 				co_return;
 			}
 
-			co_await wil::resume_foreground(dispatcherQueue);
+			try {
+
+				co_await wil::resume_foreground(dispatcherQueue);
+			}
+			catch (winrt::hresult_error const&) {
+
+				co_return;
+			}
 
 			auto& registeredPackage = [&, this] -> winrt::Package& {
 
