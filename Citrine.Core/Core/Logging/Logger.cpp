@@ -59,6 +59,7 @@ namespace {
 
 	auto queue = LogMessageQueue{};
 	auto worker = std::thread{};
+	auto initialized = std::atomic_flag{};
 
 	auto DispatchLogMessages(std::filesystem::path path) -> void {
 
@@ -121,6 +122,7 @@ namespace Citrine {
 	auto Logger::Initialize(std::filesystem::path path) -> void {
 
 		worker = std::thread{ DispatchLogMessages, std::move(path) };
+		initialized.test_and_set(std::memory_order::relaxed);
 	}
 
 	auto Logger::Flush() -> void {
@@ -131,10 +133,15 @@ namespace Citrine {
 	auto Logger::Shutdown() -> void {
 
 		PostLogMessage({ LogMessageType::Shutdown });
-		worker.join();
+
+		if (worker.joinable())
+			worker.join();
 	}
 
 	auto Logger::PostLogMessage(LogMessage&& message) -> void {
+
+		if (!initialized.test(std::memory_order::relaxed))
+			return;
 
 		queue.EnqueueMessage(std::move(message));
 	}
