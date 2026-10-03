@@ -30,7 +30,9 @@ namespace winrt::Citrine::implementation
         auto UninstallGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void;
 
         auto OpenGameDirectory(Citrine::MinecraftBedrockGamePackageItem gamePackage) -> winrt::fire_and_forget;
+        auto OpenGameModsDirectory(Citrine::MinecraftBedrockGamePackageItem gamePackage) -> winrt::fire_and_forget;
         auto OpenGameDataDirectory(Citrine::MinecraftBedrockGamePackageItem gamePackage) -> winrt::fire_and_forget;
+        auto GetGameConfigOptions(Citrine::MinecraftBedrockGamePackageItem gamePackage) -> Citrine::MinecraftBedrockGameConfigOptions;
 
         auto PauseGamePackageOperation(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void;
         auto ResumeGamePackageOperation(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void;

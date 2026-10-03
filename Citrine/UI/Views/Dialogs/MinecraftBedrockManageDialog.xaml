@@ -56,8 +56,8 @@
             </Button.Resources>
             <FontIcon Glyph="&#xF78A;" FontSize="16" />
         </Button>
-        <StackPanel x:Name="OptionsArea" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4">
-            <Grid Height="64" Padding="16,15" ColumnSpacing="16" Background="{ThemeResource OptionCardFillColorBrush}" CornerRadius="4" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+        <StackPanel x:Name="OptionsArea" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Spacing="3">
+            <Grid Height="64" Padding="16,0" ColumnSpacing="16" Background="{ThemeResource OptionCardFillColorBrush}" CornerRadius="4" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
@@ -70,6 +70,21 @@
                         <FontIcon Glyph="&#xE838;" FontSize="16" />
                     </Button>
                     <Button x:Uid="MinecraftBedrock_GamePackage_Uninstall" VerticalAlignment="Stretch" Click="UninstallButton_Click" />
+                </StackPanel>
+            </Grid>
+            <Grid x:Name="Options_Mods" x:Load="{x:Bind GameConfigOptions.OptionIsAvailable('ModLoaderEnabled')}" Height="64" Padding="16,0" ColumnSpacing="16" Background="{ThemeResource OptionCardFillColorBrush}" CornerRadius="4" BorderThickness="1" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <FontIcon Glyph="&#xEA86;" Margin="2,0" VerticalAlignment="Center" Grid.Column="0" FontSize="24"/>
+                <TextBlock x:Uid="MinecraftBedrock_GamePackage_Mods" VerticalAlignment="Center" FontSize="16" Grid.Column="1"/>
+                <StackPanel Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="14">
+                    <ToggleSwitch x:Uid="MinecraftBedrock_GamePackage_ModsToggle" IsOn="{x:Bind GameConfigOptions.ModLoaderEnabled, Mode=TwoWay}" VerticalAlignment="Center" Style="{StaticResource RightAlignedToggleSwitchStyle}" HorizontalContentAlignment="Right" />
+                    <Button Grid.Column="1" VerticalAlignment="Center" Height="32" Width="42" Click="OpenGameModsDirectoryButton_Click">
+                        <FontIcon Glyph="&#xE838;" FontSize="16" />
+                    </Button>
                 </StackPanel>
             </Grid>
         </StackPanel>

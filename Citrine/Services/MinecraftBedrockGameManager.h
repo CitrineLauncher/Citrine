@@ -39,7 +39,9 @@ namespace Citrine {
 		static auto UninstallGamePackageAsync(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> void;
 
 		static auto GetGameDirectory(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> std::filesystem::path;
+		static auto GetGameModsDirectory(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> std::filesystem::path;
 		static auto GetGameDataDirectory(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> std::filesystem::path;
+		static auto GetGameConfigProvider(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> winrt::Citrine::MinecraftBedrockGameConfigProvider;
 
 		static auto PauseGamePackageOperation(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> void;
 		static auto ResumeGamePackageOperation(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> void;

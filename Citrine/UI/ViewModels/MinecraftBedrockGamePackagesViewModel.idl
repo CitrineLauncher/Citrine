@@ -3,6 +3,7 @@ import "Models/MinecraftBedrockGamePackageItem.idl";
 import "Models/MinecraftBedrockServerDownloads.idl";
 import "Models/MinecraftBedrockGamePackageImportContext.idl";
 import "Models/MinecraftBedrockGameLaunchArgs.idl";
+import "Models/MinecraftBedrockGameConfigOptions.idl";
 import "Models/InstallLocationValidationResult.idl";
 import "Collections/IObservableCollectionView.idl";
 import "Collections/IFilterableCollectionView.idl";
@@ -33,7 +34,9 @@ namespace Citrine
         void UninstallGamePackage(MinecraftBedrockGamePackageItem gamePackage);
 
         void OpenGameDirectory(MinecraftBedrockGamePackageItem gamePackage);
+        void OpenGameModsDirectory(MinecraftBedrockGamePackageItem gamePackage);
         void OpenGameDataDirectory(MinecraftBedrockGamePackageItem gamePackage);
+        MinecraftBedrockGameConfigOptions GetGameConfigOptions(MinecraftBedrockGamePackageItem gamePackage);
 
         void PauseGamePackageOperation(MinecraftBedrockGamePackageItem gamePackage);
         void ResumeGamePackageOperation(MinecraftBedrockGamePackageItem gamePackage);

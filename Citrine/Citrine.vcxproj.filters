@@ -130,6 +130,8 @@
     <Midl Include="Models\UpdateCheckStatus.idl" />
     <Midl Include="Models\UpdateInfo.idl" />
     <Midl Include="Models\UpdateAvailability.idl" />
+    <Midl Include="Models\MinecraftBedrockGameConfigProvider.idl" />
+    <Midl Include="Models\MinecraftBedrockGameConfigOptions.idl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Citrine.rc" />

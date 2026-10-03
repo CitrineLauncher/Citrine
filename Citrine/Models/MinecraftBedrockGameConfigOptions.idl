@@ -1,0 +1,10 @@
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass MinecraftBedrockGameConfigOptions
+    {
+        Boolean OptionIsAvailable(String optionName);
+
+        Boolean ModLoaderEnabled;
+    }
+}

@@ -240,6 +240,7 @@
     <ClInclude Include="Core\Util\TypeTraits.h" />
     <ClInclude Include="Core\Util\VariableSizedType.h" />
     <ClInclude Include="Core\Util\VersionNumber.h" />
+    <ClInclude Include="Minecraft\Bedrock\GameConfig.h" />
     <ClInclude Include="Minecraft\Bedrock\GameBuildType.h" />
     <ClInclude Include="Minecraft\Bedrock\GameCapabilities.h" />
     <ClInclude Include="Minecraft\Bedrock\GamePackage.h" />
@@ -313,6 +314,7 @@
     <ClCompile Include="Core\Unicode\Unicode.cpp" />
     <ClCompile Include="Core\Unicode\Utf.cpp" />
     <ClCompile Include="Core\Util\Guid.cpp" />
+    <ClCompile Include="Minecraft\Bedrock\GameConfig.cpp" />
     <ClCompile Include="Minecraft\Bedrock\GameCapabilities.cpp" />
     <ClCompile Include="Minecraft\Bedrock\GamePackageMeta.cpp" />
     <ClCompile Include="Minecraft\Bedrock\GameVersion.cpp" />

@@ -5,9 +5,11 @@
 #include "Minecraft/Bedrock/GamePackageMeta.h"
 #include "Minecraft/Bedrock/ServerPackageMeta.h"
 #include "Minecraft/Bedrock/GamePackageOperation.h"
+#include "Minecraft/Bedrock/GameConfig.h"
 #include "Models/MinecraftBedrockGamePackageItem.h"
 #include "Models/MinecraftBedrockGamePackageImportContext.h"
 #include "Models/MinecraftBedrockGameLaunchArgs.h"
+#include "Models/MinecraftBedrockGameConfigProvider.h"
 
 #include "Core/Coroutine/FireAndForget.h"
 #include "Core/Util/Scope.h"
@@ -79,6 +81,8 @@ namespace {
 	using GameLaunchArgs = winrt::Citrine::MinecraftBedrockGameLaunchArgs;
 	using GameLaunchArgsImpl = winrt::Citrine::implementation::MinecraftBedrockGameLaunchArgs;
 	using GameLaunchResult = winrt::Citrine::MinecraftBedrockGameLaunchResult;
+	using GameConfigProvider = winrt::Citrine::MinecraftBedrockGameConfigProvider;
+	using GameConfigProviderImpl = winrt::Citrine::implementation::MinecraftBedrockGameConfigProvider;
 	using winrt::Citrine::InstallLocationValidationResult;
 
 	struct GamePackageItemGreater {
@@ -384,6 +388,7 @@ namespace {
 	}
 
 	constexpr auto& ExtractionContextFileName = L"Citrine.ExtractionContext.bin";
+	constexpr auto& GameConfigFileName = L"Citrine.GameConfig.json";
 
 	class GameManagerInternal {
 	public:
@@ -1275,6 +1280,26 @@ namespace {
 			return gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
 		}
 
+		auto GetGameModsDirectory(GamePackageItem const& item) -> std::filesystem::path {
+
+			if (!initialized)
+				return {};
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			auto gamePackage = gameInstallations->Find(packageId);
+			if (gamePackage == gameInstallations->end())
+				return {};
+
+			auto gameModsDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage) / L"Mods";
+			if (auto ec = std::error_code{}; !std::filesystem::create_directory(gameModsDirectory) && ec) {
+
+				Logger::Error("Creating game mods directory for game package {} failed ({})", *gamePackage, ec.value());
+			}
+			return gameModsDirectory;
+		}
+
 		auto GetGameDataDirectory(GamePackageItem const& item) -> std::filesystem::path {
 
 			if (!initialized)
@@ -1303,6 +1328,38 @@ namespace {
 			}
 
 			return {};
+		}
+
+		auto GetGameConfigProvider(GamePackageItem const& item) -> GameConfigProvider {
+
+			if (!initialized)
+				return nullptr;
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			auto gamePackage = gameInstallations->Find(packageId);
+			if (gamePackage == gameInstallations->end())
+				return nullptr;
+
+			auto gameDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
+			auto gameConfig = GameConfig::Load(gameDirectory / GameConfigFileName, [&](StorageOperationResult result, std::string const&) {
+
+				if (result || result == StorageError::NotFound)
+					return;
+
+				Logger::Error("Loading game config for game package {} failed ({})", packageId, result.Error);
+			});
+
+			if (!gameConfig)
+				gameConfig.emplace();
+
+			return winrt::make<GameConfigProviderImpl>(
+				item,
+				std::move(*gameConfig),
+				[this](auto const&... args) { UpdateGameConfig(args...); },
+				[this](auto const&... args) { return CheckGameConfigOptionAvailability(args...); }
+			);
 		}
 
 		auto PauseGamePackageOperation(GamePackageItem&& item) -> void {
@@ -2859,6 +2916,44 @@ namespace {
 			}
 		}
 
+		auto UpdateGameConfig(GamePackageItem const& item, GameConfig const& gameConfig) -> void {
+
+			if (!initialized)
+				return;
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			auto gamePackage = gameInstallations->Find(packageId);
+			if (gamePackage == gameInstallations->end())
+				return;
+
+			auto gameDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
+			gameConfig.Save(gameDirectory / GameConfigFileName, [&](StorageOperationResult result, std::string const&) {
+
+				if (result)
+					return;
+
+				Logger::Error("Saving game config for game package {} failed ({})", packageId, result.Error);
+			});
+		}
+
+		auto CheckGameConfigOptionAvailability(GamePackageItem const& item, std::wstring_view optionName) -> bool {
+
+			if (!initialized)
+				return false;
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			if (optionName == L"ModLoaderEnabled") {
+
+				return packageId.Version >= GameVersion{ 1, 26, 10, 0 };
+			}
+
+			return false;
+		}
+
 		struct SettingsT : public MinecraftBedrockGameManagerSettings {
 
 			friend GameManagerInternal;
@@ -2979,9 +3074,19 @@ namespace Citrine {
 		return gameManagerInternal.GetGameDirectory(item);
 	}
 
+	auto MinecraftBedrockGameManager::GetGameModsDirectory(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> std::filesystem::path {
+
+		return gameManagerInternal.GetGameModsDirectory(item);
+	}
+
 	auto MinecraftBedrockGameManager::GetGameDataDirectory(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> std::filesystem::path {
 
 		return gameManagerInternal.GetGameDataDirectory(item);
+	}
+
+	auto MinecraftBedrockGameManager::GetGameConfigProvider(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> winrt::Citrine::MinecraftBedrockGameConfigProvider {
+
+		return gameManagerInternal.GetGameConfigProvider(item);
 	}
 
 	auto MinecraftBedrockGameManager::PauseGamePackageOperation(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> void {

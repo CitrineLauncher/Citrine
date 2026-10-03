@@ -143,6 +143,14 @@
     <ClInclude Include="Collections\FilterableCollectionView.h" />
     <ClInclude Include="Collections\ItemFilter.h" />
     <ClInclude Include="Collections\ObservableCollection.h" />
+    <ClInclude Include="Models\MinecraftBedrockGameConfigOptions.h">
+      <DependentUpon>Models\MinecraftBedrockGameConfigOptions.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="Models\MinecraftBedrockGameConfigProvider.h">
+      <DependentUpon>Models\MinecraftBedrockGameConfigProvider.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="Models\UpdateInfo.h">
       <DependentUpon>Models\UpdateInfo.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -402,6 +410,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ApplicationMutex.cpp" />
+    <ClCompile Include="Models\MinecraftBedrockGameConfigOptions.cpp">
+      <DependentUpon>Models\MinecraftBedrockGameConfigOptions.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="Models\MinecraftBedrockGameConfigProvider.cpp">
+      <DependentUpon>Models\MinecraftBedrockGameConfigProvider.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="Models\UpdateInfo.cpp">
       <DependentUpon>Models\UpdateInfo.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -616,6 +632,12 @@
     </Midl>
     <Midl Include="Models\ByteProgress.idl" />
     <Midl Include="Models\InstallLocationValidationResult.idl" />
+    <Midl Include="Models\MinecraftBedrockGameConfigOptions.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="Models\MinecraftBedrockGameConfigProvider.idl">
+      <SubType>Designer</SubType>
+    </Midl>
     <Midl Include="Models\MinecraftBedrockGameInfo.idl">
       <SubType>Designer</SubType>
     </Midl>
