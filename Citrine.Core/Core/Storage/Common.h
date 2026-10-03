@@ -1,6 +1,9 @@
 #pragma once
 
+#include "Core/Util/Concepts.h"
+
 #include <compare>
+#include <format>
 
 namespace Citrine {
 
@@ -8,6 +11,8 @@ namespace Citrine {
 
 		None,
 		NotOpen,
+		NotFound,
+		OpeningFailed,
 		ReadingFailed,
 		WritingFailed,
 		SerializationFailed,
@@ -34,5 +39,17 @@ namespace Citrine {
 		}
 
 		StorageError Error{};
+	};
+}
+
+namespace std {
+
+	template<::Citrine::IsAnyOf<char, wchar_t> CharT>
+	struct formatter<::Citrine::StorageError, CharT> : formatter<int, CharT> {
+
+		auto format(::Citrine::StorageError value, auto& ctx) const -> auto {
+
+			return formatter<int, CharT>::format(std::to_underlying(value), ctx);
+		}
 	};
 }
