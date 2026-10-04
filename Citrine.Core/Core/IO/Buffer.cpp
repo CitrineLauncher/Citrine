@@ -6,6 +6,8 @@
 #include <unknwnbase.h>
 #include <robuffer.h>
 
+#pragma comment(lib, "runtimeobject.lib")
+
 using namespace Citrine;
 
 namespace {
