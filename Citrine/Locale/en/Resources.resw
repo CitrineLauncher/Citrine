@@ -373,9 +373,9 @@
     <value>Mods</value>
   </data>
   <data name="MinecraftBedrock_GamePackage_ModsToggle.OffContent" xml:space="preserve">
-    <value>Deactivated</value>
+    <value>Disabled</value>
   </data>
   <data name="MinecraftBedrock_GamePackage_ModsToggle.OnContent" xml:space="preserve">
-    <value>Activated</value>
+    <value>Enabled</value>
   </data>
 </root>
