@@ -31,7 +31,7 @@ namespace {
 
 	auto SaveGameConfig(std::filesystem::path const& path, GameConfig const& gameConfig, std::string& buffer) -> StorageOperationResult {
 
-		auto tempFile = File{ path.native() + L".temp", FileMode::OpenAlways, FileAccess::Write | FileAccess::Delete, FileShare::None };
+		auto tempFile = File{ path.native() + L".temp", FileMode::OpenAlways, FileAccess::Write | FileAccess::Delete, FileShare::Read | FileShare::Delete };
 		if (!tempFile)
 			return { StorageError::OpeningFailed };
 
