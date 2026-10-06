@@ -134,13 +134,32 @@ namespace Citrine {
 		std::uint32_t lastError{};
 	};
 
-	auto ReadFile(std::filesystem::path const& path, std::vector<std::uint8_t>& vec) -> bool;
-	auto ReadFile(std::filesystem::path const& path, std::string& str) -> bool;
+	struct FileOperationResult {
 
-	auto WriteFile(std::filesystem::path const& path, std::span<std::uint8_t const> buffer) noexcept -> bool;
-	auto WriteFile(std::filesystem::path const& path, std::string_view str) noexcept -> bool;
+		explicit constexpr operator bool() const noexcept {
+
+			return ErrorCode == 0;
+		}
+
+		constexpr auto operator==(std::uint32_t value) noexcept -> bool {
+
+			return ErrorCode == value;
+		}
+
+		constexpr auto operator<=>(std::uint32_t value) noexcept -> std::strong_ordering {
+
+			return ErrorCode <=> value;
+		}
+
+		std::uint32_t ErrorCode{};
+	};
+
+	auto ReadFile(std::filesystem::path const& path, std::vector<std::uint8_t>& vec) -> FileOperationResult;
+	auto ReadFile(std::filesystem::path const& path, std::string& str) -> FileOperationResult;
+
+	auto WriteFile(std::filesystem::path const& path, std::span<std::uint8_t const> buffer) noexcept -> FileOperationResult;
+	auto WriteFile(std::filesystem::path const& path, std::string_view str) noexcept -> FileOperationResult;
 
 	auto CreateTempFile() -> File;
-	auto RotateFile(std::filesystem::path const& path, std::uint8_t maxFiles) -> bool;
+	auto RotateFile(std::filesystem::path const& path, std::uint8_t maxFiles) -> FileOperationResult;
 }
-

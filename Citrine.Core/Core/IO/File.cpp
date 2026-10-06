@@ -375,28 +375,52 @@ namespace Citrine {
 		Close();
 	}
 
-	auto ReadFile(std::filesystem::path const& path, std::vector<std::uint8_t>& vec) -> bool {
+	auto ReadFile(std::filesystem::path const& path, std::vector<std::uint8_t>& vec) -> FileOperationResult {
 
 		auto file = File{ path, FileMode::OpenExisting, FileAccess::Read };
-		return file.ReadToEnd(vec);
+		if (!file)
+			return { file.LastError() };
+
+		if (!file.ReadToEnd(vec))
+			return { file.LastError() };
+
+		return {};
 	}
 
-	auto ReadFile(std::filesystem::path const& path, std::string& str) -> bool {
+	auto ReadFile(std::filesystem::path const& path, std::string& str) -> FileOperationResult {
 #
 		auto file = File{ path, FileMode::OpenExisting, FileAccess::Read };
-		return file.ReadToEnd(str);
+		if (!file)
+			return { file.LastError() };
+
+		if (!file.ReadToEnd(str))
+			return { file.LastError() };
+
+		return {};
 	}
 
-	auto WriteFile(std::filesystem::path const& path, std::span<std::uint8_t const> buffer) noexcept -> bool {
+	auto WriteFile(std::filesystem::path const& path, std::span<std::uint8_t const> buffer) noexcept -> FileOperationResult {
 
 		auto file = File{ path, FileMode::OpenAlways, FileAccess::Write };
-		return file.Write(buffer) && file.Truncate();
+		if (!file)
+			return { file.LastError() };
+
+		if (!file.Write(buffer) || !file.Truncate())
+			return { file.LastError() };
+
+		return {};
 	}
 
-	auto WriteFile(std::filesystem::path const& path, std::string_view str) noexcept -> bool {
+	auto WriteFile(std::filesystem::path const& path, std::string_view str) noexcept -> FileOperationResult {
 
 		auto file = File{ path, FileMode::OpenAlways, FileAccess::Write };
-		return file.Write(str) && file.Truncate();
+		if (!file)
+			return { file.LastError() };
+
+		if (!file.Write(str) || !file.Truncate())
+			return { file.LastError() };
+
+		return {};
 	}
 
 	auto CreateTempFile() -> File {
@@ -418,7 +442,7 @@ namespace Citrine {
 		return file;
 	}
 
-	auto RotateFile(std::filesystem::path const& path, std::uint8_t maxFiles) -> bool {
+	auto RotateFile(std::filesystem::path const& path, std::uint8_t maxFiles) -> FileOperationResult {
 
 		auto splitted = [path = std::wstring_view{ path.native() }] -> std::pair<std::wstring_view, std::wstring_view> {
 
@@ -440,9 +464,10 @@ namespace Citrine {
 		for (auto i = maxFiles; i > 0; --i) {
 
 			auto sourcePath = calculatePath(i - 1);
-			if (std::filesystem::rename(sourcePath, targetPath, ec); ec && ec.value() != ERROR_FILE_NOT_FOUND) return false;
+			if (std::filesystem::rename(sourcePath, targetPath, ec); ec && ec.value() != ERROR_FILE_NOT_FOUND)
+				return { static_cast<std::uint32_t>(ec.value()) };
 			targetPath = std::move(sourcePath);
 		}
-		return true;
+		return {};
 	}
 }
