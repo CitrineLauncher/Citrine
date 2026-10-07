@@ -824,6 +824,9 @@ namespace {
 
 			auto applyGameShims = [this](GamePackageIdentity const& packageId) -> void {
 
+				if (packageId.Platform != GamePlatform::WindowsGDK)
+					return;
+
 				auto op = gamePackageOperations->Find(packageId);
 				if (op != gamePackageOperations->end())
 					return;
