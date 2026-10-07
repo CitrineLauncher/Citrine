@@ -256,6 +256,7 @@
     <ClInclude Include="Minecraft\Bedrock\ServerPackageMeta.h" />
     <ClInclude Include="Minecraft\Bedrock\ServerPlatform.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Windows\PE\PEFileVersion.h" />
     <ClInclude Include="ReleaseInfo.h" />
     <ClInclude Include="Core\Net\Http\Http.h" />
     <ClInclude Include="Windows\AppLauncher.h" />
@@ -325,6 +326,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Core\Net\Http\Http.cpp" />
+    <ClCompile Include="Windows\PE\PEFileVersion.cpp" />
     <ClCompile Include="Windows\AppLauncher.cpp" />
     <ClCompile Include="Windows\AppModel.cpp" />
     <ClCompile Include="Windows\BuildInfo.cpp" />

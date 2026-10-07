@@ -393,6 +393,9 @@
     <ClInclude Include="Minecraft\Bedrock\GameConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Windows\PE\PEFileVersion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -513,6 +516,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Minecraft\Bedrock\GameConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\PE\PEFileVersion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "MinecraftBedrockGameManager.h"
 
+#include "Citrine.h"
+
 #include "Minecraft/Bedrock/GamePackage.h"
 #include "Minecraft/Bedrock/GamePackageMeta.h"
 #include "Minecraft/Bedrock/ServerPackageMeta.h"
@@ -30,6 +32,7 @@
 #include "Windows/Shell.h"
 #include "Windows/AppLauncher.h"
 #include "Windows/User.h"
+#include "Windows/PE/PEFileVersion.h"
 
 #include <atomic>
 #include <filesystem>
@@ -49,7 +52,9 @@
 #include <winuser.h>
 #include <synchapi.h>
 
+#include <wil/stl.h>
 #include <wil/resource.h>
+#include <wil/win32_helpers.h>
 
 #include <glaze/json.hpp>
 
@@ -817,18 +822,33 @@ namespace {
 				}
 			}
 
+			auto applyGameShims = [this](GamePackageIdentity const& packageId) -> void {
+
+				auto op = gamePackageOperations->Find(packageId);
+				if (op != gamePackageOperations->end())
+					return;
+
+				auto gamePackage = gameInstallations->Find(packageId);
+				if (gamePackage == gameInstallations->end())
+					return;
+
+				ApplyGameShims(*gamePackage);
+			};
+
 			if (auto const& releaseBuild = std::holds_alternative<winrt::Package>(registeredReleaseBuild)
 				? std::get<winrt::Package>(registeredReleaseBuild)
 				: registeredReleaseBuild.emplace<winrt::Package>(registeredPackages.Release))
 			{
-				UpdatePackageRegistrationStatus(releaseBuild, true);
+				if (auto packageId = UpdatePackageRegistrationStatus(releaseBuild, true))
+					applyGameShims(*packageId);
 			}
 
 			if (auto const& previewBuild = std::holds_alternative<winrt::Package>(registeredPreviewBuild)
 				? std::get<winrt::Package>(registeredPreviewBuild)
 				: registeredPreviewBuild.emplace<winrt::Package>(registeredPackages.Preview))
 			{
-				UpdatePackageRegistrationStatus(previewBuild, true);
+				if (auto packageId = UpdatePackageRegistrationStatus(previewBuild, true))
+					applyGameShims(*packageId);
 			}
 
 			initialized = true;
@@ -2198,6 +2218,11 @@ namespace {
 
 			if (!alreadyRegistered) try {
 
+				if (gamePackage->Platform == GamePlatform::WindowsGDK) {
+
+					ApplyGameShims(*gamePackage);
+				}
+
 				Logger::Info("Registering game package {}", *gamePackage);
 
 				auto deploymentOpts = winrt::DeploymentOptions::DevelopmentMode | winrt::DeploymentOptions::ForceTargetApplicationShutdown;
@@ -2275,6 +2300,8 @@ namespace {
 					Logger::Error("Launching game package {} failed: shortcut creation failed ({})", *gamePackage, result.error());
 					co_return false;
 				}
+
+				ApplyGameShims(*gamePackage);
 
 				auto args = std::string{};
 				if (auto fileToImport = launchArgs.FileToImport(); !fileToImport.empty()) {
@@ -2824,7 +2851,7 @@ namespace {
 		}
 		catch (winrt::hresult_error const&) {}
 
-		auto UpdatePackageRegistrationStatus(winrt::Package const& appPackage, bool registered) -> void {
+		auto UpdatePackageRegistrationStatus(winrt::Package const& appPackage, bool registered) -> std::optional<GamePackageIdentity> {
 
 			auto packageFullName = winrt::to_string(appPackage.Id().FullName());
 			auto packagePath = std::filesystem::path{ std::wstring{ appPackage.InstalledPath() } };
@@ -2891,7 +2918,7 @@ namespace {
 			}
 
 			if (!found)
-				return;
+				return std::nullopt;
 
 			auto& gamePackages = [&] -> ObservableCollection<GamePackageItem>& {
 
@@ -2914,12 +2941,11 @@ namespace {
 				itemImpl->IsRegistered(registered);
 				break;
 			}
+
+			return packageId;
 		}
 
 		auto UpdateGameConfig(GamePackageItem const& item, GameConfig const& gameConfig) -> void {
-
-			if (!initialized)
-				return;
 
 			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
 			auto packageId = itemImpl->Id();
@@ -2940,9 +2966,6 @@ namespace {
 
 		auto CheckGameConfigOptionAvailability(GamePackageItem const& item, std::wstring_view optionName) -> bool {
 
-			if (!initialized)
-				return false;
-
 			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
 			auto packageId = itemImpl->Id();
 
@@ -2952,6 +2975,69 @@ namespace {
 			}
 
 			return false;
+		}
+
+		auto ApplyGameShims(GamePackage const& gamePackage) -> void {
+
+			struct ShimMapping {
+
+				std::wstring_view Target;
+				std::wstring_view Source;
+			};
+
+			static constexpr auto shims = std::to_array<ShimMapping>({
+				
+				{ L"vcruntime140_1.dll", L"Citrine.BedrockShim.dll" }
+			});
+			static auto shimsLocation = std::filesystem::path{ wil::GetModuleFileNameW<std::wstring>() }.parent_path();
+
+			auto gameDirectory = gamePackage.InstallLocation / GetGameDirectoryName(gamePackage);
+			auto buffer = Buffer{ 1024 * 64 };
+
+			constexpr auto targetVersion = Windows::PEFileVersion{ CITRINE_VERSION_MAJOR, CITRINE_VERSION_MINOR, CITRINE_VERSION_PATCH, 0 };
+			for (auto const& shim : shims) {
+
+				auto shimVersion = Windows::PEFileVersion{};
+				auto shimPath = gameDirectory / shim.Target;
+
+				if (Windows::GetPEFileVersion(shimPath, shimVersion, &buffer) && shimVersion == targetVersion)
+					continue;
+
+				auto logError = ScopeExit{ [&] { Logger::Error(L"Applying game shim (Target: {}, Source: {}) for game package {} failed", shim.Target, shim.Source, gamePackage); } };
+
+				auto tempFile = File{ shimPath.native() + L".tmp", FileMode::CreateAlways, FileAccess::Write | FileAccess::Delete, FileShare::Read | FileShare::Delete };
+				if (!tempFile)
+					continue;
+
+				auto deleteTempFile = ScopeExit{ [&tempFile] { tempFile.Delete(); } };
+
+				auto sourceFile = File{ shimsLocation / shim.Source, FileMode::OpenExisting, FileAccess::Read, FileShare::Read };
+				if (!sourceFile)
+					continue;
+
+				auto error = false;
+				do {
+
+					if (error = !sourceFile.Read(buffer))
+						break;
+
+					if (buffer.empty())
+						break;
+
+					if (error = !tempFile.Write(buffer))
+						break;
+
+				} while (true);
+
+				if (error)
+					continue;
+
+				if (!tempFile.Rename(shimPath, true))
+					continue;
+
+				logError.Release();
+				deleteTempFile.Release();
+			}
 		}
 
 		struct SettingsT : public MinecraftBedrockGameManagerSettings {
