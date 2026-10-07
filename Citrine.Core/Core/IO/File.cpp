@@ -131,7 +131,11 @@ namespace Citrine {
 		} while (result && totalBytesRead < buffer.size() && currentBytesRead > 0);
 		
 		if (!result)
+			result = ::GetLastError() == ERROR_HANDLE_EOF;
+
+		if (!result)
 			lastError = ::GetLastError();
+
 		return result;
 	}
 
