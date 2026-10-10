@@ -2974,7 +2974,9 @@ namespace {
 
 			if (optionName == L"ModLoaderEnabled") {
 
-				return packageId.Version >= GameVersion{ 1, 26, 10, 0 };
+				return
+					packageId.Platform == GamePlatform::WindowsGDK &&
+					packageId.Version >= GameVersion{ 1, 26, 10, 0 };
 			}
 
 			return false;
