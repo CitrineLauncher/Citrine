@@ -189,6 +189,10 @@
       <DependentUpon>UI\Converters\IntToBoolConverter.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="UI\Converters\NumericValueConverter.h">
+      <DependentUpon>UI\Converters\NumericValueConverter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="UI\ViewModels\AboutViewModel.h">
       <DependentUpon>UI\ViewModels\AboutViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -456,6 +460,10 @@
       <DependentUpon>UI\Converters\IntToBoolConverter.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="UI\Converters\NumericValueConverter.cpp">
+      <DependentUpon>UI\Converters\NumericValueConverter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="UI\ViewModels\AboutViewModel.cpp">
       <DependentUpon>UI\ViewModels\AboutViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
@@ -696,6 +704,9 @@
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="UI\Converters\IntToBoolConverter.idl">
+      <SubType>Designer</SubType>
+    </Midl>
+    <Midl Include="UI\Converters\NumericValueConverter.idl">
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="UI\Converters\StringToVisibilityConverter.idl">

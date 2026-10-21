@@ -132,6 +132,7 @@
     <Midl Include="Models\UpdateAvailability.idl" />
     <Midl Include="Models\MinecraftBedrockGameConfigProvider.idl" />
     <Midl Include="Models\MinecraftBedrockGameConfigOptions.idl" />
+    <Midl Include="UI\Converters\NumericValueConverter.idl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Citrine.rc" />
