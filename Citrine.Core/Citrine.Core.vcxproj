@@ -192,6 +192,7 @@
     <ClInclude Include="Core\Coroutine\Task.h" />
     <ClInclude Include="Core\Coroutine\TaskPromise.h" />
     <ClInclude Include="Core\Coroutine\Traits.h" />
+    <ClInclude Include="Core\Environment\EnvironmentVariable.h" />
     <ClInclude Include="Core\IO\Buffer.h" />
     <ClInclude Include="Core\IO\File.h" />
     <ClInclude Include="Core\IO\IRangeStreamProvider.h" />

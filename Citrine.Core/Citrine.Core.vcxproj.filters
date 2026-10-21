@@ -396,6 +396,9 @@
     <ClInclude Include="Windows\PE\PEFileVersion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Environment\EnvironmentVariable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
