@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <expected>
 #include <functional>
+#include <chrono>
 
 #include <glaze/json.hpp>
 
@@ -21,6 +22,7 @@ namespace Citrine::Minecraft::Bedrock {
 		auto Save(this GameConfig const& gameConfig, std::filesystem::path const& path, OperationCallback callback) -> std::expected<void, StorageError>;
 
 		bool ModLoaderEnabled{};
+		std::chrono::milliseconds ModsLoadDelay{};
 	};
 }
 
@@ -32,7 +34,8 @@ namespace glz {
 		using T = ::Citrine::Minecraft::Bedrock::GameConfig;
 
 		static constexpr auto value = object(
-			"ModLoaderEnabled", &T::ModLoaderEnabled
+			"ModLoaderEnabled", &T::ModLoaderEnabled,
+			"ModsLoadDelay", &T::ModsLoadDelay
 		);
 	};
 }

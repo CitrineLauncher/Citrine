@@ -6,5 +6,6 @@ namespace Citrine
         Boolean OptionIsAvailable(String optionName);
 
         Boolean ModLoaderEnabled;
+        Int64 ModsLoadDelay;
     }
 }

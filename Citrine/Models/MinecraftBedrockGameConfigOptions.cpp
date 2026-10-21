@@ -31,4 +31,20 @@ namespace winrt::Citrine::implementation
             provider->OnConfigChanged();
         }
     }
+
+    auto MinecraftBedrockGameConfigOptions::ModsLoadDelay() const noexcept -> std::int64_t {
+
+        auto& config = GetConfig();
+        return config.ModsLoadDelay.count();
+    }
+
+    auto MinecraftBedrockGameConfigOptions::ModsLoadDelay(std::int64_t value) -> void {
+
+        auto& config = GetConfig();
+        if (config.ModsLoadDelay.count() != value) {
+
+            config.ModsLoadDelay = std::chrono::milliseconds{ value };
+            provider->OnConfigChanged();
+        }
+    }
 }

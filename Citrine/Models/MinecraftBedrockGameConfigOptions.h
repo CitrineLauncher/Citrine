@@ -15,6 +15,9 @@ namespace winrt::Citrine::implementation
         auto ModLoaderEnabled() const noexcept -> bool;
         auto ModLoaderEnabled(bool value) -> void;
 
+        auto ModsLoadDelay() const noexcept -> std::int64_t;
+        auto ModsLoadDelay(std::int64_t value) -> void;
+
     private:
 
         template<typename Self>

@@ -21,7 +21,12 @@ namespace winrt::Citrine::implementation
         auto OpenGameModsDirectoryButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& args) -> void;
         auto UninstallButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& args) -> void;
 
+        auto ModsToggle_Toggled(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&) -> void;
+        auto ModsOptions_Loaded(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&) -> void;
+
     private:
+
+        auto OnModsToggleToggled() -> void;
 
         winrt::com_ptr<implementation::MinecraftBedrockGamePackagesViewModel> viewModel{ nullptr };
         Citrine::MinecraftBedrockGamePackageItem gamePackage{ nullptr };
