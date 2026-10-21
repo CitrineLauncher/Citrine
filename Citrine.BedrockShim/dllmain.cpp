@@ -1,8 +1,6 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
 
-#include <safetyhook.hpp>
-
 #include "Core/Util/TrivialArray.h"
 #include "Core/Util/Ascii.h"
 #include "Minecraft/Bedrock/GameConfig.h"
@@ -10,6 +8,8 @@
 #include <string_view>
 #include <filesystem>
 #include <atomic>
+#include <thread>
+#include <chrono>
 
 #include <wil/stl.h>
 #include <wil/resource.h>
@@ -18,24 +18,32 @@
 using namespace Citrine;
 using namespace Minecraft::Bedrock;
 
+using namespace std::chrono_literals;
+
 namespace {
 
     using ExceptionHandlerT = auto(*)(::PEXCEPTION_RECORD exceptionRecord, ::PVOID establisherFrame, ::PCONTEXT contextRecord, ::PDISPATCHER_CONTEXT dispatcherContext) -> ::EXCEPTION_DISPOSITION;
     auto cxxFrameHandler4 = ExceptionHandlerT{};
-    auto createWindowExW = SafetyHookInline{};
 
-    struct BedrockWinMain {
+    struct ModEntry {
 
-        void* VTable;
-        void* Platform;
-        void* Platform_RefCount;
-        void* WndProcHandler;
+        std::filesystem::path Path;
+        ::HMODULE Module{ nullptr };
     };
 
-    auto modsDirectory = std::filesystem::path{};
-    auto window = ::HWND{};
-    auto bedrockWinMain = static_cast<BedrockWinMain const*>(nullptr);
-    auto bedrockHasInitialized = static_cast<std::atomic<bool> const*>(nullptr);
+    enum struct ModLoaderStatus {
+
+        Idle,
+        Loading,
+        LoadingCompleted,
+        Unloading,
+        UnloadingCompleted
+    };
+
+    auto modEntries = std::vector<ModEntry>{};
+    auto modLoaderStatus = std::atomic<ModLoaderStatus>{};
+    auto modsLoadDelay = std::chrono::milliseconds{};
+    auto getMessageHook = ::HHOOK{};
 
     auto IsHiddenDirectoryEntry(std::filesystem::directory_entry const& entry) -> bool {
 
@@ -63,105 +71,62 @@ namespace {
         return true;
     }
 
-    auto LoadDlls() -> void try {
+    auto LoadDlls() -> void {
 
-        while (!bedrockHasInitialized->load(std::memory_order::relaxed))
-            std::this_thread::yield();
+        for (auto& entry : ::modEntries) {
 
-        std::atomic_thread_fence(std::memory_order::acquire);
-
-        for (auto const& entry : std::filesystem::directory_iterator{ modsDirectory }) {
-
-            if (!ShouldIncludeDirectoryEntry(entry))
-                continue;
-
-            auto const& path = entry.path();
-            ::LoadLibraryExW(path.c_str(), nullptr, LOAD_LIBRARY_SEARCH_DEFAULT_DIRS | LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
+            entry.Module = ::LoadLibraryExW(entry.Path.c_str(), nullptr, LOAD_LIBRARY_SEARCH_DEFAULT_DIRS | LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
         }
-    } catch (std::filesystem::filesystem_error const&) {}
-
-    auto $CreateWindowEx(
-        ::DWORD dwExStyle,
-        ::LPCWSTR lpClassName,
-        ::PCWSTR lpWindowName,
-        ::DWORD dwStyle,
-        int X,
-        int Y,
-        int nWidth,
-        int nHeight,
-        ::HWND hWndParent,
-        ::HMENU hMenu,
-        ::HINSTANCE hInstance,
-        ::LPVOID lpParam)
-    {
-        auto hwnd = createWindowExW.call<::HWND>(dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-        if (IS_INTRESOURCE(lpClassName) || std::wstring_view{ lpClassName } != L"Bedrock") {
-
-            return hwnd;
-        }
-        static_cast<void>(createWindowExW.disable());
-
-        if (!lpParam)
-            return hwnd;
-
-        bedrockWinMain = reinterpret_cast<BedrockWinMain const*>(lpParam);
-
-        constexpr auto subclassProcId = 0x2b5b462b;
-        constexpr auto subclassProc = [](
-            ::HWND hWnd,
-            ::UINT uMsg,
-            ::WPARAM wParam,
-            ::LPARAM lParam,
-            ::UINT_PTR uIdSubclass,
-            ::DWORD_PTR dwRefData
-        ) static -> ::LRESULT {
-
-            auto result = ::DefSubclassProc(hWnd, uMsg, wParam, lParam);
-            if (!bedrockWinMain->Platform)
-                return result;
-
-            struct AddressPair {
-
-                std::uintptr_t First;
-                std::uintptr_t Second;
-            };
-
-            auto platformMemory = reinterpret_cast<std::uint8_t const*>(bedrockWinMain->Platform);
-            auto [firstAddress, secondAddress] = *reinterpret_cast<AddressPair const*>(&platformMemory[0x20]);
-
-            auto hasInitializedOffset = (firstAddress != 0 && secondAddress != 0 && firstAddress == secondAddress + 16) ? 0x18 : 0x81;
-            bedrockHasInitialized = reinterpret_cast<std::atomic<bool> const*>(&platformMemory[hasInitializedOffset]);
-
-            std::thread{ LoadDlls }.detach();
-
-            ::RemoveWindowSubclass(hWnd, reinterpret_cast<::SUBCLASSPROC>(dwRefData), uIdSubclass);
-            return result;
-        };
-
-        ::SetWindowSubclass(hwnd, subclassProc, subclassProcId, reinterpret_cast<::DWORD_PTR>(+subclassProc));
-        return hwnd;
     }
 
-    auto InitializeModLoader(std::filesystem::path modsDirectory) -> void try {
+    auto UnloadDlls() -> void {
 
-        auto loaderRequired = false;
+        for (auto const& entry : ::modEntries | std::views::reverse) {
+
+            if (entry.Module)
+                ::FreeLibrary(entry.Module);
+        }
+    }
+
+    auto InitializeModLoader(std::filesystem::path const& modsDirectory, std::chrono::milliseconds loadDelay) -> void try {
+
         for (auto const& entry : std::filesystem::directory_iterator{ modsDirectory }) {
 
             if (!ShouldIncludeDirectoryEntry(entry))
                 continue;
 
-            loaderRequired = true;
+            ::modEntries.emplace_back(entry);
             break;
         }
 
-        if (!loaderRequired)
+        if (::modEntries.empty())
             return;
 
-        ::modsDirectory = std::move(modsDirectory);
-        createWindowExW = safetyhook::create_inline(
-            reinterpret_cast<void*>(&CreateWindowExW),
-            reinterpret_cast<void*>(&$CreateWindowEx)
-        );
+        ::modsLoadDelay = std::clamp(loadDelay, 0ms, 15000ms);
+
+        constexpr auto hookProc = [](int code, ::WPARAM wParam, ::LPARAM lParam) static -> ::LRESULT {
+
+            auto message = reinterpret_cast<::MSG const*>(lParam)->message;
+            if (message >= WM_APP && modLoaderStatus.load(std::memory_order::relaxed) == ModLoaderStatus::Idle) {
+
+                modLoaderStatus.store(ModLoaderStatus::Loading, std::memory_order::relaxed);
+                std::thread{ [] static {
+
+                    std::this_thread::sleep_for(::modsLoadDelay);
+                    LoadDlls();
+
+                    modLoaderStatus.store(ModLoaderStatus::LoadingCompleted, std::memory_order::release);
+                } }
+                .detach();
+            }
+            else if (message == WM_QUIT) {
+
+                ::TerminateProcess(::GetCurrentProcess(), 0);
+            }
+            return ::CallNextHookEx(nullptr, code, wParam, lParam);
+        };
+
+        ::getMessageHook = ::SetWindowsHookExW(WH_GETMESSAGE, hookProc, nullptr, GetCurrentThreadId());
     }
     catch (std::filesystem::filesystem_error const&) {}
 }
@@ -197,7 +162,7 @@ auto APIENTRY DllMain(HMODULE currentModule, DWORD reason, LPVOID reserved) -> B
 
             auto buffer = TrivialArray<wchar_t, MAX_PATH>{};
             auto systemDirectory = std::filesystem::path{ buffer.data(), buffer.data() + ::GetSystemDirectoryW(buffer.data(), buffer.size()) };
-            
+
             if (systemDirectory.empty())
                 return FALSE;
 
@@ -212,7 +177,7 @@ auto APIENTRY DllMain(HMODULE currentModule, DWORD reason, LPVOID reserved) -> B
             return FALSE;
 
         if (modLoaderEnabled)
-            InitializeModLoader(currentLocation / L"Mods");
+            InitializeModLoader(currentLocation / L"Mods", gameConfig->ModsLoadDelay);
     }
     return TRUE;
 }

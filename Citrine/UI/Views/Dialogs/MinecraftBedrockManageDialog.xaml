@@ -94,8 +94,8 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Load delay" VerticalAlignment="Center" FontSize="15" Grid.Column="1" />
-                    <local:NumberBoxEx Minimum="0" Maximum="10000" Value="{x:Bind GameConfigOptions.ModsLoadDelay, Mode=TwoWay, Converter={StaticResource NumericValueConverter}}" SmallChange="250" LargeChange="1000" SpinButtonPlacementMode="Compact" SuffixText="ms" ClearButtonVisibility="Collapsed" Grid.Column="2" HorizontalAlignment="Right" Height="32" Width="104" />
+                    <TextBlock x:Uid="MinecraftBedrock_GamePackage_ModsLoadDelay" VerticalAlignment="Center" FontSize="15" Grid.Column="1" />
+                    <local:NumberBoxEx Minimum="0" Maximum="15000" Value="{x:Bind GameConfigOptions.ModsLoadDelay, Mode=TwoWay, Converter={StaticResource NumericValueConverter}}" SmallChange="500" LargeChange="1000" SpinButtonPlacementMode="Compact" SuffixText="ms" ClearButtonVisibility="Collapsed" Grid.Column="2" HorizontalAlignment="Right" Height="32" Width="104" />
                 </Grid>
             </StackPanel>
         </StackPanel>

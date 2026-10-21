@@ -2972,11 +2972,9 @@ namespace {
 			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
 			auto packageId = itemImpl->Id();
 
-			if (optionName == L"ModLoaderEnabled") {
+			if (optionName == L"ModLoaderEnabled" || optionName == L"ModsLoadDelay") {
 
-				return
-					packageId.Platform == GamePlatform::WindowsGDK &&
-					packageId.Version >= GameVersion{ 1, 26, 10, 0 };
+				return packageId.Platform == GamePlatform::WindowsGDK;
 			}
 
 			return false;

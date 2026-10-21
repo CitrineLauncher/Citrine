@@ -378,4 +378,7 @@
   <data name="MinecraftBedrock_GamePackage_ModsToggle.OnContent" xml:space="preserve">
     <value>Enabled</value>
   </data>
+  <data name="MinecraftBedrock_GamePackage_ModsLoadDelay.Text" xml:space="preserve">
+    <value>Load delay</value>
+  </data>
 </root>
