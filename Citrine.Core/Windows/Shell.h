@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Core/Coroutine/Task.h"
+#include "Core/Environment/EnvironmentVariable.h"
 
 #include <string>
 #include <expected>
 #include <filesystem>
+#include <vector>
 
 #include <wil/resource.h>
 
@@ -20,7 +22,7 @@ namespace Citrine::Windows {
 	public:
 
 		static auto OpenFolderAsync(std::filesystem::path path) -> AsyncShellResult<>;
-		static auto ExecuteAsync(std::filesystem::path path, std::string_view arguments, bool runAsAdmin = false) -> AsyncShellResult<wil::unique_process_handle>;
+		static auto ExecuteAsync(std::filesystem::path path, std::string_view arguments, bool runAsAdmin = false, std::vector<EnvironmentVariable> envVariables = {}) -> AsyncShellResult<wil::unique_process_handle>;
 		static auto CreateShortcut(std::filesystem::path const& path, std::filesystem::path const& targetPath, std::string_view arguments, std::string_view aumid) -> ShellResult<>;
 	};
 }
