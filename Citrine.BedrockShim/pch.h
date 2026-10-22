@@ -11,5 +11,6 @@
 #include <Windows.h>
 #include <commctrl.h>
 #pragma comment(lib, "comctl32.lib")
+#include <shobjidl_core.h>
 
 #endif //PCH_H
