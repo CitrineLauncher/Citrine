@@ -11,6 +11,48 @@
 #include <propkey.h>
 #include <propvarutil.h>
 
+using namespace Citrine;
+
+namespace {
+
+	class AddEnvironmentVariablesSite : public winrt::implements<AddEnvironmentVariablesSite, ::IServiceProvider, ::ICreatingProcess> {
+	public:
+
+		AddEnvironmentVariablesSite(std::vector<EnvironmentVariable>&& envVariables)
+
+			: envVariables(std::move(envVariables))
+		{}
+
+		auto QueryService(::GUID const& guidService, ::IID const& riid, void** ppv) -> ::HRESULT final override {
+
+			if (guidService == SID_ExecuteCreatingProcess) {
+
+				return QueryInterface(riid, ppv);
+			}
+			else {
+
+				*ppv = nullptr;
+				return E_NOTIMPL;
+			}
+		}
+
+		auto OnCreating(::ICreateProcessInputs* inputs) -> ::HRESULT final override {
+
+			for (auto const& [name, value] : envVariables) {
+
+				auto result = inputs->SetEnvironmentVariableW(ToUtf16(name).c_str(), ToUtf16(value).c_str());
+				if (result != S_OK)
+					return result;
+			}
+			return S_OK;
+		}
+
+	private:
+
+		std::vector<EnvironmentVariable> envVariables;
+	};
+}
+
 namespace Citrine::Windows {
 
 	auto Shell::OpenFolderAsync(std::filesystem::path path) -> AsyncShellResult<> {
@@ -36,20 +78,22 @@ namespace Citrine::Windows {
 		co_return {};
 	}
 
-	auto Shell::ExecuteAsync(std::filesystem::path path, std::string_view arguments, bool runAsAdmin) -> AsyncShellResult<wil::unique_process_handle> {
+	auto Shell::ExecuteAsync(std::filesystem::path path, std::string_view arguments, bool runAsAdmin, std::vector<EnvironmentVariable> envVariables) -> AsyncShellResult<wil::unique_process_handle> {
 
 		auto wideArgs = ToUtf16(arguments);
 
 		co_await winrt::resume_background();
 
+		auto addEnvironmentVariablesSite = winrt::make<AddEnvironmentVariablesSite>(std::move(envVariables));
 		auto executeInfo = ::SHELLEXECUTEINFOW{
 
 			.cbSize = sizeof(::SHELLEXECUTEINFOW),
-			.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NOASYNC,
+			.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NOASYNC | SEE_MASK_FLAG_HINST_IS_SITE,
 			.lpVerb = runAsAdmin ? L"runas" : L"open",
 			.lpFile = path.c_str(),
 			.lpParameters = wideArgs.c_str(),
-			.nShow = SW_SHOWNORMAL
+			.nShow = SW_SHOWNORMAL,
+			.hInstApp = reinterpret_cast<::HINSTANCE>(addEnvironmentVariablesSite.get())
 		};
 
 		if (!::ShellExecuteExW(&executeInfo)) {

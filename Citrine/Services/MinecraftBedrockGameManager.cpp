@@ -1,13 +1,17 @@
 #include "pch.h"
 #include "MinecraftBedrockGameManager.h"
 
+#include "Citrine.h"
+
 #include "Minecraft/Bedrock/GamePackage.h"
 #include "Minecraft/Bedrock/GamePackageMeta.h"
 #include "Minecraft/Bedrock/ServerPackageMeta.h"
 #include "Minecraft/Bedrock/GamePackageOperation.h"
+#include "Minecraft/Bedrock/GameConfig.h"
 #include "Models/MinecraftBedrockGamePackageItem.h"
 #include "Models/MinecraftBedrockGamePackageImportContext.h"
 #include "Models/MinecraftBedrockGameLaunchArgs.h"
+#include "Models/MinecraftBedrockGameConfigProvider.h"
 
 #include "Core/Coroutine/FireAndForget.h"
 #include "Core/Util/Scope.h"
@@ -28,6 +32,7 @@
 #include "Windows/Shell.h"
 #include "Windows/AppLauncher.h"
 #include "Windows/User.h"
+#include "Windows/PE/PEFileVersion.h"
 
 #include <atomic>
 #include <filesystem>
@@ -47,7 +52,9 @@
 #include <winuser.h>
 #include <synchapi.h>
 
+#include <wil/stl.h>
 #include <wil/resource.h>
+#include <wil/win32_helpers.h>
 
 #include <glaze/json.hpp>
 
@@ -79,6 +86,8 @@ namespace {
 	using GameLaunchArgs = winrt::Citrine::MinecraftBedrockGameLaunchArgs;
 	using GameLaunchArgsImpl = winrt::Citrine::implementation::MinecraftBedrockGameLaunchArgs;
 	using GameLaunchResult = winrt::Citrine::MinecraftBedrockGameLaunchResult;
+	using GameConfigProvider = winrt::Citrine::MinecraftBedrockGameConfigProvider;
+	using GameConfigProviderImpl = winrt::Citrine::implementation::MinecraftBedrockGameConfigProvider;
 	using winrt::Citrine::InstallLocationValidationResult;
 
 	struct GamePackageItemGreater {
@@ -384,6 +393,7 @@ namespace {
 	}
 
 	constexpr auto& ExtractionContextFileName = L"Citrine.ExtractionContext.bin";
+	constexpr auto& GameConfigFileName = L"Citrine.GameConfig.json";
 
 	class GameManagerInternal {
 	public:
@@ -812,18 +822,36 @@ namespace {
 				}
 			}
 
+			auto applyGameShims = [this](GamePackageIdentity const& packageId) -> void {
+
+				if (packageId.Platform != GamePlatform::WindowsGDK)
+					return;
+
+				auto op = gamePackageOperations->Find(packageId);
+				if (op != gamePackageOperations->end())
+					return;
+
+				auto gamePackage = gameInstallations->Find(packageId);
+				if (gamePackage == gameInstallations->end())
+					return;
+
+				ApplyGameShims(*gamePackage);
+			};
+
 			if (auto const& releaseBuild = std::holds_alternative<winrt::Package>(registeredReleaseBuild)
 				? std::get<winrt::Package>(registeredReleaseBuild)
 				: registeredReleaseBuild.emplace<winrt::Package>(registeredPackages.Release))
 			{
-				UpdatePackageRegistrationStatus(releaseBuild, true);
+				if (auto packageId = UpdatePackageRegistrationStatus(releaseBuild, true))
+					applyGameShims(*packageId);
 			}
 
 			if (auto const& previewBuild = std::holds_alternative<winrt::Package>(registeredPreviewBuild)
 				? std::get<winrt::Package>(registeredPreviewBuild)
 				: registeredPreviewBuild.emplace<winrt::Package>(registeredPackages.Preview))
 			{
-				UpdatePackageRegistrationStatus(previewBuild, true);
+				if (auto packageId = UpdatePackageRegistrationStatus(previewBuild, true))
+					applyGameShims(*packageId);
 			}
 
 			initialized = true;
@@ -1275,6 +1303,26 @@ namespace {
 			return gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
 		}
 
+		auto GetGameModsDirectory(GamePackageItem const& item) -> std::filesystem::path {
+
+			if (!initialized)
+				return {};
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			auto gamePackage = gameInstallations->Find(packageId);
+			if (gamePackage == gameInstallations->end())
+				return {};
+
+			auto gameModsDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage) / L"Mods";
+			if (auto ec = std::error_code{}; !std::filesystem::create_directory(gameModsDirectory) && ec) {
+
+				Logger::Error("Creating game mods directory for game package {} failed ({})", *gamePackage, ec.value());
+			}
+			return gameModsDirectory;
+		}
+
 		auto GetGameDataDirectory(GamePackageItem const& item) -> std::filesystem::path {
 
 			if (!initialized)
@@ -1303,6 +1351,38 @@ namespace {
 			}
 
 			return {};
+		}
+
+		auto GetGameConfigProvider(GamePackageItem const& item) -> GameConfigProvider {
+
+			if (!initialized)
+				return nullptr;
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			auto gamePackage = gameInstallations->Find(packageId);
+			if (gamePackage == gameInstallations->end())
+				return nullptr;
+
+			auto gameDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
+			auto gameConfig = GameConfig::Load(gameDirectory / GameConfigFileName, [&](StorageOperationResult result, std::string const&) {
+
+				if (result || result == StorageError::NotFound)
+					return;
+
+				Logger::Error("Loading game config for game package {} failed ({})", packageId, result.Error);
+			});
+
+			if (!gameConfig)
+				gameConfig.emplace();
+
+			return winrt::make<GameConfigProviderImpl>(
+				item,
+				std::move(*gameConfig),
+				[this](auto const&... args) { UpdateGameConfig(args...); },
+				[this](auto const&... args) { return CheckGameConfigOptionAvailability(args...); }
+			);
 		}
 
 		auto PauseGamePackageOperation(GamePackageItem&& item) -> void {
@@ -2141,6 +2221,11 @@ namespace {
 
 			if (!alreadyRegistered) try {
 
+				if (gamePackage->Platform == GamePlatform::WindowsGDK) {
+
+					ApplyGameShims(*gamePackage);
+				}
+
 				Logger::Info("Registering game package {}", *gamePackage);
 
 				auto deploymentOpts = winrt::DeploymentOptions::DevelopmentMode | winrt::DeploymentOptions::ForceTargetApplicationShutdown;
@@ -2212,12 +2297,7 @@ namespace {
 
 			if (gamePackage->Platform == GamePlatform::WindowsGDK) {
 
-				auto shortcutPath = gameDirectory / GetGameShortcutName(*gamePackage);
-				if (auto result = Windows::Shell::CreateShortcut(shortcutPath, gameDirectory / packageApp.Executable, {}, aumid); !result) {
-
-					Logger::Error("Launching game package {} failed: shortcut creation failed ({})", *gamePackage, result.error());
-					co_return false;
-				}
+				ApplyGameShims(*gamePackage);
 
 				auto args = std::string{};
 				if (auto fileToImport = launchArgs.FileToImport(); !fileToImport.empty()) {
@@ -2233,7 +2313,10 @@ namespace {
 						: "minecraft://creator/?Editor=true";
 				}
 
-				if (auto result = co_await Windows::Shell::ExecuteAsync(shortcutPath, args); !result) {
+				auto envVariables = std::vector<EnvironmentVariable>{};
+				envVariables.emplace_back("CitrineLauncher_GameInstance_Aumid", aumid);
+
+				if (auto result = co_await Windows::Shell::ExecuteAsync(gameDirectory / packageApp.Executable, args, false, envVariables); !result) {
 
 					Logger::Error("Launching game package {} failed: process creation failed ({})", *gamePackage, result.error());
 					co_return false;
@@ -2767,7 +2850,7 @@ namespace {
 		}
 		catch (winrt::hresult_error const&) {}
 
-		auto UpdatePackageRegistrationStatus(winrt::Package const& appPackage, bool registered) -> void {
+		auto UpdatePackageRegistrationStatus(winrt::Package const& appPackage, bool registered) -> std::optional<GamePackageIdentity> {
 
 			auto packageFullName = winrt::to_string(appPackage.Id().FullName());
 			auto packagePath = std::filesystem::path{ std::wstring{ appPackage.InstalledPath() } };
@@ -2834,7 +2917,7 @@ namespace {
 			}
 
 			if (!found)
-				return;
+				return std::nullopt;
 
 			auto& gamePackages = [&] -> ObservableCollection<GamePackageItem>& {
 
@@ -2856,6 +2939,103 @@ namespace {
 
 				itemImpl->IsRegistered(registered);
 				break;
+			}
+
+			return packageId;
+		}
+
+		auto UpdateGameConfig(GamePackageItem const& item, GameConfig const& gameConfig) -> void {
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			auto gamePackage = gameInstallations->Find(packageId);
+			if (gamePackage == gameInstallations->end())
+				return;
+
+			auto gameDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
+			gameConfig.Save(gameDirectory / GameConfigFileName, [&](StorageOperationResult result, std::string const&) {
+
+				if (result)
+					return;
+
+				Logger::Error("Saving game config for game package {} failed ({})", packageId, result.Error);
+			});
+		}
+
+		auto CheckGameConfigOptionAvailability(GamePackageItem const& item, std::wstring_view optionName) -> bool {
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			if (optionName == L"ModLoaderEnabled" || optionName == L"ModsLoadDelay") {
+
+				return packageId.Platform == GamePlatform::WindowsGDK;
+			}
+
+			return false;
+		}
+
+		auto ApplyGameShims(GamePackage const& gamePackage) -> void {
+
+			struct ShimMapping {
+
+				std::wstring_view Target;
+				std::wstring_view Source;
+			};
+
+			static constexpr auto shims = std::to_array<ShimMapping>({
+				
+				{ L"vcruntime140_1.dll", L"Citrine.BedrockShim.dll" }
+			});
+			static auto shimsLocation = std::filesystem::path{ wil::GetModuleFileNameW<std::wstring>() }.parent_path();
+
+			auto gameDirectory = gamePackage.InstallLocation / GetGameDirectoryName(gamePackage);
+			auto buffer = Buffer{ 1024 * 64 };
+
+			constexpr auto targetVersion = Windows::PEFileVersion{ CITRINE_VERSION_MAJOR, CITRINE_VERSION_MINOR, CITRINE_VERSION_PATCH, 0 };
+			for (auto const& shim : shims) {
+
+				auto shimVersion = Windows::PEFileVersion{};
+				auto shimPath = gameDirectory / shim.Target;
+
+				if (Windows::GetPEFileVersion(shimPath, shimVersion, &buffer) && shimVersion == targetVersion)
+					continue;
+
+				auto logError = ScopeExit{ [&] { Logger::Error(L"Applying game shim (Target: {}, Source: {}) for game package {} failed", shim.Target, shim.Source, gamePackage); } };
+
+				auto tempFile = File{ shimPath.native() + L".tmp", FileMode::CreateAlways, FileAccess::Write | FileAccess::Delete, FileShare::Read | FileShare::Delete };
+				if (!tempFile)
+					continue;
+
+				auto deleteTempFile = ScopeExit{ [&tempFile] { tempFile.Delete(); } };
+
+				auto sourceFile = File{ shimsLocation / shim.Source, FileMode::OpenExisting, FileAccess::Read, FileShare::Read };
+				if (!sourceFile)
+					continue;
+
+				auto error = false;
+				do {
+
+					if (error = !sourceFile.Read(buffer))
+						break;
+
+					if (buffer.empty())
+						break;
+
+					if (error = !tempFile.Write(buffer))
+						break;
+
+				} while (true);
+
+				if (error)
+					continue;
+
+				if (!tempFile.Rename(shimPath, true))
+					continue;
+
+				logError.Release();
+				deleteTempFile.Release();
 			}
 		}
 
@@ -2979,9 +3159,19 @@ namespace Citrine {
 		return gameManagerInternal.GetGameDirectory(item);
 	}
 
+	auto MinecraftBedrockGameManager::GetGameModsDirectory(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> std::filesystem::path {
+
+		return gameManagerInternal.GetGameModsDirectory(item);
+	}
+
 	auto MinecraftBedrockGameManager::GetGameDataDirectory(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> std::filesystem::path {
 
 		return gameManagerInternal.GetGameDataDirectory(item);
+	}
+
+	auto MinecraftBedrockGameManager::GetGameConfigProvider(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> winrt::Citrine::MinecraftBedrockGameConfigProvider {
+
+		return gameManagerInternal.GetGameConfigProvider(item);
 	}
 
 	auto MinecraftBedrockGameManager::PauseGamePackageOperation(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> void {

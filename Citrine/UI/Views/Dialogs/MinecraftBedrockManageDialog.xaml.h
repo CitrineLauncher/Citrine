@@ -14,15 +14,23 @@ namespace winrt::Citrine::implementation
 
         auto ViewModel() const noexcept -> Citrine::MinecraftBedrockGamePackagesViewModel;
         auto GamePackage() const noexcept -> Citrine::MinecraftBedrockGamePackageItem;
+        auto GameConfigOptions() const noexcept -> Citrine::MinecraftBedrockGameConfigOptions;
 
         auto CloseButton2_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& args) -> void;
         auto OpenGameDirectoryButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& args) -> void;
+        auto OpenGameModsDirectoryButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& args) -> void;
         auto UninstallButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& args) -> void;
+
+        auto ModsToggle_Toggled(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&) -> void;
+        auto ModsOptions_Loaded(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&) -> void;
 
     private:
 
+        auto OnModsToggleToggled() -> void;
+
         winrt::com_ptr<implementation::MinecraftBedrockGamePackagesViewModel> viewModel{ nullptr };
         Citrine::MinecraftBedrockGamePackageItem gamePackage{ nullptr };
+        Citrine::MinecraftBedrockGameConfigOptions gameConfigOptions{ nullptr };
 
         PrimaryButtonClick_revoker primaryButtonClickRevoker;
     };

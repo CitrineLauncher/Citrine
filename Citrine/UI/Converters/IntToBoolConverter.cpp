@@ -44,13 +44,13 @@ namespace winrt::Citrine::implementation
 
             auto v = std::uint64_t{};
             if (str.size() > 6)
-                return v;
+                return 0xFFFFFFFFFFFFFFFF;
 
             for (auto i = 0; i < str.size(); ++i) {
 
                 auto ch = str[i];
                 if (ch > 0x7F)
-                    return v;
+                    return 0xFFFFFFFFFFFFFFFF;
 
                 v |= std::uint64_t{ ch } << (8 * i);
             }

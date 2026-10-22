@@ -316,10 +316,25 @@ namespace winrt::Citrine::implementation
 		co_await Shell::OpenFolderAsync(MinecraftBedrockGameManager::GetGameDirectory(gamePackage));
 	}
 
+	auto MinecraftBedrockGamePackagesViewModel::OpenGameModsDirectory(Citrine::MinecraftBedrockGamePackageItem gamePackage) -> winrt::fire_and_forget {
+
+		using ::Citrine::Windows::Shell;
+		co_await Shell::OpenFolderAsync(MinecraftBedrockGameManager::GetGameModsDirectory(gamePackage));
+	}
+
 	auto MinecraftBedrockGamePackagesViewModel::OpenGameDataDirectory(Citrine::MinecraftBedrockGamePackageItem gamePackage) -> winrt::fire_and_forget {
 
 		using ::Citrine::Windows::Shell;
 		co_await Shell::OpenFolderAsync(MinecraftBedrockGameManager::GetGameDataDirectory(gamePackage));
+	}
+
+	auto MinecraftBedrockGamePackagesViewModel::GetGameConfigOptions(Citrine::MinecraftBedrockGamePackageItem gamePackage) -> Citrine::MinecraftBedrockGameConfigOptions {
+
+		auto gameConfigProvider = MinecraftBedrockGameManager::GetGameConfigProvider(gamePackage);
+		if (!gameConfigProvider)
+			return nullptr;
+
+		return gameConfigProvider.GetOptions();
 	}
 
 	auto MinecraftBedrockGamePackagesViewModel::PauseGamePackageOperation(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> void {

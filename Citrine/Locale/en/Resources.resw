@@ -369,4 +369,16 @@
   <data name="Main_UpdateAvailable.Text" xml:space="preserve">
     <value>Update available</value>
   </data>
+  <data name="MinecraftBedrock_GamePackage_Mods.Text" xml:space="preserve">
+    <value>Mods</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_ModsToggle.OffContent" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_ModsToggle.OnContent" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="MinecraftBedrock_GamePackage_ModsLoadDelay.Text" xml:space="preserve">
+    <value>Load delay</value>
+  </data>
 </root>

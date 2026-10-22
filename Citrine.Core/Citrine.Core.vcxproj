@@ -192,6 +192,7 @@
     <ClInclude Include="Core\Coroutine\Task.h" />
     <ClInclude Include="Core\Coroutine\TaskPromise.h" />
     <ClInclude Include="Core\Coroutine\Traits.h" />
+    <ClInclude Include="Core\Environment\EnvironmentVariable.h" />
     <ClInclude Include="Core\IO\Buffer.h" />
     <ClInclude Include="Core\IO\File.h" />
     <ClInclude Include="Core\IO\IRangeStreamProvider.h" />
@@ -240,6 +241,7 @@
     <ClInclude Include="Core\Util\TypeTraits.h" />
     <ClInclude Include="Core\Util\VariableSizedType.h" />
     <ClInclude Include="Core\Util\VersionNumber.h" />
+    <ClInclude Include="Minecraft\Bedrock\GameConfig.h" />
     <ClInclude Include="Minecraft\Bedrock\GameBuildType.h" />
     <ClInclude Include="Minecraft\Bedrock\GameCapabilities.h" />
     <ClInclude Include="Minecraft\Bedrock\GamePackage.h" />
@@ -255,6 +257,7 @@
     <ClInclude Include="Minecraft\Bedrock\ServerPackageMeta.h" />
     <ClInclude Include="Minecraft\Bedrock\ServerPlatform.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Windows\PE\PEFileVersion.h" />
     <ClInclude Include="ReleaseInfo.h" />
     <ClInclude Include="Core\Net\Http\Http.h" />
     <ClInclude Include="Windows\AppLauncher.h" />
@@ -313,6 +316,7 @@
     <ClCompile Include="Core\Unicode\Unicode.cpp" />
     <ClCompile Include="Core\Unicode\Utf.cpp" />
     <ClCompile Include="Core\Util\Guid.cpp" />
+    <ClCompile Include="Minecraft\Bedrock\GameConfig.cpp" />
     <ClCompile Include="Minecraft\Bedrock\GameCapabilities.cpp" />
     <ClCompile Include="Minecraft\Bedrock\GamePackageMeta.cpp" />
     <ClCompile Include="Minecraft\Bedrock\GameVersion.cpp" />
@@ -323,6 +327,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Core\Net\Http\Http.cpp" />
+    <ClCompile Include="Windows\PE\PEFileVersion.cpp" />
     <ClCompile Include="Windows\AppLauncher.cpp" />
     <ClCompile Include="Windows\AppModel.cpp" />
     <ClCompile Include="Windows\BuildInfo.cpp" />

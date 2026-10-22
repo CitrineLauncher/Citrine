@@ -21,7 +21,9 @@ namespace winrt::Citrine::implementation
 
 		: viewModel(viewModel.as<implementation::MinecraftBedrockGamePackagesViewModel>())
 		, gamePackage(gamePackage)
-	{}
+	{
+		gameConfigOptions = this->viewModel->GetGameConfigOptions(this->gamePackage);
+	}
 
 	auto MinecraftBedrockManageDialog::ViewModel() const noexcept -> Citrine::MinecraftBedrockGamePackagesViewModel {
 
@@ -33,6 +35,11 @@ namespace winrt::Citrine::implementation
 		return gamePackage;
 	}
 
+	auto MinecraftBedrockManageDialog::GameConfigOptions() const noexcept -> Citrine::MinecraftBedrockGameConfigOptions {
+
+		return gameConfigOptions;
+	}
+
 	auto MinecraftBedrockManageDialog::CloseButton2_Click(winrt::IInspectable const&, winrt::RoutedEventArgs const& args) -> void {
 
 		Hide();
@@ -41,6 +48,11 @@ namespace winrt::Citrine::implementation
 	auto MinecraftBedrockManageDialog::OpenGameDirectoryButton_Click(winrt::IInspectable const&, winrt::RoutedEventArgs const& args) -> void {
 
 		viewModel->OpenGameDirectory(gamePackage);
+	}
+
+	auto MinecraftBedrockManageDialog::OpenGameModsDirectoryButton_Click(winrt::IInspectable const&, winrt::RoutedEventArgs const& args) -> void {
+
+		viewModel->OpenGameModsDirectory(gamePackage);
 	}
 
 	auto MinecraftBedrockManageDialog::UninstallButton_Click(winrt::IInspectable const&, winrt::RoutedEventArgs const& args) -> void {
@@ -59,5 +71,36 @@ namespace winrt::Citrine::implementation
 			viewModel->UninstallGamePackage(gamePackage);
 			primaryButtonClickRevoker.revoke();
 		});
+	}
+
+	auto MinecraftBedrockManageDialog::ModsToggle_Toggled(winrt::IInspectable const&, winrt::RoutedEventArgs const&) -> void {
+
+		OnModsToggleToggled();
+	}
+
+	auto MinecraftBedrockManageDialog::ModsOptions_Loaded(winrt::IInspectable const&, winrt::RoutedEventArgs const&) -> void
+	{
+		OnModsToggleToggled();
+	}
+
+	auto MinecraftBedrockManageDialog::OnModsToggleToggled() -> void {
+
+		auto modsToggle = ModsToggle();
+		auto primaryArea = ModsOptions_PrimaryArea();
+		auto secondaryArea = ModsOptions_SecondaryArea();
+
+		if (!modsToggle || !primaryArea || !secondaryArea)
+			return;
+
+		if (modsToggle.IsOn()) {
+
+			primaryArea.CornerRadius({ 4, 4, 0, 0 });
+			secondaryArea.Visibility(winrt::Visibility::Visible);
+		}
+		else {
+
+			primaryArea.CornerRadius({ 4, 4, 4, 4 });
+			secondaryArea.Visibility(winrt::Visibility::Collapsed);
+		}
 	}
 }

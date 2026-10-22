@@ -390,6 +390,15 @@
     <ClInclude Include="Core\IO\IRangeStreamProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Minecraft\Bedrock\GameConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Windows\PE\PEFileVersion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Environment\EnvironmentVariable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -507,6 +516,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\Net\Http\Http.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minecraft\Bedrock\GameConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Windows\PE\PEFileVersion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
