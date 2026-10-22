@@ -142,6 +142,12 @@ auto APIENTRY DllMain(HMODULE currentModule, DWORD reason, LPVOID reserved) -> B
     if (reason == DLL_PROCESS_ATTACH) {
 
         ::DisableThreadLibraryCalls(currentModule);
+
+        if (auto aumid = std::wstring{}; wil::TryGetEnvironmentVariableW(L"CitrineLauncher_GameInstance_Aumid", aumid) == S_OK) {
+
+            ::SetCurrentProcessExplicitAppUserModelID(aumid.c_str());
+        }
+
         auto currentLocation = [currentModule] {
 
             auto path = std::filesystem::path{ wil::GetModuleFileNameW<std::wstring>(currentModule) };

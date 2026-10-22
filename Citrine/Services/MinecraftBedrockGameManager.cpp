@@ -2297,13 +2297,6 @@ namespace {
 
 			if (gamePackage->Platform == GamePlatform::WindowsGDK) {
 
-				auto shortcutPath = gameDirectory / GetGameShortcutName(*gamePackage);
-				if (auto result = Windows::Shell::CreateShortcut(shortcutPath, gameDirectory / packageApp.Executable, {}, aumid); !result) {
-
-					Logger::Error("Launching game package {} failed: shortcut creation failed ({})", *gamePackage, result.error());
-					co_return false;
-				}
-
 				ApplyGameShims(*gamePackage);
 
 				auto args = std::string{};
@@ -2320,7 +2313,10 @@ namespace {
 						: "minecraft://creator/?Editor=true";
 				}
 
-				if (auto result = co_await Windows::Shell::ExecuteAsync(shortcutPath, args); !result) {
+				auto envVariables = std::vector<EnvironmentVariable>{};
+				envVariables.emplace_back("CitrineLauncher_GameInstance_Aumid", aumid);
+
+				if (auto result = co_await Windows::Shell::ExecuteAsync(gameDirectory / packageApp.Executable, args, false, envVariables); !result) {
 
 					Logger::Error("Launching game package {} failed: process creation failed ({})", *gamePackage, result.error());
 					co_return false;
