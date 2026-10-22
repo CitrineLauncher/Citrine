@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Util/Concepts.h"
+#include "Core/Util/StringLiteral.h"
 #include "Core/Coroutine/Task.h"
 #include "Core/Unicode/Utf.h"
 
@@ -105,6 +106,10 @@ namespace std {
     template<::Citrine::IsAnyOf<char, wchar_t> CharT>
     struct formatter<::Citrine::HttpError, CharT> {
 
+        static constexpr auto FormatStr = ::Citrine::StringLiteralCast<CharT>(
+            "(Code: {}, Message: {})"
+        );
+
         constexpr auto parse(std::basic_format_parse_context<CharT>& ctx) const -> auto {
 
             return ctx.begin();
@@ -112,12 +117,20 @@ namespace std {
 
         auto format(::Citrine::HttpError const& value, auto& ctx) const -> auto {
 
+            return format_to(ctx.out(), FormatStr, value.Code, GetString(value.Message));
+        }
+
+    private:
+
+        template<typename Str>
+        static auto GetString(Str const& str) -> decltype(auto) {
+
             using namespace ::Citrine;
 
             if constexpr (std::same_as<CharT, wchar_t>)
-                return format_to(ctx.out(), L"(Code: {}, Message: {})", value.Code, ToUtf16(value.Message));
+                return ToUtf16(str);
             else
-                return format_to(ctx.out(), "(Code: {}, Message: {})", value.Code, value.Message);
+                return (str);
         }
     };
 }

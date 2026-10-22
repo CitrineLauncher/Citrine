@@ -83,6 +83,10 @@ namespace std {
 	template<::Citrine::IsAnyOf<char, wchar_t> CharT>
 	struct formatter<::Citrine::ReleaseInfo, CharT> {
 
+		static constexpr auto FormatStr = ::Citrine::StringLiteralCast<CharT>(
+			"(Version: {}, Channel: {}, Tag: {})"
+		);
+
 		constexpr auto parse(std::basic_format_parse_context<CharT>& ctx) const -> auto {
 
 			return ctx.begin();
@@ -90,21 +94,15 @@ namespace std {
 
 		auto format(::Citrine::ReleaseInfo const& info, auto& ctx) const -> auto {
 
-			return format_to(ctx.out(), GetFormatString(), info.Version, info.Channel, GetString(info.Tag));
+			return format_to(ctx.out(), FormatStr, info.Version, info.Channel, GetString(info.Tag));
 		}
 
 	private:
 
-		static consteval auto GetFormatString() noexcept -> auto const& {
-
-			static constexpr auto fmt = ::Citrine::StringLiteralCast<CharT>(
-				"(Version: {}, Channel: {}, Tag: {})"
-			);
-			return fmt;
-		}
-
 		template<typename Str>
 		static auto GetString(Str const& str) -> decltype(auto) {
+
+			using namespace ::Citrine;
 
 			if constexpr (std::same_as<CharT, wchar_t>)
 				return ToUtf16(str);

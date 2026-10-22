@@ -135,6 +135,10 @@ namespace std {
 	template<::Citrine::IsAnyOf<char, wchar_t> CharT>
 	struct formatter<::Citrine::Minecraft::Bedrock::GamePackageIdentity, CharT> {
 
+		static constexpr auto FormatStr = ::Citrine::StringLiteralCast<CharT>(
+			"(Version: {}, BuildType: {}, Platform: {}, Architecture: {}, Origin: {}, InstallId: {})"
+		);
+
 		constexpr auto parse(std::basic_format_parse_context<CharT>& ctx) const -> auto {
 
 			return ctx.begin();
@@ -142,17 +146,7 @@ namespace std {
 
 		auto format(::Citrine::Minecraft::Bedrock::GamePackageIdentity const& id, auto& ctx) const -> auto {
 
-			return format_to(ctx.out(), GetFormatString(), id.Version, id.BuildType, id.Platform, id.Architecture, id.Origin, id.InstallId);
-		}
-
-	private:
-
-		static consteval auto GetFormatString() noexcept -> auto const& {
-
-			static constexpr auto fmt = ::Citrine::StringLiteralCast<CharT>(
-				"(Version: {}, BuildType: {}, Platform: {}, Architecture: {}, Origin: {}, InstallId: {})"
-			);
-			return fmt;
+			return format_to(ctx.out(), FormatStr, id.Version, id.BuildType, id.Platform, id.Architecture, id.Origin, id.InstallId);
 		}
 	};
 
