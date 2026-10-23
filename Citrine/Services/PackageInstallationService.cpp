@@ -247,7 +247,7 @@ namespace {
 				co_return nullptr;
 			}
 
-			Logger::Info("Fetching FE3Cookie completed");
+			Logger::Info("FE3Cookie fetching completed");
 
 			{
 				auto lock = std::unique_lock{ mutex };
@@ -298,7 +298,7 @@ namespace {
 				co_return {};
 			}
 
-			Logger::Info("Fetching WUCategoryId for package family {} completed ({})", packageFamilyName, wuCategoryId);
+			Logger::Info("WUCategoryId fetching for package family {} completed ({})", packageFamilyName, wuCategoryId);
 			co_return wuCategoryId;
 		}
 
