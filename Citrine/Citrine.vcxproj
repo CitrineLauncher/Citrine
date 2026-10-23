@@ -676,6 +676,7 @@
     <Midl Include="Models\UpdateInfo.idl">
       <SubType>Designer</SubType>
     </Midl>
+    <Midl Include="Models\WindowsDeveloperModeStatus.idl" />
     <Midl Include="UI\Controls\ContentDialogEx.idl">
       <SubType>Designer</SubType>
     </Midl>

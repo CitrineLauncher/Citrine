@@ -1,0 +1,10 @@
+namespace Citrine
+{
+	enum WindowsDeveloperModeStatus
+	{
+		Unknown,
+		Disabled,
+		Blocked,
+		Enabled
+	};
+}
