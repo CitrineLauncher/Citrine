@@ -17,6 +17,8 @@
 
 #include <winrt/Windows.Management.Deployment.h>
 
+#include <wil/registry.h>
+
 #include <glaze/json.hpp>
 #include <glaze/json/jmespath.hpp>
 
@@ -38,10 +40,18 @@ namespace {
 
 #endif
 
+	using winrt::Citrine::WindowsDeveloperModeStatus;
+
 	class PackageInstallationServiceInternal : ServiceImplBase {
 	public:
 
 		static constexpr auto& Name = "PackageInstallationService";
+
+		class WindowsDeveloperModeEnableOperation : public Operation<WindowsDeveloperModeStatus> {
+		public:
+
+			WindowsDeveloperModeEnableOperation() = default;
+		};
 
 		class FE3CookieFetchOperation : public Operation<std::shared_ptr<FE3Cookie const>> {
 		public:
@@ -75,7 +85,39 @@ namespace {
 
 		PackageInstallationServiceInternal() {
 
+			RegisterAction<EnableWindowsDeveloperModeAction>();
 			RegisterAction<InstallPackageAction>();
+		}
+
+		auto GetWindowsDeveloperModeStatus() -> winrt::Citrine::WindowsDeveloperModeStatus {
+
+			return InvokeGetWindowsDeveloperModeStatus();
+		}
+
+		auto EnableWindowsDeveloperModeAsync() -> Task<winrt::Citrine::WindowsDeveloperModeStatus> {
+
+			auto opHandle = OperationHandle<WindowsDeveloperModeEnableOperation>{};
+			{
+				auto operations = activeOperations.Lock();
+				for (auto& operation : operations) {
+
+					auto op = dynamic_cast<WindowsDeveloperModeEnableOperation*>(operation);
+					if (!op)
+						continue;
+
+					opHandle.Attach(op);
+					break;
+				}
+
+				if (!opHandle) {
+
+					auto task = InvokeEnableWindowsDeveloperMode();
+					auto op = operations.Add(std::make_unique<WindowsDeveloperModeEnableOperation>(), std::move(task));
+					opHandle.Attach(op);
+				}
+			}
+
+			co_return co_await opHandle;
 		}
 
 		auto GetFE3CookieAsync() -> Task<std::shared_ptr<FE3Cookie const>> {
@@ -168,6 +210,21 @@ namespace {
 
 	private:
 
+		struct EnableWindowsDeveloperModeAction {
+
+			static constexpr auto Name = "EnableWindowsDeveloperMode";
+
+			static auto Execute() -> std::int32_t {
+
+				return wil::reg::set_value_dword_nothrow(
+					HKEY_LOCAL_MACHINE,
+					LR"(SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock)",
+					L"AllowDevelopmentWithoutDevLicense",
+					1
+				);
+			}
+		};
+
 		struct PackageInstallArgs {
 
 			Url Url;
@@ -227,6 +284,70 @@ namespace {
 				co_return{ code, std::move(message) };
 			}
 		};
+
+		auto InvokeGetWindowsDeveloperModeStatus() -> WindowsDeveloperModeStatus {
+
+			using enum WindowsDeveloperModeStatus;
+
+			auto value = ::DWORD{};
+			auto result = wil::reg::get_value_dword_nothrow(
+				HKEY_LOCAL_MACHINE,
+				LR"(SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock)",
+				L"AllowDevelopmentWithoutDevLicense",
+				&value
+			);
+
+			if (result != S_OK && result != ERROR_FILE_NOT_FOUND && result != ERROR_PATH_NOT_FOUND) {
+
+				Logger::Error("Retrieving windows developer mode status failed: {}", result);
+				return Unknown;
+			}
+
+			return value == 1 ? Enabled : Disabled;
+		}
+
+		auto InvokeEnableWindowsDeveloperMode() -> OperationTask<WindowsDeveloperModeStatus> {
+
+			using enum WindowsDeveloperModeStatus;
+
+			auto status = GetWindowsDeveloperModeStatus();
+			if (status == Enabled) {
+
+				Logger::Info("Windows developer mode is already enabled");
+				co_return Enabled;
+			}
+
+			if (status != Disabled) {
+
+				Logger::Error("Enabling windows developer mode failed: invalid status ()", std::to_underlying(status));
+				co_return status;
+			}
+
+			auto result = wil::reg::set_value_dword_nothrow(
+				HKEY_LOCAL_MACHINE,
+				LR"(SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock)",
+				L"AllowDevelopmentWithoutDevLicense",
+				1
+			);
+
+			if (result == E_ACCESSDENIED) {
+
+				if (!co_await RunActionInAdminContext<EnableWindowsDeveloperModeAction>(result)) {
+
+					Logger::Error("Enabling windows developer mode failed: elevated action invocation failed");
+					co_return Disabled;
+				}
+			}
+
+			if (result != S_OK) {
+
+				Logger::Error("Enabling windows developer mode failed: {}", result);
+				co_return Disabled;
+			}
+
+			Logger::Info("Windows developer mode enablement completed");
+			co_return Enabled;
+		}
 
 		auto InvokeGetFE3Cookie() -> OperationTask<std::shared_ptr<FE3Cookie const>> {
 
@@ -605,6 +726,16 @@ namespace {
 }
 
 namespace Citrine {
+
+	auto PackageInstallationService::GetWindowsDeveloperModeStatus() -> winrt::Citrine::WindowsDeveloperModeStatus {
+
+		return packageInstallationServiceInternal.GetWindowsDeveloperModeStatus();
+	}
+
+	auto PackageInstallationService::EnableWindowsDeveloperModeAsync() -> Task<winrt::Citrine::WindowsDeveloperModeStatus> {
+
+		return packageInstallationServiceInternal.EnableWindowsDeveloperModeAsync();
+	}
 
 	auto PackageInstallationService::InstallPackageAsync(StringParameter packageFamilyName) -> Task<bool> {
 
