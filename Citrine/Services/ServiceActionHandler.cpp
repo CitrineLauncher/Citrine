@@ -202,7 +202,7 @@ namespace glz {
 
 		static constexpr auto value = object(
 			"Type", &T::Type,
-			"Payload", &T::Payload
+			"Payload", glz::custom<[](T& self, glz::raw_json_view raw) static { self.Payload = raw; }, &T::Payload>
 		);
 	};
 }
