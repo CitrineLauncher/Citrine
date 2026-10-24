@@ -123,7 +123,7 @@
     <Midl Include="Models\MinecraftBedrockGameLaunchArgs.idl" />
     <Midl Include="Models\MinecraftBedrockGameLaunchResult.idl" />
     <Midl Include="UI\ViewModels\AboutViewModel.idl" />
-    <Midl Include="Models\MinecraftBedrockGamePackageRegisterResult.idl" />
+    <Midl Include="Models\MinecraftBedrockGamePackageRegistrationResult.idl" />
     <Midl Include="Collections\IItemFilter.idl" />
     <Midl Include="UI\ViewModels\MinecraftBedrockViewModel.idl" />
     <Midl Include="UI\Converters\IntToBoolConverter.idl" />
@@ -140,9 +140,5 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Icons\Citrine.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natstepfilter" />
   </ItemGroup>
 </Project>

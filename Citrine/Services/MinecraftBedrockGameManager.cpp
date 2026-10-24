@@ -82,7 +82,7 @@ namespace {
 	using GamePackageStatus = winrt::Citrine::MinecraftBedrockGamePackageStatus;
 	using GamePackageImportContext = winrt::Citrine::MinecraftBedrockGamePackageImportContext;
 	using GamePackageImportContextImpl = winrt::Citrine::implementation::MinecraftBedrockGamePackageImportContext;
-	using GamePackageRegisterResult = winrt::Citrine::MinecraftBedrockGamePackageRegisterResult;
+	using GamePackageRegistrationResult = winrt::Citrine::MinecraftBedrockGamePackageRegistrationResult;
 	using GameLaunchArgs = winrt::Citrine::MinecraftBedrockGameLaunchArgs;
 	using GameLaunchArgsImpl = winrt::Citrine::implementation::MinecraftBedrockGameLaunchArgs;
 	using GameLaunchResult = winrt::Citrine::MinecraftBedrockGameLaunchResult;
@@ -1142,10 +1142,10 @@ namespace {
 			ExecuteInstallGamePackageOperation(std::move(item), std::to_address(op));
 		}
 
-		auto RegisterGamePackageAsync(GamePackageItem&& item) -> Task<GamePackageRegisterResult> {
+		auto RegisterGamePackageAsync(GamePackageItem&& item) -> Task<GamePackageRegistrationResult> {
 
 			if (!initialized)
-				co_return GamePackageRegisterResult::Blocked;
+				co_return GamePackageRegistrationResult::Blocked;
 
 			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
 			auto packageId = itemImpl->Id();
@@ -1153,7 +1153,7 @@ namespace {
 			if (!gameInstallations->Contains(packageId)) {
 
 				Logger::Error("Registering game package {} failed: not found", packageId);
-				co_return GamePackageRegisterResult::Failed;
+				co_return GamePackageRegistrationResult::Failed;
 			}
 
 			auto [op, inserted] = gamePackageOperations->Emplace(
@@ -1164,7 +1164,7 @@ namespace {
 			if (!inserted) {
 
 				Logger::Warn("Game package {} is already in use", packageId);
-				co_return GamePackageRegisterResult::Blocked;
+				co_return GamePackageRegistrationResult::Blocked;
 			}
 
 			co_return co_await ExecuteRegisterGamePackageOperation(std::move(item), std::to_address(op));
@@ -1593,7 +1593,7 @@ namespace {
 			}
 		}
 
-		auto ExecuteRegisterGamePackageOperation(GamePackageItem item, GamePackageOperation const* op) -> Task<GamePackageRegisterResult> {
+		auto ExecuteRegisterGamePackageOperation(GamePackageItem item, GamePackageOperation const* op) -> Task<GamePackageRegistrationResult> {
 
 			using enum GamePackageStatus;
 			using enum PackageOperationStatus;
@@ -1611,13 +1611,13 @@ namespace {
 			if (gamePackage == gameInstallations->end()) {
 
 				Logger::Error("Registering game package {} failed: not found", packageId);
-				co_return GamePackageRegisterResult::Failed;
+				co_return GamePackageRegistrationResult::Failed;
 			}
 
 			auto& deploymentMutex = GetDeploymentMutex(*gamePackage);
 
 			if (!deploymentMutex.try_acquire())
-				co_return GamePackageRegisterResult::Blocked;
+				co_return GamePackageRegistrationResult::Blocked;
 
 			auto releaseDeploymentMutex = ScopeExit{ [&] { deploymentMutex.release(); } };
 
@@ -1629,10 +1629,10 @@ namespace {
 
 				auto result = co_await std::move(op->Task);
 				if (!result)
-					co_return GamePackageRegisterResult::Failed;
+					co_return GamePackageRegistrationResult::Failed;
 
 				Logger::Info("Registration of game package {} completed", packageId);
-				co_return GamePackageRegisterResult::Success;
+				co_return GamePackageRegistrationResult::Success;
 			}
 			catch (TaskCancelledException) {
 
@@ -3129,7 +3129,7 @@ namespace Citrine {
 		return gameManagerInternal.ImportGamePackageAsync(std::move(importContext), std::move(nameTag));
 	}
 
-	auto MinecraftBedrockGameManager::RegisterGamePackageAsync(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> Task<winrt::Citrine::MinecraftBedrockGamePackageRegisterResult> {
+	auto MinecraftBedrockGameManager::RegisterGamePackageAsync(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> Task<winrt::Citrine::MinecraftBedrockGamePackageRegistrationResult> {
 
 		return gameManagerInternal.RegisterGamePackageAsync(std::move(item));
 	}

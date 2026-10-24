@@ -1,6 +1,6 @@
 namespace Citrine{
 
-	enum MinecraftBedrockGamePackageRegisterResult {
+	enum MinecraftBedrockGamePackageRegistrationResult {
 
 		Success,
 		Blocked,
