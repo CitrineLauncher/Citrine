@@ -232,7 +232,7 @@ namespace winrt::Citrine::implementation
 
 	auto MinecraftBedrockGamePackagesViewModel::CanStartImporting() const noexcept -> bool {
 
-		return SupportsImporting();
+		return canStartImporting;
 	}
 
 	auto MinecraftBedrockGamePackagesViewModel::InstallGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage, winrt::hstring const& installLocation) -> void {
