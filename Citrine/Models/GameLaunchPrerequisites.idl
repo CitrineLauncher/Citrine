@@ -1,0 +1,9 @@
+namespace Citrine{
+
+    [flags]
+    enum GameLaunchPrerequisites {
+
+        None,
+        WindowsDeveloperModeEnablement
+    };
+}

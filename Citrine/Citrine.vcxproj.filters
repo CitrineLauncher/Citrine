@@ -135,6 +135,7 @@
     <Midl Include="UI\Converters\NumericValueConverter.idl" />
     <Midl Include="Models\WindowsDeveloperModeStatus.idl" />
     <Midl Include="Models\GamePackageRegistrationPrerequisites.idl" />
+    <Midl Include="Models\GameLaunchPrerequisites.idl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Citrine.rc" />

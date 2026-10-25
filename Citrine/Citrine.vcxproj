@@ -639,6 +639,7 @@
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="Models\ByteProgress.idl" />
+    <Midl Include="Models\GameLaunchPrerequisites.idl" />
     <Midl Include="Models\GamePackageRegistrationPrerequisites.idl" />
     <Midl Include="Models\InstallLocationValidationResult.idl" />
     <Midl Include="Models\MinecraftBedrockGameConfigOptions.idl">
