@@ -652,14 +652,14 @@
     <Midl Include="Models\MinecraftBedrockGameLaunchArgs.idl">
       <SubType>Designer</SubType>
     </Midl>
-    <Midl Include="Models\MinecraftBedrockGameLaunchResult.idl" />
+    <Midl Include="Models\GameLaunchResult.idl" />
     <Midl Include="Models\MinecraftBedrockGamePackageImportContext.idl">
       <SubType>Designer</SubType>
     </Midl>
     <Midl Include="Models\MinecraftBedrockGamePackageItem.idl">
       <SubType>Designer</SubType>
     </Midl>
-    <Midl Include="Models\MinecraftBedrockGamePackageRegistrationResult.idl" />
+    <Midl Include="Models\GamePackageRegistrationResult.idl" />
     <Midl Include="Models\MinecraftBedrockGamePackageStatus.idl" />
     <Midl Include="Models\MinecraftBedrockServerDownloads.idl">
       <SubType>Designer</SubType>

@@ -82,13 +82,13 @@ namespace {
 	using GamePackageStatus = winrt::Citrine::MinecraftBedrockGamePackageStatus;
 	using GamePackageImportContext = winrt::Citrine::MinecraftBedrockGamePackageImportContext;
 	using GamePackageImportContextImpl = winrt::Citrine::implementation::MinecraftBedrockGamePackageImportContext;
-	using GamePackageRegistrationResult = winrt::Citrine::MinecraftBedrockGamePackageRegistrationResult;
 	using GameLaunchArgs = winrt::Citrine::MinecraftBedrockGameLaunchArgs;
 	using GameLaunchArgsImpl = winrt::Citrine::implementation::MinecraftBedrockGameLaunchArgs;
-	using GameLaunchResult = winrt::Citrine::MinecraftBedrockGameLaunchResult;
 	using GameConfigProvider = winrt::Citrine::MinecraftBedrockGameConfigProvider;
 	using GameConfigProviderImpl = winrt::Citrine::implementation::MinecraftBedrockGameConfigProvider;
 	using winrt::Citrine::InstallLocationValidationResult;
+	using winrt::Citrine::GamePackageRegistrationResult;
+	using winrt::Citrine::GameLaunchResult;
 
 	struct GamePackageItemGreater {
 
@@ -3129,12 +3129,12 @@ namespace Citrine {
 		return gameManagerInternal.ImportGamePackageAsync(std::move(importContext), std::move(nameTag));
 	}
 
-	auto MinecraftBedrockGameManager::RegisterGamePackageAsync(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> Task<winrt::Citrine::MinecraftBedrockGamePackageRegistrationResult> {
+	auto MinecraftBedrockGameManager::RegisterGamePackageAsync(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> Task<winrt::Citrine::GamePackageRegistrationResult> {
 
 		return gameManagerInternal.RegisterGamePackageAsync(std::move(item));
 	}
 
-	auto MinecraftBedrockGameManager::LaunchGamePackageAsync(winrt::Citrine::MinecraftBedrockGameLaunchArgs launchArgs) -> Task<winrt::Citrine::MinecraftBedrockGameLaunchResult> {
+	auto MinecraftBedrockGameManager::LaunchGamePackageAsync(winrt::Citrine::MinecraftBedrockGameLaunchArgs launchArgs) -> Task<winrt::Citrine::GameLaunchResult> {
 
 		return gameManagerInternal.LaunchGamePackageAsync(std::move(launchArgs));
 	}

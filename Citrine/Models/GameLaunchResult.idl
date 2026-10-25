@@ -1,6 +1,6 @@
 namespace Citrine{
 
-	enum MinecraftBedrockGameLaunchResult {
+	enum GameLaunchResult {
 
 		Success,
 		Blocked,

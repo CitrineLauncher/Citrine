@@ -278,7 +278,7 @@ namespace winrt::Citrine::implementation
 	auto MinecraftBedrockGamePackagesViewModel::RegisterGamePackage(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> winrt::fire_and_forget {
 
 		auto result = co_await MinecraftBedrockGameManager::RegisterGamePackageAsync(gamePackage);
-		if (result == MinecraftBedrockGamePackageRegistrationResult::Failed) {
+		if (result == GamePackageRegistrationResult::Failed) {
 
 			ToastNotificationService::SendNotification(NotificationSeverity::Error, Localizer::GetString(L"ErrorMessage_RegisteringGamePackageFailed"), {});
 		}
@@ -287,7 +287,7 @@ namespace winrt::Citrine::implementation
 	auto MinecraftBedrockGamePackagesViewModel::LaunchGamePackage(Citrine::MinecraftBedrockGameLaunchArgs launchArgs) -> winrt::fire_and_forget {
 
 		auto result = co_await MinecraftBedrockGameManager::LaunchGamePackageAsync(launchArgs);
-		if (result == MinecraftBedrockGameLaunchResult::Failed) {
+		if (result == GameLaunchResult::Failed) {
 
 			ToastNotificationService::SendNotification(NotificationSeverity::Error, Localizer::GetString(L"ErrorMessage_LaunchingGameFailed"), {});
 		}
