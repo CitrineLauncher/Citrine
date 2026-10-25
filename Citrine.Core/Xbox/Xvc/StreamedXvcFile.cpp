@@ -260,7 +260,7 @@ namespace {
 
 		auto Parse() noexcept -> void {
 
-			auto alignas(8) buffer = TrivialArray<std::uint8_t, SerializedSize>{};
+			auto alignas(16) buffer = TrivialArray<std::uint8_t, SerializedSize>{};
 			auto bytesRead = 0uz;
 
 			if (!file.Read(buffer, bytesRead) || bytesRead != SerializedSize)
