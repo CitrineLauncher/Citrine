@@ -134,6 +134,7 @@
     <Midl Include="Models\MinecraftBedrockGameConfigOptions.idl" />
     <Midl Include="UI\Converters\NumericValueConverter.idl" />
     <Midl Include="Models\WindowsDeveloperModeStatus.idl" />
+    <Midl Include="Models\GamePackageRegistrationPrerequisites.idl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Citrine.rc" />
