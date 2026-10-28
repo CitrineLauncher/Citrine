@@ -15,9 +15,9 @@ namespace winrt::Citrine::implementation
         auto ViewModel() const noexcept -> Citrine::MinecraftBedrockGamePackagesViewModel;
         auto GamePackage() const noexcept -> Citrine::MinecraftBedrockGamePackageItem;
 
-        auto OnPrimaryButtonClick(winrt::Microsoft::UI::Xaml::Controls::ContentDialog const&, winrt::Microsoft::UI::Xaml::Controls::ContentDialogButtonClickEventArgs const& args) -> void;
-
     private:
+
+        auto OnPrimaryButtonClick(winrt::Microsoft::UI::Xaml::Controls::ContentDialog const&, winrt::Microsoft::UI::Xaml::Controls::ContentDialogButtonClickEventArgs const& args) -> void;
 
         winrt::com_ptr<implementation::MinecraftBedrockGamePackagesViewModel> viewModel{ nullptr };
         Citrine::MinecraftBedrockGamePackageItem gamePackage{ nullptr };
