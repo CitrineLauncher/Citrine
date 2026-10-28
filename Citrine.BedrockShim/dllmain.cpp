@@ -177,6 +177,9 @@ auto APIENTRY DllMain(HMODULE currentModule, DWORD reason, LPVOID reserved) -> B
                 return path;
             }();
 
+            if (auto ec = std::error_code{}; std::filesystem::equivalent(vcRuntimeDirectory, currentLocation))
+                vcRuntimeDirectory = wil::GetSystemDirectoryW<std::wstring>();
+
             module = ::LoadLibraryExW((vcRuntimeDirectory / L"vcruntime140_1.dll").c_str(), nullptr, LOAD_LIBRARY_SEARCH_DEFAULT_DIRS | LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
         }
 
