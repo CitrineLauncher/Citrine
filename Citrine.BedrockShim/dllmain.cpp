@@ -166,13 +166,18 @@ auto APIENTRY DllMain(HMODULE currentModule, DWORD reason, LPVOID reserved) -> B
 
         if (!module) {
 
-            auto buffer = TrivialArray<wchar_t, MAX_PATH>{};
-            auto systemDirectory = std::filesystem::path{ buffer.data(), buffer.data() + ::GetSystemDirectoryW(buffer.data(), buffer.size()) };
-
-            if (systemDirectory.empty())
+            auto vcRuntimeHandle = ::GetModuleHandleW(L"vcruntime140.dll");
+            if (!vcRuntimeHandle)
                 return FALSE;
 
-            module = ::LoadLibraryExW((systemDirectory / L"vcruntime140_1.dll").c_str(), nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+            auto vcRuntimeDirectory = [vcRuntimeHandle] {
+
+                auto path = std::filesystem::path{ wil::GetModuleFileNameW<std::wstring>(vcRuntimeHandle) };
+                path.remove_filename();
+                return path;
+            }();
+
+            module = ::LoadLibraryExW((vcRuntimeDirectory / L"vcruntime140_1.dll").c_str(), nullptr, LOAD_LIBRARY_SEARCH_DEFAULT_DIRS | LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
         }
 
         if (!module)
