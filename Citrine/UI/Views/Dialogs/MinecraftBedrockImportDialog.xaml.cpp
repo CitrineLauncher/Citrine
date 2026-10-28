@@ -30,13 +30,13 @@ namespace winrt::Citrine::implementation
 			if (!initiateImportOp && !importContext)
 				Hide();
 		});
-
-		CloseButtonText(Localizer::GetString(L"Action_Cancel"));
-		CloseButtonClick([this](auto const&...) {
+		Closing([this](auto const&...) {
 
 			if (initiateImportOp)
 				initiateImportOp.Cancel();
 		});
+
+		CloseButtonText(Localizer::GetString(L"Action_Cancel"));
 	}
 
 	auto MinecraftBedrockImportDialog::ViewModel() const noexcept -> Citrine::MinecraftBedrockGamePackagesViewModel {
