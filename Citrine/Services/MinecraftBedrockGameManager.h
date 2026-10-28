@@ -28,6 +28,8 @@ namespace Citrine {
 		static auto ImportedGamePackages() -> winrt::Citrine::IObservableCollectionView;
 
 		static auto ValidateInstallLocation(std::filesystem::path const& path) -> winrt::Citrine::InstallLocationValidationResult;
+		static auto GetGamePackageRegistrationPrerequisites(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> winrt::Citrine::GamePackageRegistrationPrerequisites;
+		static auto GetGameLaunchPrerequisites(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> winrt::Citrine::GameLaunchPrerequisites;
 
 		static auto InstallGamePackageAsync(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> void;
 		static auto InitiateGamePackageImportAsync(std::filesystem::path gamePackageLocation) -> Task<winrt::Citrine::MinecraftBedrockGamePackageImportContext>;

@@ -87,7 +87,9 @@ namespace {
 	using GameConfigProvider = winrt::Citrine::MinecraftBedrockGameConfigProvider;
 	using GameConfigProviderImpl = winrt::Citrine::implementation::MinecraftBedrockGameConfigProvider;
 	using winrt::Citrine::InstallLocationValidationResult;
+	using winrt::Citrine::GamePackageRegistrationPrerequisites;
 	using winrt::Citrine::GamePackageRegistrationResult;
+	using winrt::Citrine::GameLaunchPrerequisites;
 	using winrt::Citrine::GameLaunchResult;
 
 	struct GamePackageItemGreater {
@@ -914,6 +916,75 @@ namespace {
 				return DirectoryNotFound;
 
 			return Success;
+		}
+
+		auto GetGamePackageRegistrationPrerequisites(GamePackageItem const& item) -> GamePackageRegistrationPrerequisites {
+
+			if (!initialized)
+				return {};
+
+			using enum GamePackageRegistrationPrerequisites;
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			auto gamePackage = gameInstallations->Find(packageId);
+			if (gamePackage == gameInstallations->end())
+				return {};
+
+			auto &registeredPackage = std::get<winrt::Package>(
+				packageId.BuildType == GameBuildType::Preview
+					? registeredPreviewBuild
+					: registeredReleaseBuild
+			);
+
+			if (registeredPackage) try {
+
+				auto packagePath = registeredPackage.InstalledPath();
+				auto gameDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
+
+				if (auto ec = std::error_code{}; std::filesystem::equivalent(std::wstring{ packagePath }, gameDirectory))
+					return None;
+			}
+			catch (winrt::hresult_error const&) {}
+
+			return WindowsDeveloperModeEnablement;
+		}
+
+		auto GetGameLaunchPrerequisites(GamePackageItem const& item) -> GameLaunchPrerequisites {
+
+			if (!initialized)
+				return {};
+
+			using enum GameLaunchPrerequisites;
+
+			auto itemImpl = winrt::get_self<GamePackageItemImpl>(item);
+			auto packageId = itemImpl->Id();
+
+			auto gamePackage = gameInstallations->Find(packageId);
+			if (gamePackage == gameInstallations->end())
+				return {};
+
+			if (packageId.Platform == GamePlatform::WindowsGDK)
+				return None;
+
+			auto& registeredPackage = std::get<winrt::Package>(
+				packageId.BuildType == GameBuildType::Preview
+					? registeredPreviewBuild
+					: registeredReleaseBuild
+			);
+
+			if (registeredPackage) try {
+
+				auto packagePath = registeredPackage.InstalledPath();
+				auto gameDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
+
+				if (auto ec = std::error_code{}; std::filesystem::equivalent(std::wstring{ packagePath }, gameDirectory))
+					return None;
+			}
+			catch (winrt::hresult_error const&) {}
+
+			return WindowsDeveloperModeEnablement;
 		}
 
 		auto InstallGamePackageAsync(GamePackageItem&& item) -> void {
@@ -3112,6 +3183,16 @@ namespace Citrine {
 	auto MinecraftBedrockGameManager::ValidateInstallLocation(std::filesystem::path const& path) -> winrt::Citrine::InstallLocationValidationResult {
 
 		return gameManagerInternal.ValidateInstallLocation(path);
+	}
+
+	auto MinecraftBedrockGameManager::GetGamePackageRegistrationPrerequisites(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> winrt::Citrine::GamePackageRegistrationPrerequisites {
+
+		return gameManagerInternal.GetGamePackageRegistrationPrerequisites(item);
+	}
+
+	auto MinecraftBedrockGameManager::GetGameLaunchPrerequisites(winrt::Citrine::MinecraftBedrockGamePackageItem const& item) -> winrt::Citrine::GameLaunchPrerequisites {
+
+		return gameManagerInternal.GetGameLaunchPrerequisites(item);
 	}
 
 	auto MinecraftBedrockGameManager::InstallGamePackageAsync(winrt::Citrine::MinecraftBedrockGamePackageItem item) -> void {

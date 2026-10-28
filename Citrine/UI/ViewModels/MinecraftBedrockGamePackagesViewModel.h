@@ -16,6 +16,8 @@ namespace winrt::Citrine::implementation
 
         auto CurrentInstallLocation() const noexcept -> winrt::hstring;
         auto ValidateInstallLocation(winrt::hstring const& path) const noexcept -> Citrine::InstallLocationValidationResult;
+        auto GetGamePackageRegistrationPrerequisites(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> Citrine::GamePackageRegistrationPrerequisites;
+        auto GetGameLaunchPrerequisites(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> Citrine::GameLaunchPrerequisites;
 
         auto SupportsImporting() const noexcept -> bool;
         auto CanStartImporting() const noexcept -> bool;

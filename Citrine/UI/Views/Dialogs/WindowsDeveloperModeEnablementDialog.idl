@@ -1,0 +1,13 @@
+import "UI/Controls/ContentDialogEx.idl";
+import "UI/ViewModels/WindowsDeveloperModeEnablementViewModel.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass WindowsDeveloperModeEnablementDialog : ContentDialogEx, Microsoft.UI.Xaml.Markup.IComponentConnector
+    {
+        WindowsDeveloperModeEnablementDialog(WindowsDeveloperModeEnablementViewModel viewModel);
+
+        WindowsDeveloperModeEnablementViewModel ViewModel{ get; };
+    }
+}

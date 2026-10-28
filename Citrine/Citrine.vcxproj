@@ -201,6 +201,10 @@
       <DependentUpon>UI\ViewModels\MinecraftBedrockViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="UI\ViewModels\WindowsDeveloperModeEnablementViewModel.h">
+      <DependentUpon>UI\ViewModels\WindowsDeveloperModeEnablementViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml.h">
       <DependentUpon>UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -256,6 +260,10 @@
     </ClInclude>
     <ClInclude Include="UI\Converters\StringToVisibilityConverter.h">
       <DependentUpon>UI\Converters\StringToVisibilityConverter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="UI\Views\Dialogs\WindowsDeveloperModeEnablementDialog.xaml.h">
+      <DependentUpon>UI\Views\Dialogs\WindowsDeveloperModeEnablementDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="UI\Views\MinecraftBedrockGamePackageViewBase.h" />
@@ -377,6 +385,9 @@
     <Page Include="UI\Views\Dialogs\MinecraftBedrockRenameDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\Views\Dialogs\WindowsDeveloperModeEnablementDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\Views\MinecraftBedrockGamePackageView.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -472,6 +483,10 @@
       <DependentUpon>UI\ViewModels\MinecraftBedrockViewModel.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="UI\ViewModels\WindowsDeveloperModeEnablementViewModel.cpp">
+      <DependentUpon>UI\ViewModels\WindowsDeveloperModeEnablementViewModel.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml.cpp">
       <DependentUpon>UI\Views\Dialogs\MinecraftBedrockImportDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -526,6 +541,10 @@
     </ClCompile>
     <ClCompile Include="UI\Converters\StringToVisibilityConverter.cpp">
       <DependentUpon>UI\Converters\StringToVisibilityConverter.idl</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="UI\Views\Dialogs\WindowsDeveloperModeEnablementDialog.xaml.cpp">
+      <DependentUpon>UI\Views\Dialogs\WindowsDeveloperModeEnablementDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="UI\Views\MinecraftBedrockGamePackageViewBase.cpp" />
@@ -728,6 +747,9 @@
     <Midl Include="UI\ViewModels\MinecraftBedrockViewModel.idl">
       <SubType>Designer</SubType>
     </Midl>
+    <Midl Include="UI\ViewModels\WindowsDeveloperModeEnablementViewModel.idl">
+      <SubType>Designer</SubType>
+    </Midl>
     <Midl Include="UI\Views\Dialogs\MinecraftBedrockGamePackagePicker.idl">
       <SubType>Designer</SubType>
     </Midl>
@@ -748,6 +770,10 @@
     </Midl>
     <Midl Include="UI\Views\Dialogs\MinecraftBedrockRenameDialog.idl">
       <DependentUpon>UI\Views\Dialogs\MinecraftBedrockRenameDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="UI\Views\Dialogs\WindowsDeveloperModeEnablementDialog.idl">
+      <DependentUpon>UI\Views\Dialogs\WindowsDeveloperModeEnablementDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="UI\Views\IMinecraftBedrockGamePackageViewBase.idl" />

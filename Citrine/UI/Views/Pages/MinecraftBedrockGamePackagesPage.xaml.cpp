@@ -11,6 +11,8 @@
 #include "UI/Views/Dialogs/MinecraftBedrockGamePackagePicker.h"
 #include "UI/Views/Dialogs/MinecraftBedrockImportDialog.xaml.h"
 #include "UI/Views/Dialogs/MinecraftBedrockRenameDialog.xaml.h"
+#include "UI/Views/Dialogs/WindowsDeveloperModeEnablementDialog.xaml.h"
+#include "UI/ViewModels/WindowsDeveloperModeEnablementViewModel.h"
 
 using namespace Citrine;
 
@@ -65,6 +67,34 @@ namespace winrt::Citrine::implementation
 			if (!launchArgs)
 				co_return;
 
+			using enum Citrine::GameLaunchPrerequisites;
+
+			auto prerequisites = viewModel->GetGameLaunchPrerequisites(launchArgs.SelectedGamePackage());
+			if ((prerequisites & WindowsDeveloperModeEnablement) == WindowsDeveloperModeEnablement) {
+
+				using enum Citrine::WindowsDeveloperModeStatus;
+
+				auto enablementViewModel = winrt::make_self<implementation::WindowsDeveloperModeEnablementViewModel>();
+				auto devModeStatus = enablementViewModel->GetWindowsDeveloperModeStatus();
+
+				if (devModeStatus != Enabled) {
+
+					using enum winrt::ContentDialogResult;
+
+					auto dialog = Citrine::WindowsDeveloperModeEnablementDialog{ *enablementViewModel };
+					dialog.XamlRoot(XamlRoot());
+
+					auto result = co_await dialog.ShowAsync();
+					if (result != Primary)
+						co_return;
+
+					devModeStatus = enablementViewModel->GetWindowsDeveloperModeStatus();
+				}
+
+				if (devModeStatus != Enabled)
+					co_return;
+			}
+
 			viewModel->LaunchGamePackage(launchArgs);
 		}
 		else if (action == L"PauseOperation") {
@@ -115,6 +145,34 @@ namespace winrt::Citrine::implementation
 
 			if (!gamePackage)
 				co_return;
+
+			using enum Citrine::GamePackageRegistrationPrerequisites;
+
+			auto prerequisites = viewModel->GetGamePackageRegistrationPrerequisites(gamePackage);
+			if ((prerequisites & WindowsDeveloperModeEnablement) == WindowsDeveloperModeEnablement) {
+
+				using enum Citrine::WindowsDeveloperModeStatus;
+
+				auto enablementViewModel = winrt::make_self<implementation::WindowsDeveloperModeEnablementViewModel>();
+				auto devModeStatus = enablementViewModel->GetWindowsDeveloperModeStatus();
+
+				if (devModeStatus != Enabled) {
+
+					using enum winrt::ContentDialogResult;
+
+					auto dialog = Citrine::WindowsDeveloperModeEnablementDialog{ *enablementViewModel };
+					dialog.XamlRoot(XamlRoot());
+
+					auto result = co_await dialog.ShowAsync();
+					if (result != Primary)
+						co_return;
+
+					devModeStatus = enablementViewModel->GetWindowsDeveloperModeStatus();
+				}
+
+				if (devModeStatus != Enabled)
+					co_return;
+			}
 
 			viewModel->RegisterGamePackage(gamePackage);
 		}

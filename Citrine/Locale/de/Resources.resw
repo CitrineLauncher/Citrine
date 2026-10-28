@@ -381,4 +381,16 @@
   <data name="MinecraftBedrock_GamePackage_ModsLoadDelay.Text" xml:space="preserve">
     <value>Ladeverzögerung</value>
   </data>
+  <data name="Action_Enable" xml:space="preserve">
+    <value>Aktivieren</value>
+  </data>
+  <data name="Enablement_WindowsDeveloperMode_DialogTitle" xml:space="preserve">
+    <value>Windows-Entwicklermodus aktivieren?</value>
+  </data>
+  <data name="Enablement_WindowsDeveloperMode_DialogContent" xml:space="preserve">
+    <value>Um fortzufahren, muss der Windows-Entwicklermodus aktiviert werden.</value>
+  </data>
+  <data name="ErrorMessage_EnablingWindowsDeveloperModeFailed" xml:space="preserve">
+    <value>Aktivieren des Windows-Entwicklermodus fehlgeschlagen.</value>
+  </data>
 </root>

@@ -1,0 +1,13 @@
+import "Models/WindowsDeveloperModeStatus.idl";
+
+namespace Citrine
+{
+    [default_interface]
+    runtimeclass WindowsDeveloperModeEnablementViewModel 
+    {
+        WindowsDeveloperModeEnablementViewModel();
+
+        WindowsDeveloperModeStatus GetWindowsDeveloperModeStatus();
+        Windows.Foundation.IAsyncOperation<WindowsDeveloperModeStatus> EnableWindowsDeveloperMode();
+    }
+}

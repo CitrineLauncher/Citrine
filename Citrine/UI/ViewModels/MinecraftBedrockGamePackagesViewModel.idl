@@ -5,6 +5,8 @@ import "Models/MinecraftBedrockGamePackageImportContext.idl";
 import "Models/MinecraftBedrockGameLaunchArgs.idl";
 import "Models/MinecraftBedrockGameConfigOptions.idl";
 import "Models/InstallLocationValidationResult.idl";
+import "Models/GamePackageRegistrationPrerequisites.idl";
+import "Models/GameLaunchPrerequisites.idl";
 import "Collections/IObservableCollectionView.idl";
 import "Collections/IFilterableCollectionView.idl";
 
@@ -20,6 +22,8 @@ namespace Citrine
 
         String CurrentInstallLocation{ get; };
         InstallLocationValidationResult ValidateInstallLocation(String path);
+        GamePackageRegistrationPrerequisites GetGamePackageRegistrationPrerequisites(MinecraftBedrockGamePackageItem gamePackage);
+        GameLaunchPrerequisites GetGameLaunchPrerequisites(MinecraftBedrockGamePackageItem gamePackage);
 
         Boolean SupportsImporting{ get; };
         Boolean CanStartImporting{ get; };

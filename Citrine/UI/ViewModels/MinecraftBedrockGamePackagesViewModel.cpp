@@ -225,6 +225,16 @@ namespace winrt::Citrine::implementation
 		return MinecraftBedrockGameManager::ValidateInstallLocation(std::wstring{ path });
 	}
 
+	auto MinecraftBedrockGamePackagesViewModel::GetGamePackageRegistrationPrerequisites(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> Citrine::GamePackageRegistrationPrerequisites {
+
+		return MinecraftBedrockGameManager::GetGamePackageRegistrationPrerequisites(gamePackage);
+	}
+
+	auto MinecraftBedrockGamePackagesViewModel::GetGameLaunchPrerequisites(Citrine::MinecraftBedrockGamePackageItem const& gamePackage) -> Citrine::GameLaunchPrerequisites {
+
+		return MinecraftBedrockGameManager::GetGameLaunchPrerequisites(gamePackage);
+	}
+
 	auto MinecraftBedrockGamePackagesViewModel::SupportsImporting() const noexcept -> bool {
 
 		return packageSourceId == L"Imports";

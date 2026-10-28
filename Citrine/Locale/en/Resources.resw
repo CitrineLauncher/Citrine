@@ -381,4 +381,16 @@
   <data name="MinecraftBedrock_GamePackage_ModsLoadDelay.Text" xml:space="preserve">
     <value>Load delay</value>
   </data>
+  <data name="Action_Enable" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Enablement_WindowsDeveloperMode_DialogTitle" xml:space="preserve">
+    <value>Enable Windows developer mode?</value>
+  </data>
+  <data name="Enablement_WindowsDeveloperMode_DialogContent" xml:space="preserve">
+    <value>To continue, Windows developer mode must be enabled.</value>
+  </data>
+  <data name="ErrorMessage_EnablingWindowsDeveloperModeFailed" xml:space="preserve">
+    <value>Enabling Windows developer mode failed.</value>
+  </data>
 </root>
