@@ -943,7 +943,7 @@ namespace {
 				auto packagePath = registeredPackage.InstalledPath();
 				auto gameDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
 
-				if (auto ec = std::error_code{}; std::filesystem::equivalent(std::wstring{ packagePath }, gameDirectory))
+				if (auto ec = std::error_code{}; std::filesystem::equivalent(std::wstring{ packagePath }, gameDirectory, ec))
 					return None;
 			}
 			catch (winrt::hresult_error const&) {}
@@ -979,7 +979,7 @@ namespace {
 				auto packagePath = registeredPackage.InstalledPath();
 				auto gameDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
 
-				if (auto ec = std::error_code{}; std::filesystem::equivalent(std::wstring{ packagePath }, gameDirectory))
+				if (auto ec = std::error_code{}; std::filesystem::equivalent(std::wstring{ packagePath }, gameDirectory, ec))
 					return None;
 			}
 			catch (winrt::hresult_error const&) {}
@@ -1387,7 +1387,7 @@ namespace {
 				return {};
 
 			auto gameModsDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage) / L"Mods";
-			if (auto ec = std::error_code{}; !std::filesystem::create_directory(gameModsDirectory) && ec) {
+			if (auto ec = std::error_code{}; !std::filesystem::create_directory(gameModsDirectory, ec) && ec) {
 
 				Logger::Error("Creating game mods directory for game package {} failed ({})", *gamePackage, ec.value());
 			}
@@ -1880,7 +1880,7 @@ namespace {
 			}
 
 			auto gameDirectory = gamePackage->InstallLocation / GetGameDirectoryName(*gamePackage);
-			if (auto ec = std::error_code{}; !std::filesystem::create_directory(gameDirectory) && ec) {
+			if (auto ec = std::error_code{}; !std::filesystem::create_directory(gameDirectory, ec) && ec) {
 
 				Logger::Error("Installing game package {} failed: game directory creation failed ({})", *gamePackage, ec.value());
 				co_return false;
@@ -2552,7 +2552,7 @@ namespace {
 							continue;
 
 						auto executablePath = std::filesystem::path{ std::wstring{ pathBuffer.data(), pathSize } };
-						if (auto ec = std::error_code{}; !std::filesystem::equivalent(executablePath, targetExecutablePath))
+						if (auto ec = std::error_code{}; !std::filesystem::equivalent(executablePath, targetExecutablePath, ec))
 							continue;
 
 						targetProcesses.emplace_back(std::move(process));
