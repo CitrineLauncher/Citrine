@@ -297,7 +297,7 @@ namespace {
 				&value
 			);
 
-			if (result != S_OK && result != ERROR_FILE_NOT_FOUND && result != ERROR_PATH_NOT_FOUND) {
+			if (result != S_OK && result != ::HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) && result != ::HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND)) {
 
 				Logger::Error("Retrieving windows developer mode status failed: {}", result);
 				return Unknown;
@@ -319,7 +319,7 @@ namespace {
 
 			if (status != Disabled) {
 
-				Logger::Error("Enabling windows developer mode failed: invalid status ()", std::to_underlying(status));
+				Logger::Error("Enabling windows developer mode failed: invalid status ({})", std::to_underlying(status));
 				co_return status;
 			}
 
