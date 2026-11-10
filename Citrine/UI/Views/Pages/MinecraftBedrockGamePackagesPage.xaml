@@ -30,6 +30,6 @@
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>
         </ScrollViewer>
-        <Button x:Name="ImportButton" x:Uid="MinecraftBedrock_GamePackages_Import" x:Load="{x:Bind ViewModel.SupportsImporting}" IsEnabled="{x:Bind ViewModel.CanStartImporting}" Grid.Row="3" HorizontalAlignment="Right" Margin="0,6,0,0" Click="ImportButton_Click" />
+        <Button x:Name="ImportButton" x:Uid="MinecraftBedrock_GamePackages_Import" x:Load="{x:Bind ViewModel.SupportsImporting}" IsEnabled="{x:Bind ViewModel.CanStartImporting, Mode=OneWay}" Grid.Row="3" HorizontalAlignment="Right" Margin="0,6,0,0" Click="ImportButton_Click" />
     </Grid>
 </Page>
