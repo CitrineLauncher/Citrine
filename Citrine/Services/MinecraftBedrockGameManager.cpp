@@ -181,7 +181,7 @@ namespace {
 			auto it = std::ranges::find(entries, token.ptr, &Entry::Progress);
 			if (it != entries.end()) {
 
-				auto const& [status, bytesProcessed, totalBytesToProcess, hasValue] = std::atomic_ref{ *it->Progress }.load(std::memory_order::acquire);
+				auto const& [status, bytesProcessed, totalBytesToProcess, hasValue] = std::atomic_ref{ *it->Progress }.load(std::memory_order::relaxed);
 				if (!hasValue)
 					return;
 
@@ -220,7 +220,7 @@ namespace {
 
 			for (auto& entry : entries) {
 
-				auto const& [status, bytesProcessed, totalBytesToProcess, hasValue] = std::atomic_ref{ *entry.Progress }.load(std::memory_order::acquire);
+				auto const& [status, bytesProcessed, totalBytesToProcess, hasValue] = std::atomic_ref{ *entry.Progress }.load(std::memory_order::relaxed);
 				if (!hasValue)
 					continue;
 
@@ -280,8 +280,10 @@ namespace {
 
 			if (auto xvc = std::get_if<Xbox::StreamedXvcFile>(this))
 				return &xvc->PackageManifest();
-			else if (auto msix = std::get_if<Windows::StreamedMsixFile>(this))
+
+			if (auto msix = std::get_if<Windows::StreamedMsixFile>(this))
 				return &msix->PackageManifest();
+
 			return nullptr;
 		}
 	};
